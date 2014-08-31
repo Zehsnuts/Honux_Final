@@ -116,7 +116,7 @@ public class MouseFunctions : MonoBehaviour
             {
                 if (ResourcesManager.INSTANCE.GetTracksNumber() > 0)
                 {
-                    ConnectorFunctions.INSTANCE.AssignOriginAndDestination(t.gameObject);
+                    //ConnectorFunctions.INSTANCE.AssignOriginAndDestination(t.gameObject);
                 }
                 /*if (LineCreatorByInput.INSTANCE.ReadyToCreateLine() && ResourcesManager.INSTANCE.GetTracksNumber()>0)
                     LineCreatorByInput.INSTANCE.AssignOriginAndDestination(t.gameObject);    

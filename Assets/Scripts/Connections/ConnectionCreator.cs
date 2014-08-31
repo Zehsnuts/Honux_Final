@@ -3,36 +3,55 @@ using System.Collections;
 
 public class ConnectionCreator : MonoBehaviour {
 
-    #region Singleton
 
-    private static ConnectionCreator _INSTANCE;
+    public ConnectionEnum.ConnectionType Connection;
 
-    public static ConnectionCreator INSTANCE
+    public Transform Destination;
+
+
+    CrystalConnection cc;
+
+
+    void Awake()
     {
-        get
+        if (Destination != null)
         {
-            if (_INSTANCE == null)
-            {
-                _INSTANCE = GameObject.FindObjectOfType<ConnectionCreator>();
-            }
-            return _INSTANCE;
+            SetConnectionAttributes();
+            CreateConnection();
+            Destroy(this);
         }
+        else
+            Debug.LogError("Crystal connection doesn't have a destination.");
     }
-    #endregion
 
-    public void CreateConnection(Transform a, Transform b, string str)
-    {
-        if (a == null && b == null)
-            return;
+    void SetConnectionAttributes()
+    { 
+        gameObject.AddComponent<CrystalConnection>();
+        cc = gameObject.GetComponent<CrystalConnection>();
 
-        var go = Instantiate(Resources.Load("Prefabs/Connection/Connector"), a.position, a.rotation) as GameObject;
+        if (Connection.ToString() == "Fixed")
+            cc.Connection = ConnectionEnum.ConnectionType.Fixed;
+        else
+            cc.Connection = ConnectionEnum.ConnectionType.Temporary;
 
-        go.transform.parent = a;
+        cc.Destination = Destination;
+    }
 
-        go.name = "Track: " + a.name + " to " + b.name;
+    void CreateConnection()
+    {   
+        transform.GetComponent<CrystalUnitFunctions>().ConnectSingleUnit(Destination.gameObject);
 
+        var go = Instantiate(Resources.Load("Prefabs/Connection/Connector"), transform.position, transform.rotation) as GameObject;
+
+        go.transform.parent = transform;
+
+        go.name = "Track: " + transform.name + " to " + Destination.name;
+
+        cc.ConnectionTracks.Add(go.transform);
+
+        go.GetComponent<ConnectorFunctions>().InitializeConnection();
         //go.GetComponent<LineDrawer>().DrawLineFromTo(a, b, str);
 
-        GlobalFunctions.ConnectThisLineWithParent(a.gameObject, go);
+        GlobalFunctions.ConnectThisLineWithParent(transform.gameObject, go);
     }
 }

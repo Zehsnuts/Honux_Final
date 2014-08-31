@@ -133,7 +133,7 @@ public class CrystalsControl : MonoBehaviour
             if (trans.name.Contains("Track:"))
             {
                 trans.gameObject.SetActiveRecursively(true);
-                trans.GetComponent<LineDrawer>().TurnTrackOff();
+                //trans.GetComponent<LineDrawer>().TurnTrackOff();
             }
         }
     }  
@@ -190,7 +190,7 @@ public class CrystalsControl : MonoBehaviour
             if (trans.name.Contains("Track:"))
             {
                 trans.gameObject.SetActiveRecursively(true);
-                trans.GetComponent<LineDrawer>().TurnTrackOn();
+                //trans.GetComponent<LineDrawer>().TurnTrackOn();
             }
         }
 

@@ -4,32 +4,10 @@ using System.Collections.Generic;
 
 public class CrystalConnection : MonoBehaviour 
 {
-    public enum ConnectionType
-    { 
-        Fixed, Temporary
-    }
+    public ConnectionEnum.ConnectionType Connection;
 
-    public ConnectionType Connection;
+    public Transform Destination;
 
-    private GameObject Origin;
-    public GameObject Destination;
+    public List<Transform> ConnectionTracks = new List<Transform>();
 
-    void Awake()
-    { 
-        Origin = gameObject;
-        transform.FindChild("OriginPoint").transform.position = Origin.transform.position;
-
-        if (Origin != null && Destination != null)
-            LineCreatorByInput.INSTANCE.EditorModeLineCreator(Origin, Destination, Connection.ToString());
-    }
-
-    public void SetConnectionAttributes(GameObject destination)
-    {       
-        Destination = destination;
-        transform.FindChild("DestinationPoint").transform.position = Destination.transform.position;
-
-        transform.FindChild("Frame").transform.LookAt(Destination.transform.position);
-
-        Connection = ConnectionType.Temporary;
-    }
 }

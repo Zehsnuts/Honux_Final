@@ -12,14 +12,16 @@ public class ConnectionsManager : MonoBehaviour {
 
     void CreateChildren()
     {
-        if (!FindObjectOfType<ConnectorFunctions>())
+        /*if (!FindObjectOfType<ConnectorFunctions>())
         {
             GameObject go = Instantiate(Resources.Load("Prefabs/Connection/Connector")) as GameObject;
             go.transform.parent = transform;
             go.name = "Connector";
             go.AddComponent<ConnectorFunctions>();
         }
+         * */
 
+        /*
         if (!FindObjectOfType<ConnectionCreator>())
         {
             GameObject go = new GameObject();
@@ -27,5 +29,6 @@ public class ConnectionsManager : MonoBehaviour {
             go.name = "Connector";
             go.AddComponent<ConnectionCreator>();
         }
+         * */
     }
 }

@@ -242,7 +242,7 @@ public class CrystalUnitFunctions : CrystalsUnit
     {
         foreach (GameObject go in TracksOfDonatedEnergy)
         {
-            go.GetComponent<LineDrawer>().TurnTrackOn();
+            //go.GetComponent<LineDrawer>().TurnTrackOn();
         }
     }
 
@@ -260,7 +260,7 @@ public class CrystalUnitFunctions : CrystalsUnit
         foreach (GameObject go in TracksOfDonatedEnergy)
         {
             //Desativa as linhas de conexão;
-            go.GetComponent<LineDrawer>().TurnTrackOff();
+            //go.GetComponent<LineDrawer>().TurnTrackOff();
         }
 
         SystemsThisDonatedEnergyTo.Clear();

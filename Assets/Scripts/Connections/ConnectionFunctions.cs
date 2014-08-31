@@ -1,19 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class LineCreatorByInput : MonoBehaviour {
+public class ConnectionFunctions : MonoBehaviour
+{
 
     #region Singleton
 
-    private static LineCreatorByInput _INSTANCE;
+    private static ConnectionFunctions _INSTANCE;
 
-    public static LineCreatorByInput INSTANCE
+    public static ConnectionFunctions INSTANCE
     {
         get
         {
             if (_INSTANCE == null)
             {
-                _INSTANCE = GameObject.FindObjectOfType<LineCreatorByInput>();
+                _INSTANCE = GameObject.FindObjectOfType<ConnectionFunctions>();
             }
             return _INSTANCE;
         }
@@ -23,17 +24,32 @@ public class LineCreatorByInput : MonoBehaviour {
     public GameObject Origin;
     public GameObject Destination;
 
-    private bool _isCreatingLine = false;
+    private bool _isCreatingConnection = false;
+
+    private Transform _lineFrame;
+
+    private Vector3 _initialPosition;
+
+    void Awake()
+    {
+        _lineFrame = transform.FindChild("Frame");
+        _initialPosition = transform.position;
+    }
+
+    void InitialState()
+    {
+
+    }
 
     void Update()
     {
-        if (_isCreatingLine)
-            LineToMouseLocation();
+        if (_isCreatingConnection)
+            PointFrameToMouse();
     }
 
-    void LineToMouseLocation()
+    void PointFrameToMouse()
     {
-        LineManager.INSTANCE.LineDrawerForMouse(Origin.transform);
+        _lineFrame.LookAt(MouseFunctions.INSTANCE.MoveMouseCursor());
         if (Input.GetKeyUp(KeyCode.Escape))
             CancelLineCreation();
     }
@@ -51,10 +67,11 @@ public class LineCreatorByInput : MonoBehaviour {
     {
         if (Origin == null)
         {
-            _isCreatingLine = true;
+            _isCreatingConnection = true;
             Origin = go;
+            transform.position = Origin.transform.position;
         }
-        else        
+        else
             Destination = go;
 
         if (Origin != null && Destination != null && Origin != Destination)
@@ -66,21 +83,24 @@ public class LineCreatorByInput : MonoBehaviour {
                 Destination = aux;
             }
 
-            if(GlobalFunctions.CheckIfConnectionIsPossible(Origin.transform,Destination.transform))
+            if (GlobalFunctions.CheckIfConnectionIsPossible(Origin.transform, Destination.transform))
                 StartLineCreation();
-            else 
+            else
                 CancelLineCreation();
         }
     }
 
     void StartLineCreation()
     {
-        _isCreatingLine = false;
+        _isCreatingConnection = false;
+
         Origin.transform.GetComponent<CrystalUnitFunctions>().ConnectSingleUnit(Destination);
 
-        LineManager.INSTANCE.CreateLineDrawer(Origin.transform, Destination.transform, "Temp");
+        //ConnectionCreator.INSTANCE.CreateConnection(Origin.transform, Destination.transform, "Temp");
 
-        ResourcesManager.INSTANCE.RemoveTrack();         
+        //LineManager.INSTANCE.CreateLineDrawer(Origin.transform, Destination.transform, "Temp");
+
+        ResourcesManager.INSTANCE.RemoveTrack();
 
         CancelLineCreation();
     }
@@ -92,13 +112,15 @@ public class LineCreatorByInput : MonoBehaviour {
             origin.transform.GetComponent<CrystalUnitFunctions>().ConnectSingleUnit(destination);
             LineManager.INSTANCE.CreateLineDrawer(origin.transform, destination.transform, type);
         }
-    }    
+    }
 
     public void CancelLineCreation()
     {
-        _isCreatingLine = false;
+        _isCreatingConnection = false;
         Origin = null;
         Destination = null;
-        LineManager.INSTANCE.CancelLineDrawerForMouse();
+
+        transform.position = _initialPosition;
+        //LineManager.INSTANCE.CancelLineDrawerForMouse();
     }
 }

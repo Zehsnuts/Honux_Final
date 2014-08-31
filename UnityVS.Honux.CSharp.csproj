@@ -230,9 +230,15 @@
     <Compile Include="Assets\SECTR\Demos\Core\Scripts\SECTR_Wanderer.cs" />
     <Compile Include="Assets\Scripts\CameraControl.cs" />
     <Compile Include="Assets\Scripts\Connections\ConnectionCreator.cs" />
+    <Compile Include="Assets\Scripts\Connections\ConnectionEnum.cs" />
+    <Compile Include="Assets\Scripts\Connections\ConnectionFunctions.cs" />
     <Compile Include="Assets\Scripts\Connections\ConnectionsManager.cs" />
     <Compile Include="Assets\Scripts\Connections\ConnectorFunctions.cs" />
     <Compile Include="Assets\Scripts\Connections\CrystalConnection.cs" />
+    <Compile Include="Assets\Scripts\Connections\LineCreatorByInput.cs" />
+    <Compile Include="Assets\Scripts\Connections\LineDrawer.cs" />
+    <Compile Include="Assets\Scripts\Connections\LineManager.cs" />
+    <Compile Include="Assets\Scripts\Connections\TrackConnector.cs" />
     <Compile Include="Assets\Scripts\CrystalSystem\CrystalUnitFunctions.cs" />
     <Compile Include="Assets\Scripts\CrystalSystem\CrystalsControl.cs" />
     <Compile Include="Assets\Scripts\CrystalSystem\CrystalsUnit.cs" />
@@ -247,9 +253,6 @@
     <Compile Include="Assets\Scripts\CrystalSystem\ForceField.cs" />
     <Compile Include="Assets\Scripts\CrystalSystem\ForceField_Button.cs" />
     <Compile Include="Assets\Scripts\CrystalSystem\GlobalFunctions.cs" />
-    <Compile Include="Assets\Scripts\CrystalSystem\LineCreatorByInput.cs" />
-    <Compile Include="Assets\Scripts\CrystalSystem\LineDrawer.cs" />
-    <Compile Include="Assets\Scripts\CrystalSystem\LineManager.cs" />
     <Compile Include="Assets\Scripts\CrystalSystem\Skill_StunRay.cs" />
     <Compile Include="Assets\Scripts\CrystalSystem\Skill_StunRaySphere.cs" />
     <Compile Include="Assets\Scripts\CrystalSystem\ThievingRobot.cs" />
