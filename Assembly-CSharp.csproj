@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+	<ProductVersion>10.0.20506</ProductVersion>
+	<SchemaVersion>2.0</SchemaVersion>
+	<ProjectGuid>{7A882426-787D-DCA5-5B08-6331B10C6A19}</ProjectGuid>
+	<OutputType>Library</OutputType>
+	<AppDesignerFolder>Properties</AppDesignerFolder>
+	<RootNamespace></RootNamespace>
+	<AssemblyName>Assembly-CSharp</AssemblyName>
+	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	<FileAlignment>512</FileAlignment>
+	<BaseDirectory>Assets</BaseDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+	<DebugSymbols>true</DebugSymbols>
+	<DebugType>full</DebugType>
+	<Optimize>false</Optimize>
+	<OutputPath>Temp\bin\Debug\</OutputPath>
+	<DefineConstants>DEBUG;TRACE;UNITY_4_5_2;UNITY_4_5;UNITY_64;UNITY_STANDALONE_WIN;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_UNITYEVENTS;ENABLE_NEW_HIERARCHY ;ENABLE_AUDIO_FMOD;UNITY_STANDALONE;ENABLE_MONO;ENABLE_TERRAIN;ENABLE_SUBSTANCE;ENABLE_GENERICS;INCLUDE_WP8SUPPORT;ENABLE_MOVIES;ENABLE_WWW;ENABLE_IMAGEEFFECTS;ENABLE_WEBCAM;INCLUDE_METROSUPPORT;RENDER_SOFTWARE_CURSOR;ENABLE_NETWORK;ENABLE_PHYSICS;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_2D_PHYSICS;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_NAVMESH_CARVING;ENABLE_DUCK_TYPING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;DEVELOPMENT_BUILD;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_WIN;UNITY_TEAM_LICENSE;UNITY_PRO_LICENSE</DefineConstants>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<NoWarn>0169</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+	<DebugType>pdbonly</DebugType>
+	<Optimize>true</Optimize>
+	<OutputPath>Temp\bin\Release\</OutputPath>
+	<DefineConstants>TRACE</DefineConstants>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<NoWarn>0169</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+	<Reference Include="System" />
+    <Reference Include="System.XML" />
+	<Reference Include="System.Core" />
+	<Reference Include="System.Xml.Linq" />
+	<Reference Include="UnityEngine">
+	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
+	</Reference>
+	<Reference Include="UnityEditor">
+	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
+	</Reference>
+  </ItemGroup>
+  <ItemGroup>
+     <Compile Include="Assets\SECTR\Code\Audio\Scripts\SECTR_AudioAmbience.cs" />
+     <Compile Include="Assets\SECTR\Code\Audio\Scripts\SECTR_AudioBus.cs" />
+     <Compile Include="Assets\SECTR\Code\Audio\Scripts\SECTR_AudioCue.cs" />
+     <Compile Include="Assets\SECTR\Code\Audio\Scripts\SECTR_AudioCueInstance.cs" />
+     <Compile Include="Assets\SECTR\Code\Audio\Scripts\SECTR_AudioEnvironment.cs" />
+     <Compile Include="Assets\SECTR\Code\Audio\Scripts\SECTR_AudioEnvironmentTrigger.cs" />
+     <Compile Include="Assets\SECTR\Code\Audio\Scripts\SECTR_AudioEnvironmentZone.cs" />
+     <Compile Include="Assets\SECTR\Code\Audio\Scripts\SECTR_AudioSource.cs" />
+     <Compile Include="Assets\SECTR\Code\Audio\Scripts\SECTR_AudioSystem.cs" />
+     <Compile Include="Assets\SECTR\Code\Audio\Scripts\SECTR_CharacterAudio.cs" />
+     <Compile Include="Assets\SECTR\Code\Audio\Scripts\SECTR_ComputeRMS.cs" />
+     <Compile Include="Assets\SECTR\Code\Audio\Scripts\SECTR_DoorAudio.cs" />
+     <Compile Include="Assets\SECTR\Code\Audio\Scripts\SECTR_ImpactAudio.cs" />
+     <Compile Include="Assets\SECTR\Code\Audio\Scripts\SECTR_MusicTrigger.cs" />
+     <Compile Include="Assets\SECTR\Code\Audio\Scripts\SECTR_PointSource.cs" />
+     <Compile Include="Assets\SECTR\Code\Audio\Scripts\SECTR_PropagationSource.cs" />
+     <Compile Include="Assets\SECTR\Code\Audio\Scripts\SECTR_RegionSource.cs" />
+     <Compile Include="Assets\SECTR\Code\Audio\Scripts\SECTR_SplineSource.cs" />
+     <Compile Include="Assets\SECTR\Code\Audio\Scripts\SECTR_StartMusic.cs" />
+     <Compile Include="Assets\SECTR\Code\Audio\Scripts\SECTR_TriggerSource.cs" />
+     <Compile Include="Assets\SECTR\Code\Core\Scripts\SECTR_Door.cs" />
+     <Compile Include="Assets\SECTR\Code\Core\Scripts\SECTR_Geometry.cs" />
+     <Compile Include="Assets\SECTR\Code\Core\Scripts\SECTR_Graph.cs" />
+     <Compile Include="Assets\SECTR\Code\Core\Scripts\SECTR_Hull.cs" />
+     <Compile Include="Assets\SECTR\Code\Core\Scripts\SECTR_Member.cs" />
+     <Compile Include="Assets\SECTR\Code\Core\Scripts\SECTR_Modules.cs" />
+     <Compile Include="Assets\SECTR\Code\Core\Scripts\SECTR_Portal.cs" />
+     <Compile Include="Assets\SECTR\Code\Core\Scripts\SECTR_PriorityQueue.cs" />
+     <Compile Include="Assets\SECTR\Code\Core\Scripts\SECTR_Sector.cs" />
+     <Compile Include="Assets\SECTR\Code\Core\Scripts\SECTR_ToolTip.cs" />
+     <Compile Include="Assets\SECTR\Code\Core\Scripts\SECTR_ULong.cs" />
+     <Compile Include="Assets\SECTR\Demos\Audio\Scripts\SECTR_AudioDemoUI.cs" />
+     <Compile Include="Assets\SECTR\Demos\Core\Scripts\SECTR_CharacterMotor.cs" />
+     <Compile Include="Assets\SECTR\Demos\Core\Scripts\SECTR_DemoUI.cs" />
+     <Compile Include="Assets\SECTR\Demos\Core\Scripts\SECTR_FPController.cs" />
+     <Compile Include="Assets\SECTR\Demos\Core\Scripts\SECTR_FPSController.cs" />
+     <Compile Include="Assets\SECTR\Demos\Core\Scripts\SECTR_GhostController.cs" />
+     <Compile Include="Assets\SECTR\Demos\Core\Scripts\SECTR_Wanderer.cs" />
+     <Compile Include="Assets\Scripts\CameraControl.cs" />
+     <Compile Include="Assets\Scripts\Connections\ConnectionCreator.cs" />
+     <Compile Include="Assets\Scripts\Connections\ConnectionsManager.cs" />
+     <Compile Include="Assets\Scripts\Connections\ConnectorFunctions.cs" />
+     <Compile Include="Assets\Scripts\Connections\CrystalConnection.cs" />
+     <Compile Include="Assets\Scripts\CrystalSystem\CrystalUnitFunctions.cs" />
+     <Compile Include="Assets\Scripts\CrystalSystem\CrystalsControl.cs" />
+     <Compile Include="Assets\Scripts\CrystalSystem\CrystalsUnit.cs" />
+     <Compile Include="Assets\Scripts\CrystalSystem\CrystalsUnit_Bridge.cs" />
+     <Compile Include="Assets\Scripts\CrystalSystem\CrystalsUnit_Generator.cs" />
+     <Compile Include="Assets\Scripts\CrystalSystem\CrystalsUnit_Rhythm.cs" />
+     <Compile Include="Assets\Scripts\CrystalSystem\CrystalsUnit_Unstable.cs" />
+     <Compile Include="Assets\Scripts\CrystalSystem\CrystalsUnit_pinAND.cs" />
+     <Compile Include="Assets\Scripts\CrystalSystem\CrystalsUnit_pinOR.cs" />
+     <Compile Include="Assets\Scripts\CrystalSystem\CrystalsUnit_pinXOR.cs" />
+     <Compile Include="Assets\Scripts\CrystalSystem\CrystalsUnit_repNormal.cs" />
+     <Compile Include="Assets\Scripts\CrystalSystem\ForceField.cs" />
+     <Compile Include="Assets\Scripts\CrystalSystem\ForceField_Button.cs" />
+     <Compile Include="Assets\Scripts\CrystalSystem\GlobalFunctions.cs" />
+     <Compile Include="Assets\Scripts\CrystalSystem\LineCreatorByInput.cs" />
+     <Compile Include="Assets\Scripts\CrystalSystem\LineDrawer.cs" />
+     <Compile Include="Assets\Scripts\CrystalSystem\LineManager.cs" />
+     <Compile Include="Assets\Scripts\CrystalSystem\Skill_StunRay.cs" />
+     <Compile Include="Assets\Scripts\CrystalSystem\Skill_StunRaySphere.cs" />
+     <Compile Include="Assets\Scripts\CrystalSystem\ThievingRobot.cs" />
+     <Compile Include="Assets\Scripts\InputFunctions\KeyboardFunctions.cs" />
+     <Compile Include="Assets\Scripts\InputFunctions\MouseFunctions.cs" />
+     <Compile Include="Assets\Scripts\Managers\EventManager.cs" />
+     <Compile Include="Assets\Scripts\Managers\GUIManager.cs" />
+     <Compile Include="Assets\Scripts\Managers\GameStateManager.cs" />
+     <Compile Include="Assets\Scripts\Managers\HUDManager.cs" />
+     <Compile Include="Assets\Scripts\Managers\LoadingManager.cs" />
+     <Compile Include="Assets\Scripts\Managers\Manager.cs" />
+     <Compile Include="Assets\Scripts\Managers\ResolutionManager.cs" />
+     <Compile Include="Assets\Scripts\Managers\ResourcesManager.cs" />
+     <Compile Include="Assets\Scripts\Managers\SoundManager.cs" />
+     <Compile Include="Assets\Scripts\Managers\StageManager.cs" />
+     <Compile Include="Assets\Scripts\MenuSystem.cs" />
+     <Compile Include="Assets\Scripts\MenuSystem_Options.cs" />
+     <Compile Include="Assets\Scripts\Screens\Screen_AudioScreen.cs" />
+     <Compile Include="Assets\Scripts\Screens\Screen_BluePrint.cs" />
+     <Compile Include="Assets\Scripts\Screens\Screen_Feedback.cs" />
+     <Compile Include="Assets\Scripts\Screens\Screen_Pause.cs" />
+     <Compile Include="Assets\Scripts\Screens\Screen_StageSelect.cs" />
+     <Compile Include="Assets\Scripts\Stages\StagesProperties.cs" />
+     <Compile Include="Assets\Scripts\Tutorial\Stage_tut_1.cs" />
+     <Compile Include="Assets\Scripts\Tutorial\Stage_tut_2.cs" />
+     <Compile Include="Assets\Scripts\Tutorial\Stage_tut_3.cs" />
+     <Compile Include="Assets\Scripts\Tutorial\Stage_tut_4.cs" />
+     <Compile Include="Assets\Scripts\Tutorial\Stage_tut_5.cs" />
+     <Compile Include="Assets\Scripts\Tutorial\Stage_tut_6.cs" />
+     <Compile Include="Assets\Scripts\Tutorial\Stage_tut_7.cs" />
+     <Compile Include="Assets\Scripts\Tutorial\Stage_tut_8.cs" />
+     <Compile Include="Assets\Scripts\Tutorial\TutorialManager.cs" />
+     <Compile Include="Assets\Scripts\Utils\CameraFade.cs" />
+     <Compile Include="Assets\Scripts\Utils\Extensions.cs" />
+     <Compile Include="Assets\iTween\Plugins\iTween.cs" />
+     <Compile Include="Assets\iTween\Sample\MoveSample.cs" />
+     <Compile Include="Assets\iTween\Sample\RotateSample.cs" />
+     <Compile Include="Assets\iTween\Sample\SampleInfo.cs" />
+     <None Include="Assets\Standard Assets\Skyboxes\_skybox info.txt" />
+     <None Include="Assets\iTween\ReadMe!\ReadMe!.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
+      <Project>{979497AD-5934-F391-B509-6E6F7218A36C}</Project>      <Name>Assembly-CSharp-firstpass</Name>    </ProjectReference>
+    <ProjectReference Include="Assembly-UnityScript-firstpass.unityproj">
+      <Project>{7089277B-1A0F-AC2F-8DEF-3298E1D07BD3}</Project>      <Name>Assembly-UnityScript-firstpass</Name>    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+	   Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  
+</Project>

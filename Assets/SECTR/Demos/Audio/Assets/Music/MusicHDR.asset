@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e53b6803754c30d4fafeac19b23db57b, type: 3}
+  m_Name: MusicHDR
+  m_EditorClassIdentifier: 
+  template: {fileID: 0}
+  bus: {fileID: 11400000, guid: fdce15b11a02f294f9990dc14eb53bab, type: 2}
+  AudioClips:
+  - clip: {fileID: 8300000, guid: 47c0232058f28aa4685eebe37e0125e7, type: 3}
+    playedInShuffle: 0
+    volume: .75
+    hdrKeys:
+    - -13.4382772
+    - -14.0001116
+    - -13.5496197
+    - -13.9080753
+    - -13.3765812
+    - -13.9016705
+    - -13.4686718
+    - -13.8232784
+    - -13.4709587
+    - -13.8123894
+    - -13.2728758
+    - -13.9345856
+    - -13.2998142
+    - -13.96488
+    - -13.4684038
+    - -14.0092764
+    - -13.4382772
+    bakeTimestamp:
+      first: -1309104618
+      second: 53024
+  PlaybackMode: 0
+  HDR: 1
+  Loudness: {x: 45, y: 45}
+  Volume: {x: 1, y: 1}
+  Pitch: {x: 1, y: 1}
+  Loops: 1
+  Priority: 128
+  BypassEffects: 0
+  MaxInstances: 10
+  FadeInTime: .5
+  FadeOutTime: .5
+  Spatialization: 3
+  Spread: 0
+  Pan2D: 0
+  Falloff: 0
+  MaxDistance: 32.5304413
+  MinDistance: 7.52981567
+  DopplerLevel: 0
+  ProximityLimit: 0
+  ProximityRange: 10

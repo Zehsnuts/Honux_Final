@@ -1,0 +1,231 @@
+﻿using UnityEngine;
+using System.Collections;
+public class StagesProperties : MonoBehaviour
+{
+    #region Events
+    void OnEnable()
+    {
+        EventManager.PINTURNON_XOR += PinXorTurnedOn;
+        EventManager.PINTURNON_OR += PinOrTurnedOn;
+        EventManager.PINTURNON_AND += PinAndTurnedOn;
+
+        EventManager.PINTURNOFF_XOR += PinXorTurnedOff;
+        EventManager.PINTURNOFF_OR += PinOrTurnedOff;
+        EventManager.PINTURNOFF_AND += PinAndTurnedOff;
+
+        EventManager.UNSTABLETURNON += TurnRobotOn;
+        EventManager.UNSTABLETURNOFF += TurnRobotOff;
+
+        EventManager.UNSTABLETURNON += AddToUnstableCount;
+        EventManager.UNSTABLETURNOFF += RemoveFromUnstableCount;
+    }
+
+    void OnDisable()
+    {
+        EventManager.PINTURNON_XOR -= PinXorTurnedOn;
+        EventManager.PINTURNON_OR -= PinOrTurnedOn;
+        EventManager.PINTURNON_AND -= PinAndTurnedOn;
+
+        EventManager.PINTURNOFF_XOR -= PinXorTurnedOff;
+        EventManager.PINTURNOFF_OR -= PinOrTurnedOff;
+        EventManager.PINTURNOFF_AND -= PinAndTurnedOff;
+
+        EventManager.UNSTABLETURNON -= TurnRobotOn;
+        EventManager.UNSTABLETURNOFF -= TurnRobotOff;
+
+        EventManager.UNSTABLETURNON -= AddToUnstableCount;
+        EventManager.UNSTABLETURNOFF -= RemoveFromUnstableCount;
+    }
+    #endregion
+
+    public int NumberOfInitialTracks;
+    public int TimeAvailableInMinutes;
+    public int TimeAvailableInSeconds;
+
+    public int MaxUnstableUnitsPowered;
+    private int _actualUnstableUnitsPowered=0;
+    private bool _isCoutingDownToStageFail = false;
+    private bool _isRobotOn = false;
+    private bool _isStageSucceded = false;
+
+
+    public int NumberOfPinsAND=0;
+    public int NumberOfPinsOR=0;
+    public int NumberOfPinsXOR=0;
+
+    private int _pinsAnd = 0;
+    private int _pinsOr = 0;
+    private int _pinsXor = 0;
+
+    private bool _and = false;
+    private bool _or = false;
+    private bool _xor = false;
+
+
+    void Start()
+    {
+        HUDManager.INSTANCE.SetCountDownTimer(TimeAvailableInMinutes, TimeAvailableInSeconds);
+        ResourcesManager.INSTANCE.SetNumberOfInitialTrack(NumberOfInitialTracks);
+
+        if (NumberOfPinsAND == 0 && NumberOfPinsOR == 0 && NumberOfPinsXOR == 0)
+        {
+            Debug.LogError("You need to set at least one pin needed to complete this level in the Stage Holder. \nNumber Of Pins AND = " + NumberOfPinsAND + "\nNumber Of Pins OR = " + NumberOfPinsOR + "\nNumber Of Pins XOR = " + NumberOfPinsXOR);
+        }
+    }
+    
+    #region Pins
+
+    void PinAndTurnedOn()
+    {
+        _pinsAnd++;
+        CheckIfStageEnded();        
+    }
+
+    void PinAndTurnedOff()
+    {
+        _pinsAnd--;
+        CheckIfStageEnded();
+    }
+
+    void PinOrTurnedOn()
+    {
+        _pinsOr++;
+        CheckIfStageEnded();
+    }
+
+    void PinOrTurnedOff()
+    {
+        _pinsOr--;
+        CheckIfStageEnded();
+    }
+
+    void PinXorTurnedOn()
+    {
+        _pinsXor++;
+        CheckIfStageEnded();
+    }
+
+    void PinXorTurnedOff()
+    {
+        _pinsXor--;
+        CheckIfStageEnded();
+    }
+    #endregion
+
+    void AddToUnstableCount()
+    {
+        _actualUnstableUnitsPowered++;
+
+        if (_actualUnstableUnitsPowered >= MaxUnstableUnitsPowered && !_isStageSucceded)
+        {
+            Debug.Log("Unstabel");
+            _isCoutingDownToStageFail = true;
+            EventManager.INSTANCE.CallStageFailSequenceInitiated();
+            StartCoroutine("StageFailCountDown");
+        }
+    }
+
+    void RemoveFromUnstableCount()
+    {
+        _actualUnstableUnitsPowered--;
+        ImpossibilityCheck();
+
+        if (_actualUnstableUnitsPowered == 0)
+        {
+            EventManager.INSTANCE.CallRobotTurnOff();
+            EventManager.INSTANCE.CallRobotCreationSequenceStop();
+        }
+
+        if (_isCoutingDownToStageFail && _actualUnstableUnitsPowered < MaxUnstableUnitsPowered || _actualUnstableUnitsPowered == 0)
+        {
+            StopCoroutine("StageFailCountDown");
+            _isCoutingDownToStageFail = false;
+            EventManager.INSTANCE.CallStageFailSequenceStop();
+        }
+    }
+
+    IEnumerator StageFailCountDown()
+    {
+        yield return new WaitForSeconds(5);
+
+        if(_isCoutingDownToStageFail)
+            EventManager.INSTANCE.CallStageFail();
+    }
+
+    #region Robot
+
+    void TurnRobotOn()
+    {
+        if (_isRobotOn)
+            return;
+
+        EventManager.INSTANCE.CallRobotCreationSequence();
+        StartCoroutine("CreateRobot");    
+    }
+
+    IEnumerator CreateRobot()
+    {
+        _isRobotOn = true;
+        yield return new WaitForSeconds(3);        
+        EventManager.INSTANCE.CallRobotTurnOn();
+    }
+
+    void TurnRobotOff()
+    {
+        StopCoroutine("CreateRobot");
+
+        if (_actualUnstableUnitsPowered == 0)
+            EventManager.INSTANCE.CallRobotCreationSequenceStop();
+    }
+
+    #endregion
+
+    void CheckIfStageEnded()
+    {
+        ImpossibilityCheck();
+
+        if (_pinsAnd == NumberOfPinsAND)
+            _and = true;
+        else
+            _and = false;
+
+        if (_pinsOr == NumberOfPinsOR)
+            _or = true;
+        else
+            _or = false;
+
+
+        if (_pinsXor == NumberOfPinsXOR)
+            _xor = true;
+        else
+            _xor = false;        
+
+        Debug.Log(_pinsAnd + " And " + _pinsOr + " Or " + _pinsXor + " Xor");
+
+
+        if (_and && _xor && _or )
+        {
+            _isStageSucceded = true;
+            StopCoroutine("StageFailCountDown");
+            _isCoutingDownToStageFail = false;
+            EventManager.INSTANCE.CallStageFailSequenceStop();
+
+            EventManager.INSTANCE.CallStageSucces();
+        }
+    }
+
+    void ImpossibilityCheck()
+    { 
+        if(_pinsAnd<=0)
+            _pinsAnd=0;
+        if (_pinsOr <= 0)
+            _pinsOr = 0;
+        if (_pinsXor <= 0)
+            _pinsXor = 0;
+
+        if (_actualUnstableUnitsPowered < 0)
+            _actualUnstableUnitsPowered = 0;
+    }
+
+
+}
