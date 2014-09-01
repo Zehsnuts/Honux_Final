@@ -25,20 +25,16 @@ public class ConnectionFunctions : MonoBehaviour
     public GameObject Destination;
 
     private bool _isCreatingConnection = false;
+    private bool _canCreate = false;
 
-    private Transform _lineFrame;
+    private GameObject _lineFrame;
+    private Transform _lightFollow;
 
     private Vector3 _initialPosition;
 
     void Awake()
-    {
-        _lineFrame = transform.FindChild("Frame");
+    {  
         _initialPosition = transform.position;
-    }
-
-    void InitialState()
-    {
-
     }
 
     void Update()
@@ -49,7 +45,16 @@ public class ConnectionFunctions : MonoBehaviour
 
     void PointFrameToMouse()
     {
-        _lineFrame.LookAt(MouseFunctions.INSTANCE.MoveMouseCursor());
+        var dist = Vector3.Distance(MouseFunctions.INSTANCE.MoveMouseCursor(), Origin.transform.position);
+
+        if (dist < 20)
+        {
+            _lightFollow.position = MouseFunctions.INSTANCE.MoveMouseCursor();
+            _canCreate = true;
+        }
+        else
+            _canCreate = false;
+
         if (Input.GetKeyUp(KeyCode.Escape))
             CancelLineCreation();
     }
@@ -70,9 +75,13 @@ public class ConnectionFunctions : MonoBehaviour
             _isCreatingConnection = true;
             Origin = go;
             transform.position = Origin.transform.position;
+
+            LightTracking();
         }
         else
             Destination = go;
+
+
 
         if (Origin != null && Destination != null && Origin != Destination)
         {
@@ -90,15 +99,30 @@ public class ConnectionFunctions : MonoBehaviour
         }
     }
 
+    void LightTracking()
+    {
+        if (_lineFrame == null)
+        {
+            _lineFrame = Instantiate(Resources.Load("Prefabs/Connection/ConnectionLight"), Origin.transform.position, Origin.transform.rotation) as GameObject;
+            _lineFrame.transform.parent = transform;
+
+            var go = new GameObject();
+            go.name = "LightFollow";
+            _lightFollow = go.transform;
+            _lightFollow.parent = transform;
+
+            _lineFrame.GetComponent<LightningBolt>().target = _lightFollow;
+        }
+    }
+
     void StartLineCreation()
     {
         _isCreatingConnection = false;
 
         Origin.transform.GetComponent<CrystalUnitFunctions>().ConnectSingleUnit(Destination);
 
+        Origin.AddComponent<ConnectionCreator>().CreateConnectionAtRunTime(Destination.transform, ConnectionEnum.ConnectionType.Temporary);
         //ConnectionCreator.INSTANCE.CreateConnection(Origin.transform, Destination.transform, "Temp");
-
-        //LineManager.INSTANCE.CreateLineDrawer(Origin.transform, Destination.transform, "Temp");
 
         ResourcesManager.INSTANCE.RemoveTrack();
 
@@ -110,7 +134,6 @@ public class ConnectionFunctions : MonoBehaviour
         if (origin != null && destination != null)
         {
             origin.transform.GetComponent<CrystalUnitFunctions>().ConnectSingleUnit(destination);
-            LineManager.INSTANCE.CreateLineDrawer(origin.transform, destination.transform, type);
         }
     }
 
@@ -121,6 +144,10 @@ public class ConnectionFunctions : MonoBehaviour
         Destination = null;
 
         transform.position = _initialPosition;
+
+        Destroy(_lineFrame);
+        if(_lightFollow != null)
+        Destroy(_lightFollow.gameObject);
         //LineManager.INSTANCE.CancelLineDrawerForMouse();
     }
 }

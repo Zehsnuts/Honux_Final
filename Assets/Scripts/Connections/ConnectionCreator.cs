@@ -8,11 +8,9 @@ public class ConnectionCreator : MonoBehaviour {
 
     public Transform Destination;
 
-
     CrystalConnection cc;
 
-
-    void Awake()
+    void Start()
     {
         if (Destination != null)
         {
@@ -29,7 +27,7 @@ public class ConnectionCreator : MonoBehaviour {
         gameObject.AddComponent<CrystalConnection>();
         cc = gameObject.GetComponent<CrystalConnection>();
 
-        if (Connection.ToString() == "Fixed")
+        if (Connection == ConnectionEnum.ConnectionType.Fixed)
             cc.Connection = ConnectionEnum.ConnectionType.Fixed;
         else
             cc.Connection = ConnectionEnum.ConnectionType.Temporary;
@@ -47,11 +45,15 @@ public class ConnectionCreator : MonoBehaviour {
 
         go.name = "Track: " + transform.name + " to " + Destination.name;
 
-        cc.ConnectionTracks.Add(go.transform);
-
         go.GetComponent<ConnectorFunctions>().InitializeConnection();
         //go.GetComponent<LineDrawer>().DrawLineFromTo(a, b, str);
 
         GlobalFunctions.ConnectThisLineWithParent(transform.gameObject, go);
+    }
+
+    public void CreateConnectionAtRunTime(Transform destination, ConnectionEnum.ConnectionType type)
+    {
+        Destination = destination;
+        Connection = type;                
     }
 }

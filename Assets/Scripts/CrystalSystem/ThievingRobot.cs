@@ -198,7 +198,7 @@ public class ThievingRobot : MonoBehaviour {
             RaycastHit hit;
             if (Physics.SphereCast(_robot.position, 3, _robot.transform.up, out hit))
             {
-                if (hit.transform.name == "Frame" && hit.transform.parent.GetComponent<LineDrawer>().LineType == "Temp")
+                if (hit.transform.name == "Frame" && hit.transform.parent.parent.GetComponent<ConnectorFunctions>().Connection == ConnectionEnum.ConnectionType.Temporary)
                 {
                     _target = hit.transform;
                     state = States.Thief;
@@ -230,7 +230,7 @@ public class ThievingRobot : MonoBehaviour {
         }
         else
         {
-            _target.parent.GetComponent<LineDrawer>().BreakLine();
+            _target.parent.parent.GetComponent<ConnectorFunctions>().BreakLine();
             state = States.RunAway;
             ResourcesManager.INSTANCE.RemoveTrack();
             _currentWaypoint = Random.Range(0, _waypoints.Count + 1);

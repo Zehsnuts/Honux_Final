@@ -48,6 +48,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Plugins\MeshExtrusion.cs" />
+    <Compile Include="Assets\Plugins\Perlin.cs" />
     <Compile Include="Assets\Standard Assets\Character Controllers\Sources\Scripts\MouseLook.cs" />
     <None Include="Assets\iTween\ReadMe!\ReadMe!.txt" />
     <None Include="Assets\NGUI\Examples\Atlases\Fantasy\Fantasy Font - Normal.txt" />

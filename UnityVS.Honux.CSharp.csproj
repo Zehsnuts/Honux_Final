@@ -235,9 +235,6 @@
     <Compile Include="Assets\Scripts\Connections\ConnectionsManager.cs" />
     <Compile Include="Assets\Scripts\Connections\ConnectorFunctions.cs" />
     <Compile Include="Assets\Scripts\Connections\CrystalConnection.cs" />
-    <Compile Include="Assets\Scripts\Connections\LineCreatorByInput.cs" />
-    <Compile Include="Assets\Scripts\Connections\LineDrawer.cs" />
-    <Compile Include="Assets\Scripts\Connections\LineManager.cs" />
     <Compile Include="Assets\Scripts\Connections\TrackConnector.cs" />
     <Compile Include="Assets\Scripts\CrystalSystem\CrystalUnitFunctions.cs" />
     <Compile Include="Assets\Scripts\CrystalSystem\CrystalsControl.cs" />
@@ -288,6 +285,7 @@
     <Compile Include="Assets\Scripts\Tutorial\TutorialManager.cs" />
     <Compile Include="Assets\Scripts\Utils\CameraFade.cs" />
     <Compile Include="Assets\Scripts\Utils\Extensions.cs" />
+    <Compile Include="Assets\Sources\LightningBolt.cs" />
     <Compile Include="Assets\iTween\Plugins\iTween.cs" />
     <Compile Include="Assets\iTween\Sample\MoveSample.cs" />
     <Compile Include="Assets\iTween\Sample\RotateSample.cs" />

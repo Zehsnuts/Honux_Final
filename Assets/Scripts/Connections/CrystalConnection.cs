@@ -8,6 +8,4 @@ public class CrystalConnection : MonoBehaviour
 
     public Transform Destination;
 
-    public List<Transform> ConnectionTracks = new List<Transform>();
-
 }
