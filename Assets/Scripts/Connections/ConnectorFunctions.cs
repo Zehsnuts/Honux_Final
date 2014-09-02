@@ -78,6 +78,8 @@ public class ConnectorFunctions : MonoBehaviour
 
         GlobalFunctions.BreakThisConnection(gameObject, transform.parent, Destination);
 
+        Destroy(cc);
+
         Destroy(gameObject);
     }
 

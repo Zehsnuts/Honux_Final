@@ -79,6 +79,6 @@ public class Manager : MonoBehaviour {
 
     void OnGUI()
     {
-        GUILayout.Label("Version 0.1.1");
+        GUILayout.Label("Version 0.1.2");
     }
 }

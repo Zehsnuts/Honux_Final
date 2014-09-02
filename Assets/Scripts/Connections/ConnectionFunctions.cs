@@ -122,7 +122,6 @@ public class ConnectionFunctions : MonoBehaviour
         Origin.transform.GetComponent<CrystalUnitFunctions>().ConnectSingleUnit(Destination);
 
         Origin.AddComponent<ConnectionCreator>().CreateConnectionAtRunTime(Destination.transform, ConnectionEnum.ConnectionType.Temporary);
-        //ConnectionCreator.INSTANCE.CreateConnection(Origin.transform, Destination.transform, "Temp");
 
         ResourcesManager.INSTANCE.RemoveTrack();
 

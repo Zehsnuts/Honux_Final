@@ -24,7 +24,6 @@ public class ConnectionsManager : MonoBehaviour {
         CreateChildren();       
 	}
 
-
     void CreateChildren()
     {
         /*if (!FindObjectOfType<ConnectorFunctions>())

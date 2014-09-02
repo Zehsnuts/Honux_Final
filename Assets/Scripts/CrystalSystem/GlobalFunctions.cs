@@ -44,7 +44,6 @@ public class GlobalFunctions : MonoBehaviour {
         var origin = line.GetComponent<ConnectorFunctions>().Origin;
         var destination = line.GetComponent<ConnectorFunctions>().Destination;
 
-
         var originScript = origin.GetComponent<CrystalUnitFunctions>();
         var destinationScript = destination.GetComponent<CrystalUnitFunctions>();
 
@@ -82,7 +81,6 @@ public class GlobalFunctions : MonoBehaviour {
 
         for (int j = 0; j < tracks2.Count; j++)
         {
-            Debug.Log(tracks2[j].GetComponent<ConnectorFunctions>().Destination);
             if (tracks2[j].GetComponent<ConnectorFunctions>().Destination == origin)
                 return false;
         }

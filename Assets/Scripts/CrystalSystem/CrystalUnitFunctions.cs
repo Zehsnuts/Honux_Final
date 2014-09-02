@@ -267,7 +267,10 @@ public class CrystalUnitFunctions : CrystalsUnit
     }
 
     public void ConnectSingleUnit(GameObject unit)
-    {      
+    {
+        if (ConnectedToMe.Contains(unit))
+            return;
+
        ConnectedToMe.Add(unit);      
        CheckConnections();
        
