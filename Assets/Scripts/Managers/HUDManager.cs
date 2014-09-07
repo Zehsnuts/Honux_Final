@@ -24,8 +24,8 @@ public class HUDManager : MonoBehaviour
 
     void OnEnable()
     {
-        EventManager.GAMEPAUSESTART += StartCountDown;
-        EventManager.GAMEPAUSEEXIT += StopCountDown;
+        EventManager.GAMEPAUSESTART += StopCountDown;
+        EventManager.GAMEPAUSEEXIT += StartCountDown;
 
         EventManager.STAGESUCESS += StopCountDown;
         EventManager.STAGEFAIL += StopCountDown;
@@ -34,7 +34,7 @@ public class HUDManager : MonoBehaviour
     void OnDisable()
     {
         EventManager.GAMEPAUSESTART -= StopCountDown;
-        EventManager.GAMEPAUSEEXIT -= StopCountDown;
+        EventManager.GAMEPAUSEEXIT -= StartCountDown;
 
         EventManager.STAGESUCESS -= StopCountDown;
         EventManager.STAGEFAIL -= StopCountDown;
@@ -45,7 +45,7 @@ public class HUDManager : MonoBehaviour
     private string _timeText;
     private float _minutes = 5;
     private float _seconds = 59;
-    private bool _shouldCountDown = false;
+    public bool _shouldCountDown = false;
 
     public List<Transform> _leftTracks = new List<Transform>();
     public List<Transform> _rightTracks = new List<Transform>();

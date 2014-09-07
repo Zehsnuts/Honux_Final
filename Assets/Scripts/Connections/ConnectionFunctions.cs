@@ -29,25 +29,43 @@ public class ConnectionFunctions : MonoBehaviour
 
     private GameObject _lineFrame;
     private Transform _lightFollow;
-
     private Vector3 _initialPosition;
 
+    private float _connectionDistance = 10f;
+    private float _connectionDistanceMax = 10f;
+
     void Awake()
-    {  
+    {
+        _connectionDistance = 12;
         _initialPosition = transform.position;
     }
 
     void Update()
     {
-        if (_isCreatingConnection)
+        if (!_isCreatingConnection)
+            return;
+
             PointFrameToMouse();
+
+            if (Input.GetKeyUp(KeyCode.Space))
+                ExtendConnectionDistance();
+    }
+
+    void ExtendConnectionDistance()
+    {
+        if (_connectionDistance == _connectionDistanceMax)
+            _connectionDistance = _connectionDistanceMax*2;
+        else
+            _connectionDistance = _connectionDistanceMax;
     }
 
     void PointFrameToMouse()
     {
         var dist = Vector3.Distance(MouseFunctions.INSTANCE.MoveMouseCursor(), Origin.transform.position);
 
-        if (dist < 20)
+        Debug.Log(dist);
+
+        if (dist < _connectionDistance)
         {
             _lightFollow.position = MouseFunctions.INSTANCE.MoveMouseCursor();
             _canCreate = true;
@@ -92,7 +110,7 @@ public class ConnectionFunctions : MonoBehaviour
                 Destination = aux;
             }
 
-            if (GlobalFunctions.CheckIfConnectionIsPossible(Origin.transform, Destination.transform))
+            if (GlobalFunctions.CheckIfConnectionIsPossible(Origin.transform, Destination.transform, _connectionDistance))
                 StartLineCreation();
             else
                 CancelLineCreation();
@@ -141,6 +159,8 @@ public class ConnectionFunctions : MonoBehaviour
         _isCreatingConnection = false;
         Origin = null;
         Destination = null;
+
+        _connectionDistance = _connectionDistanceMax;
 
         transform.position = _initialPosition;
 

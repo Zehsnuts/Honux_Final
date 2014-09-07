@@ -60,18 +60,18 @@ public class GlobalFunctions : MonoBehaviour {
     }
 
     public static void ConnectThisLineWithParent(GameObject parent, GameObject line)
-    {
+    {        
         parent.GetComponent<CrystalsUnit>().TracksOfDonatedEnergy.Add(line);
     }
 
-    public static bool CheckIfConnectionIsPossible(Transform origin, Transform destination)
+    public static bool CheckIfConnectionIsPossible(Transform origin, Transform destination, float connectionDistance)
     {
         var tracks = origin.GetComponent<CrystalsUnit>().TracksOfDonatedEnergy;
         var tracks2 = destination.GetComponent<CrystalsUnit>().TracksOfDonatedEnergy;
         var dist = Vector3.Distance(origin.position, destination.position);
 
-        //if (dist > 10)
-            //return false;
+        if (dist > connectionDistance)
+            return false;
 
         for (int i = 0; i < tracks.Count; i++)
         {
