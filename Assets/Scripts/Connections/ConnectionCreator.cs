@@ -11,7 +11,7 @@ public class ConnectionCreator : MonoBehaviour {
 
     void Start()
     {
-        if (Destination != null)
+        if (this.Destination != null)
         {            
             SetConnectionAttributes();
             CreateConnection();          
@@ -24,14 +24,14 @@ public class ConnectionCreator : MonoBehaviour {
 
     void SetConnectionAttributes()
     { 
-       cc= gameObject.AddComponent<CrystalConnection>();         
+        this.cc = gameObject.AddComponent<CrystalConnection>();         
 
         if (Connection == ConnectionEnum.ConnectionType.Fixed)
             cc.Connection = ConnectionEnum.ConnectionType.Fixed;
         else if (Connection == ConnectionEnum.ConnectionType.Temporary)
             cc.Connection = ConnectionEnum.ConnectionType.Temporary;
 
-        cc.Destination = Destination;
+        cc.Destination = this.Destination;
     }
 
     void CreateConnection()
@@ -39,18 +39,18 @@ public class ConnectionCreator : MonoBehaviour {
         GameObject go = Instantiate(Resources.Load("Prefabs/Connection/Connector"), transform.position, transform.rotation) as GameObject;
         go.transform.parent = transform;
 
-        go.name = "Track: " + transform.name + " to " + Destination.name;
+        go.name = "Track: " + transform.name + " to " + this.Destination.name;
 
-        go.GetComponent<ConnectorFunctions>().InitializeConnection();
+        go.GetComponent<ConnectorFunctions>().InitializeConnection(cc);
 
         GlobalFunctions.ConnectThisLineWithParent(transform.gameObject, go);
 
-        transform.GetComponent<CrystalUnitFunctions>().ConnectSingleUnit(Destination.gameObject);
+        transform.GetComponent<CrystalUnitFunctions>().ConnectSingleUnit(this.Destination.gameObject);
     }
 
     public void CreateConnectionAtRunTime(Transform destination, ConnectionEnum.ConnectionType type)
     {
-        Destination = destination;
+        this.Destination = destination;
         Connection = type;       
     }
 }

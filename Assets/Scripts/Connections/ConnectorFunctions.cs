@@ -21,10 +21,10 @@ public class ConnectorFunctions : MonoBehaviour
 
     private SECTR_AudioSource _audioSource;
 
-    public void InitializeConnection()
+    public void InitializeConnection(CrystalConnection cristalConnection)
     {
         Origin = transform.parent;
-        cc = Origin.GetComponent<CrystalConnection>();
+        cc = cristalConnection;
         Destination = cc.Destination;
         Connection = cc.Connection;
 
@@ -73,6 +73,8 @@ public class ConnectorFunctions : MonoBehaviour
     {
         if (Connection == ConnectionEnum.ConnectionType.Fixed || Connection == ConnectionEnum.ConnectionType.ExtendedFixed)
             return;
+
+        Debug.Log("Destroy");
 
         ResourcesManager.INSTANCE.AddTrack();
         GlobalFunctions.BreakThisConnection(gameObject, transform.parent, Destination);

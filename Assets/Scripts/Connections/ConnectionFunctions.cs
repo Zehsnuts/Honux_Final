@@ -63,8 +63,6 @@ public class ConnectionFunctions : MonoBehaviour
     {
         var dist = Vector3.Distance(MouseFunctions.INSTANCE.MoveMouseCursor(), Origin.transform.position);
 
-        Debug.Log(dist);
-
         if (dist < _connectionDistance)
         {
             _lightFollow.position = MouseFunctions.INSTANCE.MoveMouseCursor();

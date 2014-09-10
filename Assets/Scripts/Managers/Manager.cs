@@ -2,7 +2,10 @@
 using System.Collections;
 
 public class Manager : MonoBehaviour {
-
+    void OnGUI()
+    {
+        GUILayout.Label("Version 0.1.3");
+    }
     void Awake()
     {
         if (!GameObject.FindObjectOfType<EventManager>())
@@ -77,8 +80,5 @@ public class Manager : MonoBehaviour {
         }
     }
 
-    void OnGUI()
-    {
-        GUILayout.Label("Version 0.1.2");
-    }
+ 
 }
