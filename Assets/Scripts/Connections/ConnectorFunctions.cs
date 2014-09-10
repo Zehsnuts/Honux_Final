@@ -22,7 +22,7 @@ public class ConnectorFunctions : MonoBehaviour
     private SECTR_AudioSource _audioSource;
 
     public void InitializeConnection()
-    {  
+    {
         Origin = transform.parent;
         cc = Origin.GetComponent<CrystalConnection>();
         Destination = cc.Destination;
@@ -37,7 +37,7 @@ public class ConnectorFunctions : MonoBehaviour
         _framePosition = transform.FindChild("Frame");
         _framePosition.position = Vector3.Lerp(_originPoint.position, _destinationPoint.position, 0.5f);
 
-        if (Connection == ConnectionEnum.ConnectionType.Fixed || Connection == ConnectionEnum.ConnectionType.ExtendedTemporary)
+        if (Connection == ConnectionEnum.ConnectionType.Fixed)
             _lineOnMat = Resources.Load("Materials/Line") as Material;
         else
             _lineOnMat = Resources.Load("Materials/LineTemp") as Material;
@@ -60,59 +60,13 @@ public class ConnectorFunctions : MonoBehaviour
             TurnTrackOff();
     }
 
-    public void InitializeExtendedConnection(Transform extension, string position)
-    {
-        Origin = transform.parent;
-        cc = Origin.GetComponent<CrystalConnection>();
-        Destination = cc.Destination;
-        Connection = cc.Connection;
-
-        _originPoint = transform.FindChild("OriginPoint");
-        _originPoint.position = Origin.position;
-
-        _destinationPoint = transform.FindChild("DestinationPoint");
-        _destinationPoint.position = extension.position;
-
-        if (position == "Origin")
-            _destinationPoint.position = extension.position;
-
-        else
-            _originPoint.position = extension.position;
-
-
-        _framePosition = transform.FindChild("Frame");
-        _framePosition.position = Vector3.Lerp(_originPoint.position, _destinationPoint.position, 0.5f);
-
-        if (Connection == ConnectionEnum.ConnectionType.Fixed || Connection == ConnectionEnum.ConnectionType.ExtendedFixed)
-            _lineOnMat = Resources.Load("Materials/Line") as Material;
-        else
-            _lineOnMat = Resources.Load("Materials/LineTemp") as Material;
-
-        _frame = Instantiate(Resources.Load("Prefabs/Connection/Frame"), _framePosition.transform.position, _framePosition.transform.rotation) as GameObject;
-        _frame.transform.parent = _framePosition;
-        _frame.name = "Frame";
-        _frame.transform.LookAt(Destination.position);
-        _frame.renderer.material = _lineOnMat;
-
-        _frameLight = Instantiate(Resources.Load("Prefabs/Connection/ConnectionLight"), Origin.transform.position, Origin.transform.rotation) as GameObject;
-        _frameLight.transform.parent = _framePosition;
-
-        _frameLight.GetComponent<LightningBolt>().target = Destination;
-        StartCoroutine(GetLightDestination());
-
-        if (Origin.GetComponent<CrystalsUnit>().isThisSystemOn)
-            TurnTrackOn();
-        else
-            TurnTrackOff();
-    }
-
     IEnumerator GetLightDestination()
     {
         while (_frameLight.GetComponent<LightningBolt>().target == null)
         {
             _frameLight.GetComponent<LightningBolt>().target = Destination;
             yield return 0;
-        }
+        }        
     }
 
     public void BreakLine()
@@ -121,7 +75,6 @@ public class ConnectorFunctions : MonoBehaviour
             return;
 
         ResourcesManager.INSTANCE.AddTrack();
-
         GlobalFunctions.BreakThisConnection(gameObject, transform.parent, Destination);
 
         Destroy(cc);
@@ -138,11 +91,11 @@ public class ConnectorFunctions : MonoBehaviour
             _audioSource = transform.FindChild("Frame").FindChild("Frame").FindChild("AudioSource").GetComponent<SECTR_AudioSource>();
 
         _audioSource.Play();
-
     }
 
     public void TurnTrackOff()
     {
+        
         _frame.GetComponent<MeshRenderer>().enabled = false;
         _frameLight.GetComponent<ParticleRenderer>().enabled = false;
 
@@ -151,7 +104,6 @@ public class ConnectorFunctions : MonoBehaviour
 
         _audioSource.gameObject.active = true;
 
-        _audioSource.Play();
-
+        _audioSource.Play();     
     }
 }

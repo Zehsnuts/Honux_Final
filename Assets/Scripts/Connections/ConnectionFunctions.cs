@@ -36,7 +36,7 @@ public class ConnectionFunctions : MonoBehaviour
 
     void Awake()
     {
-        _connectionDistance = 12;
+        _connectionDistance = 10;
         _initialPosition = transform.position;
     }
 
@@ -139,7 +139,10 @@ public class ConnectionFunctions : MonoBehaviour
 
         Origin.transform.GetComponent<CrystalUnitFunctions>().ConnectSingleUnit(Destination);
 
-        Origin.AddComponent<ConnectionCreator>().CreateConnectionAtRunTime(Destination.transform, ConnectionEnum.ConnectionType.Temporary);
+        if (_connectionDistance != _connectionDistanceMax)
+            Origin.AddComponent<ConnectionCreator>().CreateConnectionAtRunTime(Destination.transform, ConnectionEnum.ConnectionType.ExtendedTemporary);        
+        else
+            Origin.AddComponent<ConnectionCreator>().CreateConnectionAtRunTime(Destination.transform, ConnectionEnum.ConnectionType.Temporary);
 
         ResourcesManager.INSTANCE.RemoveTrack();
 
