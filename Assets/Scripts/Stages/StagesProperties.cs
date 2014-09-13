@@ -118,7 +118,7 @@ public class StagesProperties : MonoBehaviour
 
         if (_actualUnstableUnitsPowered >= MaxUnstableUnitsPowered && !_isStageSucceded)
         {
-            Debug.Log("Unstabel");
+            Debug.Log("Unstable");
             _isCoutingDownToStageFail = true;
             EventManager.INSTANCE.CallStageFailSequenceInitiated();
             StartCoroutine("StageFailCountDown");

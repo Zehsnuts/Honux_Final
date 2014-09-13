@@ -11,7 +11,6 @@ public class CrystalsUnit_Bridge: CrystalUnitFunctions
     {
         base.Start();
 
-
         _audioSource = transform.GetComponent<AudioSource>();
 
         _audioClip = Resources.Load("Sounds/BridgeFeedback") as AudioClip;

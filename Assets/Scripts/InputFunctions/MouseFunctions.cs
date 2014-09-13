@@ -116,14 +116,14 @@ public class MouseFunctions : MonoBehaviour
             {
                 if (ResourcesManager.INSTANCE.GetTracksNumber() > 0)
                 {
-                    //ConnectorFunctions.INSTANCE.AssignOriginAndDestination(t.gameObject);
+                    ConnectionFunctions.INSTANCE.AssignOriginAndDestination(t.gameObject);
                 }
                 /*if (LineCreatorByInput.INSTANCE.ReadyToCreateLine() && ResourcesManager.INSTANCE.GetTracksNumber()>0)
                     LineCreatorByInput.INSTANCE.AssignOriginAndDestination(t.gameObject);    
                  * */
             }
             else
-                 LineCreatorByInput.INSTANCE.CancelLineCreation();
+                ConnectionFunctions.INSTANCE.CancelLineCreation();
 
              if (t.name == "ForceFieldSphere")
                 t.parent.GetComponent<ForceField>().ClickedForceField();
@@ -132,7 +132,9 @@ public class MouseFunctions : MonoBehaviour
                 t.parent.GetComponent<ForceField_Button>().ClickForceFieldButton();
 
             else if (t.name == "Frame")
-                t.parent.GetComponent<LineDrawer>().BreakLine();
+                t.parent.parent.GetComponent<ConnectorFunctions>().BreakLine();
+             else if (t.name == "ExtendedFrame")
+                 t.parent.GetComponent<ConnectorFunctions>().BreakLine();
 
             else if (t.name == "BluePrintButton")
                 EventManager.INSTANCE.CallBluePrintStart();

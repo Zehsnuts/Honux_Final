@@ -138,8 +138,6 @@ public class SoundManager : MonoBehaviour
 
     void RobotWarning()
     {
-        Debug.Log("Robot");
-
         _robotAlarmSfx.Stop(true);
         _robotAlarmSfx.Play();
     }

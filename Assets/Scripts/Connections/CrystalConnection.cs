@@ -7,7 +7,4 @@ public class CrystalConnection : MonoBehaviour
     public ConnectionEnum.ConnectionType Connection;
 
     public Transform Destination;
-
-    public List<Transform> ConnectionTracks = new List<Transform>();
-
 }
