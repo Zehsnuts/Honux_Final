@@ -98,7 +98,6 @@ public class ConnectionFunctions : MonoBehaviour
             Destination = go;
 
 
-
         if (Origin != null && Destination != null && Origin != Destination)
         {
             if (!Origin.GetComponent<CrystalsUnit>().isThisSystemOn)
@@ -137,8 +136,8 @@ public class ConnectionFunctions : MonoBehaviour
 
         Origin.transform.GetComponent<CrystalUnitFunctions>().ConnectSingleUnit(Destination);
 
-        if (_connectionDistance != _connectionDistanceMax)
-            Origin.AddComponent<ConnectionCreator>().CreateConnectionAtRunTime(Destination.transform, ConnectionEnum.ConnectionType.ExtendedTemporary);        
+        if (_connectionDistance > _connectionDistanceMax)
+            Origin.AddComponent<ExtendedConnectionCreator>().CreateConnectionAtRunTime(Destination.transform, ConnectionEnum.ConnectionType.ExtendedTemporary);        
         else
             Origin.AddComponent<ConnectionCreator>().CreateConnectionAtRunTime(Destination.transform, ConnectionEnum.ConnectionType.Temporary);
 

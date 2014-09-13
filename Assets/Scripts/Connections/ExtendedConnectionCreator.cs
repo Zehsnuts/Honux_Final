@@ -22,7 +22,6 @@ public class ExtendedConnectionCreator : MonoBehaviour {
     GameObject frameLight4;
     GameObject frameLight5;
 
-
     void Start()
     {
         if (Destination != null)
@@ -60,8 +59,12 @@ public class ExtendedConnectionCreator : MonoBehaviour {
 
         Frame1 = Instantiate(Resources.Load("Prefabs/Connection/Frame"), Go.transform.position, Go.transform.rotation) as GameObject;
         Frame1.transform.parent = Go.transform;
-        Frame1.name = "Frame";
+        Frame1.name = "ExtendedFrame";
+        Frame1.AddComponent<ExtendedConnectionDestroyer>().Parent = Go.transform;
         Frame1.transform.LookAt(Destination.position);
+        Go.GetComponent<ConnectorFunctions>().Destination = Destination;
+        Go.GetComponent<ConnectorFunctions>().Connection = ConnectionEnum.ConnectionType.Temporary;
+
         if (cc.Connection == ConnectionEnum.ConnectionType.Fixed || cc.Connection == ConnectionEnum.ConnectionType.ExtendedFixed)
             Frame1.renderer.material = Resources.Load("Materials/Line") as Material;
         else
@@ -73,10 +76,10 @@ public class ExtendedConnectionCreator : MonoBehaviour {
         extendedAux.transform.SetPositionY(transform.position.y);
         Go2.transform.position = Vector3.Lerp(transform.position,  extendedAux.transform.position, 0.5f);
         Go2.transform.parent = Go.transform;
-
         Frame2 = Instantiate(Resources.Load("Prefabs/Connection/Frame"), Go2.transform.position, Go2.transform.rotation) as GameObject;
         Frame2.transform.parent = Go2.transform;
-        Frame2.name = "Frame";
+        Frame2.name = "ExtendedFrame";
+        Frame2.AddComponent<ExtendedConnectionDestroyer>().Parent = Go.transform;
         Frame2.transform.LookAt(Go.transform.position);
         if (cc.Connection == ConnectionEnum.ConnectionType.Fixed || cc.Connection == ConnectionEnum.ConnectionType.ExtendedFixed)
             Frame2.renderer.material = Resources.Load("Materials/Line") as Material;
@@ -92,9 +95,9 @@ public class ExtendedConnectionCreator : MonoBehaviour {
 
         Frame3 = Instantiate(Resources.Load("Prefabs/Connection/Frame"), Go3.transform.position, Go3.transform.rotation) as GameObject;
         Frame3.transform.parent = Go3.transform;
-        Frame3.name = "Frame";
-        Frame3.transform.LookAt(Go.transform.position);
-        
+        Frame3.name = "ExtendedFrame";
+        Frame3.AddComponent<ExtendedConnectionDestroyer>().Parent = Go.transform;
+        Frame3.transform.LookAt(Go.transform.position);        
         if (cc.Connection == ConnectionEnum.ConnectionType.Fixed || cc.Connection == ConnectionEnum.ConnectionType.ExtendedFixed)
             Frame3.renderer.material = Resources.Load("Materials/Line") as Material;
         else
@@ -162,5 +165,11 @@ public class ExtendedConnectionCreator : MonoBehaviour {
         frameLight2.GetComponent<ParticleRenderer>().enabled = false;
         frameLight3.GetComponent<ParticleRenderer>().enabled = false;
         frameLight4.GetComponent<ParticleRenderer>().enabled = false;
+    }
+
+    public void CreateConnectionAtRunTime(Transform destination, ConnectionEnum.ConnectionType type)
+    {
+        this.Destination = destination;
+        Connection = type;
     }
 }

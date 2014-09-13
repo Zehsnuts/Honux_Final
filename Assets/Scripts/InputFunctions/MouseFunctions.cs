@@ -133,6 +133,8 @@ public class MouseFunctions : MonoBehaviour
 
             else if (t.name == "Frame")
                 t.parent.parent.GetComponent<ConnectorFunctions>().BreakLine();
+             else if (t.name == "ExtendedFrame")
+                 t.parent.GetComponent<ConnectorFunctions>().BreakLine();
 
             else if (t.name == "BluePrintButton")
                 EventManager.INSTANCE.CallBluePrintStart();

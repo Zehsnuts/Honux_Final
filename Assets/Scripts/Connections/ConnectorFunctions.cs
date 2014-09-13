@@ -96,8 +96,7 @@ public class ConnectorFunctions : MonoBehaviour
     }
 
     public void TurnTrackOff()
-    {
-        
+    {        
         _frame.GetComponent<MeshRenderer>().enabled = false;
         _frameLight.GetComponent<ParticleRenderer>().enabled = false;
 

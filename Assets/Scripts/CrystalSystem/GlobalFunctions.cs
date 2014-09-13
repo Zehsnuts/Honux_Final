@@ -70,6 +70,13 @@ public class GlobalFunctions : MonoBehaviour {
         var tracks2 = destination.GetComponent<CrystalsUnit>().TracksOfDonatedEnergy;
         var dist = Vector3.Distance(origin.position, destination.position);
 
+        Ray myRay = new Ray(Vector3.Lerp(origin.position, destination.position, 0.5f), destination.position);
+        RaycastHit hitInfo;
+
+        if (Physics.SphereCast(myRay,1, out hitInfo, 2))
+            if (hitInfo.transform.name == "Frame" || hitInfo.transform.name == "ExtendedFrame")
+                return false;
+
         if (dist > connectionDistance)
             return false;
 
