@@ -22246,7 +22246,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63a0b3a7c52b3154eaa20cbaf7e3201a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NumberOfInitialTracks: 4
+  NumberOfInitialTracks: 5
   TimeAvailableInMinutes: 6
   TimeAvailableInSeconds: 0
   MaxUnstableUnitsPowered: 6
@@ -24964,6 +24964,7 @@ GameObject:
   - 65: {fileID: 1996969811}
   - 114: {fileID: 1996969810}
   - 82: {fileID: 1996969809}
+  - 114: {fileID: 1996969812}
   m_Layer: 0
   m_Name: Bridge
   m_TagString: Off
@@ -25088,6 +25089,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1.70000005, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1996969812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1996969807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f0234518eace6f4497498222ef04b26, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Connection: 1
+  Destination: {fileID: 1307178929}
 --- !u!1 &2004534238
 GameObject:
   m_ObjectHideFlags: 0

@@ -31,12 +31,11 @@ public class ConnectionFunctions : MonoBehaviour
     private Transform _lightFollow;
     private Vector3 _initialPosition;
 
-    private float _connectionDistance = 10f;
-    private float _connectionDistanceMax = 10f;
+    private float _connectionDistance = 9f;
+    private float _connectionDistanceMax = 9f;
 
     void Awake()
     {
-        _connectionDistance = 10;
         _initialPosition = transform.position;
     }
 

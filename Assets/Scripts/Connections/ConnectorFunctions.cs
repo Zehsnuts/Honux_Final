@@ -74,10 +74,8 @@ public class ConnectorFunctions : MonoBehaviour
         if (Connection == ConnectionEnum.ConnectionType.Fixed || Connection == ConnectionEnum.ConnectionType.ExtendedFixed)
             return;
 
-        Debug.Log("Destroy");
-
-        ResourcesManager.INSTANCE.AddTrack();
         GlobalFunctions.BreakThisConnection(gameObject, transform.parent, Destination);
+        ResourcesManager.INSTANCE.AddTrack();
 
         Destroy(cc);
 
@@ -96,9 +94,14 @@ public class ConnectorFunctions : MonoBehaviour
     }
 
     public void TurnTrackOff()
-    {        
-        _frame.GetComponent<MeshRenderer>().enabled = false;
-        _frameLight.GetComponent<ParticleRenderer>().enabled = false;
+    {
+        if (_frame == null)
+            return;
+        
+        if (_frame.GetComponent<MeshRenderer>())
+            _frame.GetComponent<MeshRenderer>().enabled = false;
+        if (_frameLight.GetComponent<ParticleRenderer>())        
+            _frameLight.GetComponent<ParticleRenderer>().enabled = false;
 
         if (_audioSource == null)
             _audioSource = transform.FindChild("Frame").FindChild("Frame").FindChild("AudioSource").GetComponent<SECTR_AudioSource>();

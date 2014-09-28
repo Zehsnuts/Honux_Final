@@ -77,38 +77,52 @@ public class StagesProperties : MonoBehaviour
 
     void PinAndTurnedOn()
     {
+        StopCoroutine("WaitBeforeCheckingIfStageEnded");
+
         _pinsAnd++;
-        CheckIfStageEnded();        
+        StartCoroutine("WaitBeforeCheckingIfStageEnded");
     }
 
     void PinAndTurnedOff()
     {
+        StopCoroutine("WaitBeforeCheckingIfStageEnded");
+
         _pinsAnd--;
-        CheckIfStageEnded();
+        StartCoroutine("WaitBeforeCheckingIfStageEnded");
+
     }
 
     void PinOrTurnedOn()
     {
+        StopCoroutine("WaitBeforeCheckingIfStageEnded");
+
         _pinsOr++;
-        CheckIfStageEnded();
+        StartCoroutine("WaitBeforeCheckingIfStageEnded");
+
     }
 
     void PinOrTurnedOff()
     {
+        StopCoroutine("WaitBeforeCheckingIfStageEnded");
+
         _pinsOr--;
-        CheckIfStageEnded();
+        StartCoroutine("WaitBeforeCheckingIfStageEnded");
+
     }
 
     void PinXorTurnedOn()
     {
+        StopCoroutine("WaitBeforeCheckingIfStageEnded");
         _pinsXor++;
-        CheckIfStageEnded();
+        StartCoroutine("WaitBeforeCheckingIfStageEnded");
+
     }
 
     void PinXorTurnedOff()
     {
+        StopCoroutine("WaitBeforeCheckingIfStageEnded");
         _pinsXor--;
-        CheckIfStageEnded();
+        StartCoroutine("WaitBeforeCheckingIfStageEnded");
     }
     #endregion
 
@@ -118,7 +132,7 @@ public class StagesProperties : MonoBehaviour
 
         if (_actualUnstableUnitsPowered >= MaxUnstableUnitsPowered && !_isStageSucceded)
         {
-            Debug.Log("Unstable");
+            //Debug.Log("Unstable");
             _isCoutingDownToStageFail = true;
             EventManager.INSTANCE.CallStageFailSequenceInitiated();
             StartCoroutine("StageFailCountDown");
@@ -138,6 +152,8 @@ public class StagesProperties : MonoBehaviour
 
         if (_isCoutingDownToStageFail && _actualUnstableUnitsPowered < MaxUnstableUnitsPowered || _actualUnstableUnitsPowered == 0)
         {
+            Debug.Log("Unstable stop");
+
             StopCoroutine("StageFailCountDown");
             _isCoutingDownToStageFail = false;
             EventManager.INSTANCE.CallStageFailSequenceStop();
@@ -158,7 +174,6 @@ public class StagesProperties : MonoBehaviour
     {
         if (_isRobotOn)
             return;
-
         EventManager.INSTANCE.CallRobotCreationSequence();
         StartCoroutine("CreateRobot");    
     }
@@ -173,6 +188,7 @@ public class StagesProperties : MonoBehaviour
     void TurnRobotOff()
     {
         StopCoroutine("CreateRobot");
+        _isRobotOn = false;
 
         if (_actualUnstableUnitsPowered == 0)
             EventManager.INSTANCE.CallRobotCreationSequenceStop();
@@ -202,7 +218,6 @@ public class StagesProperties : MonoBehaviour
 
         Debug.Log(_pinsAnd + " And " + _pinsOr + " Or " + _pinsXor + " Xor");
 
-
         if (_and && _xor && _or )
         {
             _isStageSucceded = true;
@@ -227,5 +242,12 @@ public class StagesProperties : MonoBehaviour
             _actualUnstableUnitsPowered = 0;
     }
 
-
+    //As vezes as checagens de conexão acontecem muito rapido e não da tempo dos pinos saberem que existem mais peças conectadas à eles
+    //alem da que está passando energia naquele frame. 
+    //No caso do pino XOR, quando uma peça conectada à ele for a unica a ser ligada e transferir energia, ele será ligado naquele frame. 
+    IEnumerator WaitBeforeCheckingIfStageEnded()
+    {
+        yield return new WaitForSeconds(1);
+        CheckIfStageEnded();     
+    }
 }
