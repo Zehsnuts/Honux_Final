@@ -43,6 +43,6 @@ public class CameraControl : MonoBehaviour {
                 _camPosition = "Left";
             }
 
-        Debug.Log("Changing Camera");
+        //Debug.Log("Changing Camera");
     }
 }

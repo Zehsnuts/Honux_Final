@@ -3,12 +3,26 @@ using System.Collections;
 
 public class ConnectionsManager : MonoBehaviour {
 
+    #region Singleton
+
+    private static ConnectionsManager _INSTANCE;
+    public static ConnectionsManager INSTANCE
+    {
+        get
+        {
+            if (_INSTANCE == null)
+                _INSTANCE = GameObject.FindObjectOfType<ConnectionsManager>();
+
+            return _INSTANCE;
+        }
+    }
+    #endregion
+
 	
 	void Start () 
     {
         CreateChildren();       
 	}
-
 
     void CreateChildren()
     {
@@ -31,4 +45,5 @@ public class ConnectionsManager : MonoBehaviour {
         }
          * */
     }
+
 }

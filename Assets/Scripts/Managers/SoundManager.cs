@@ -99,7 +99,6 @@ public class SoundManager : MonoBehaviour
 
         _globalSounds = GameObject.Find("ActualCamera").GetComponent<AudioSource>();
 
-
         if (GameObject.Find("StunSFX"))
             _stunSfx = GameObject.Find("StunSFX").GetComponent<SECTR_AudioSource>();
 
@@ -138,8 +137,6 @@ public class SoundManager : MonoBehaviour
 
     void RobotWarning()
     {
-        Debug.Log("Robot");
-
         _robotAlarmSfx.Stop(true);
         _robotAlarmSfx.Play();
     }
@@ -151,6 +148,7 @@ public class SoundManager : MonoBehaviour
 
     void StageFailWarningBegin()
     {
+        RobotWarning();
         _alarmSfx.Stop(true);
         _alarmSfx.Play();
     }
@@ -158,6 +156,7 @@ public class SoundManager : MonoBehaviour
     void StageFailWarningStop()
     {
         _alarmSfx.Stop(true);
+        _robotAlarmSfx.Stop(true);
     }
 
     public void PlaysSingleFileByName(string soundname, Vector3 pos)

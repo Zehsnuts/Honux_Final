@@ -27,18 +27,22 @@ public class CrystalsUnit_pinAND : CrystalUnitFunctions {
             EventManager.INSTANCE.CallPinTurnOn_And();
 
         CrystalsControl.INSTANCE.TurnThisSystemOn(transform);
-        isThisSystemOn = true;
 
+        isThisSystemOn = true;
     }
 
     public override void TurnMeOff()
     {
         if (isThisSystemOn)
-            EventManager.INSTANCE.CallPinTurnOff_And();
+        {
+            EventManager.INSTANCE.CallPinTurnOff_And();            
+        }
+
+        if(energyInsideMe<1)
+            SystemsThisReceivedEnergyFrom.Clear();
 
         CrystalsControl.INSTANCE.TurnThisSystemOff(transform);
         isThisSystemOn = false;
 
-        SystemsThisReceivedEnergyFrom.Clear();
     }
 }

@@ -2,7 +2,10 @@
 using System.Collections;
 
 public class Manager : MonoBehaviour {
-
+    void OnGUI()
+    {
+        GUILayout.Label("Version 0.1.6");
+    }
     void Awake()
     {
         if (!GameObject.FindObjectOfType<EventManager>())
@@ -66,11 +69,16 @@ public class Manager : MonoBehaviour {
             go.transform.parent = transform;
             go.name = "ConnectionsManager";
             go.AddComponent<ConnectionsManager>();
+
+            if (!GameObject.FindObjectOfType<ConnectionFunctions>())
+            {
+                var gmo = new GameObject();
+                gmo.transform.parent = go.transform;
+                gmo.name = "ConnectionFunctions";
+                gmo.AddComponent<ConnectionFunctions>();
+            }
         }
     }
 
-    void OnGUI()
-    {
-        GUILayout.Label("Version 0.1.0");
-    }
+ 
 }

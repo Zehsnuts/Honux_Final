@@ -133,7 +133,7 @@ public class CrystalsControl : MonoBehaviour
             if (trans.name.Contains("Track:"))
             {
                 trans.gameObject.SetActiveRecursively(true);
-                //trans.GetComponent<LineDrawer>().TurnTrackOff();
+                trans.GetComponent<ConnectorFunctions>().TurnTrackOff();
             }
         }
     }  
@@ -144,7 +144,6 @@ public class CrystalsControl : MonoBehaviour
     {
         t.tag = "Off";
         t.FindChild("CoreOff").gameObject.active = true;
-        //t.FindChild("Structure").gameObject.renderer.material = _structureOff;
         t.FindChild("Structure").transform.renderer.material = _structureOff;
 
         TurnShadowOn(t);
@@ -154,7 +153,6 @@ public class CrystalsControl : MonoBehaviour
     {
         t.tag = "Off";
         t.FindChild("CoreOff").gameObject.active = true;
-        //t.FindChild("Structure").gameObject.renderer.material = _structureOff;
         t.FindChild("Structure").transform.renderer.material = _structureOff;
         
 
@@ -190,7 +188,7 @@ public class CrystalsControl : MonoBehaviour
             if (trans.name.Contains("Track:"))
             {
                 trans.gameObject.SetActiveRecursively(true);
-                //trans.GetComponent<LineDrawer>().TurnTrackOn();
+                trans.GetComponent<ConnectorFunctions>().TurnTrackOn();
             }
         }
 
