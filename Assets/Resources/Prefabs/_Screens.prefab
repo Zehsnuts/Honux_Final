@@ -1545,7 +1545,7 @@ GameObject:
   m_IsActive: 1
 --- !u!1 &100184
 GameObject:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 4
@@ -1555,7 +1555,7 @@ GameObject:
   - 65: {fileID: 6500050}
   - 23: {fileID: 2300128}
   m_Layer: 0
-  m_Name: BG
+  m_Name: MidPiece
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2383,7 +2383,7 @@ Transform:
   m_LocalScale: {x: 1, y: 7.27295685, z: 1}
   m_Children: []
   m_Father: {fileID: 400072}
-  m_RootOrder: 3
+  m_RootOrder: 2
 --- !u!4 &400056
 Transform:
   m_ObjectHideFlags: 1
@@ -2500,7 +2500,6 @@ Transform:
   m_LocalScale: {x: 2.18017602, y: 1.37457669, z: 2.00208092}
   m_Children:
   - {fileID: 400180}
-  - {fileID: 400184}
   - {fileID: 400134}
   - {fileID: 400054}
   - {fileID: 400238}
@@ -2904,7 +2903,7 @@ Transform:
   m_LocalScale: {x: .253049254, y: .381961137, z: .381961137}
   m_Children: []
   m_Father: {fileID: 400072}
-  m_RootOrder: 2
+  m_RootOrder: 1
 --- !u!4 &400136
 Transform:
   m_ObjectHideFlags: 1
@@ -2954,6 +2953,7 @@ Transform:
   - {fileID: 400132}
   - {fileID: 400060}
   - {fileID: 400206}
+  - {fileID: 400184}
   m_Father: {fileID: 0}
   m_RootOrder: 0
 --- !u!4 &400144
@@ -3105,7 +3105,7 @@ Transform:
   - {fileID: 400126}
   - {fileID: 400154}
   m_Father: {fileID: 400072}
-  m_RootOrder: 5
+  m_RootOrder: 4
 --- !u!4 &400166
 Transform:
   m_ObjectHideFlags: 1
@@ -3224,11 +3224,11 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100184}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 18.3204536, y: -4.23805332, z: 1.06631148}
-  m_LocalScale: {x: 1.73749959, y: 21.3781109, z: 1.89205885}
+  m_LocalPosition: {x: 15.8790302, y: 3.34263325, z: 13.9302387}
+  m_LocalScale: {x: 3.78805494, y: 29.3858528, z: 3.78805494}
   m_Children: []
-  m_Father: {fileID: 400072}
-  m_RootOrder: 1
+  m_Father: {fileID: 400142}
+  m_RootOrder: 3
 --- !u!4 &400186
 Transform:
   m_ObjectHideFlags: 1
@@ -3579,7 +3579,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 400072}
-  m_RootOrder: 4
+  m_RootOrder: 3
 --- !u!23 &2300000
 Renderer:
   m_ObjectHideFlags: 1
@@ -6792,6 +6792,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75f6fe314e920a441bcffe03beb2061a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _shouldCountDown: 0
   _leftTracks: []
   _rightTracks: []
 --- !u!114 &11400020

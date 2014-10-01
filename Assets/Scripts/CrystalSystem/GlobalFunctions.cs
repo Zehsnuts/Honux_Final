@@ -74,11 +74,8 @@ public class GlobalFunctions : MonoBehaviour {
         RaycastHit hitInfo;
 
         if (Physics.SphereCast(myRay,1, out hitInfo, 2))
-            if (hitInfo.transform.name == "Frame" || hitInfo.transform.name == "ExtendedFrame")
+            if (hitInfo.transform.name == "Frame")
                 return false;
-
-        if (dist > connectionDistance)
-            return false;
 
         for (int i = 0; i < tracks.Count; i++)
         {

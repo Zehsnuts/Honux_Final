@@ -136,10 +136,7 @@ public class ConnectionFunctions : MonoBehaviour
 
         Origin.transform.GetComponent<CrystalUnitFunctions>().ConnectSingleUnit(Destination);
 
-        if (_connectionDistance > _connectionDistanceMax)
-            Origin.AddComponent<ExtendedConnectionCreator>().CreateConnectionAtRunTime(Destination.transform, ConnectionEnum.ConnectionType.ExtendedTemporary);        
-        else
-            Origin.AddComponent<ConnectionCreator>().CreateConnectionAtRunTime(Destination.transform, ConnectionEnum.ConnectionType.Temporary);
+        Origin.AddComponent<ConnectionCreator>().CreateConnectionAtRunTime(Destination.transform, ConnectionEnum.ConnectionType.Temporary);
 
         ResourcesManager.INSTANCE.RemoveTrack();
 

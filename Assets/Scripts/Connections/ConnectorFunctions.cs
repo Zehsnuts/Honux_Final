@@ -35,6 +35,12 @@ public class ConnectorFunctions : MonoBehaviour
         _destinationPoint.position = Destination.position;
 
         _framePosition = transform.FindChild("Frame");
+        if (Vector3.Distance(Origin.position, Destination.position) > 10)
+        {
+            var go = GameObject.Find("MidPiece");
+            _framePosition.position = Vector3.Lerp(_originPoint.position, go.transform.position, 0.5f);
+        }
+        else
         _framePosition.position = Vector3.Lerp(_originPoint.position, _destinationPoint.position, 0.5f);
 
         if (Connection == ConnectionEnum.ConnectionType.Fixed)
