@@ -5,6 +5,6 @@ public class ConnectionEnum : MonoBehaviour {
 
     public enum ConnectionType
     {
-        Fixed, Temporary, ExtendedTemporary, ExtendedFixed
+        Fixed, Temporary
     }
 }

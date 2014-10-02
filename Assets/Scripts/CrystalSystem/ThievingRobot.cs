@@ -82,8 +82,15 @@ public class ThievingRobot : MonoBehaviour {
     #region Movement Variables
     public float speed = 0.5f;
 
+    private bool _isRobotInTransition = false;
+
+    private Transform _currentMovementTarget;
     private Transform _waypointHolder;
+    private Transform _transitionPoint;
     public List<Transform> _waypoints;
+    private List<Transform> _waypointsLeft = new List<Transform>();
+    private   List<Transform> _waypointsRight = new List<Transform>();
+
     private Transform _target;
 
     private int _currentWaypoint = 0;
@@ -116,13 +123,23 @@ public class ThievingRobot : MonoBehaviour {
         _robot = transform.FindChild("Robot");
         lastKnownState = States.Patrol;
 
-        _waypointHolder = transform.FindChild("Waypoints").transform;
+        _waypointHolder = transform.FindChild("Waypoints_Left").transform;
+        _transitionPoint = transform.FindChild("Transition Point").transform;
 
         foreach (Transform t in _waypointHolder)
         {
-            if(t!=null)
-                _waypoints.Add(t);
+            if (t != null)
+                _waypointsLeft.Add(t);
         }
+
+        _waypoints = _waypointsLeft;
+        _waypointHolder = transform.FindChild("Waypoints_Right").transform;
+
+        foreach (Transform t in _waypointHolder)
+        {
+            if (t != null)
+                _waypointsRight.Add(t);
+        }        
 
         _audioSourceOn = _robot.FindChild("AudioSource_on").GetComponent<SECTR_AudioSource>();
         _audioSourceOff = _robot.FindChild("AudioSource_off").GetComponent<SECTR_AudioSource>();
@@ -176,19 +193,46 @@ public class ThievingRobot : MonoBehaviour {
 
     private void PatrolState()
     {        
-        PlaySound();        
+        PlaySound();
 
-        float dist = Vector3.Distance(_waypoints[_currentWaypoint].position, _robot.transform.position);
+        if (_isRobotInTransition)
+            _currentMovementTarget = _transitionPoint;
+        else
+            _currentMovementTarget = _waypoints[_currentWaypoint];
 
-        _robot.transform.LookAt(_waypoints[_currentWaypoint].position);
+        float dist = Vector3.Distance(_currentMovementTarget.position, _robot.transform.position);
+
+        _robot.transform.LookAt(_currentMovementTarget.position);
 
         if (dist>  2)
         {
             _robot.transform.Translate(Vector3.forward*Time.deltaTime*speed);
         }
+        else if (_isRobotInTransition)
+        {
+            _isRobotInTransition = false;
+
+            if (_waypoints == _waypointsLeft)
+                _waypoints = _waypointsRight;
+            else
+                _waypoints = _waypointsLeft;
+
+            _currentWaypoint = Random.Range(0, _waypoints.Count + 1);
+
+            if (_currentWaypoint >= _waypoints.Count)
+                _currentWaypoint = 0; 
+        }
         else
         {
-           _currentWaypoint = Random.Range(0, _waypoints.Count+1);
+            int chosenStageSide = Random.RandomRange(1, 100);
+
+            if (chosenStageSide < 10 && _waypoints == _waypointsRight)
+                _isRobotInTransition = true;
+            else if (chosenStageSide > 90 && _waypoints == _waypointsLeft)
+                _isRobotInTransition = true;
+
+            _currentWaypoint = Random.Range(0, _waypoints.Count + 1);
+
             if (_currentWaypoint >= _waypoints.Count)
                 _currentWaypoint = 0;
         }

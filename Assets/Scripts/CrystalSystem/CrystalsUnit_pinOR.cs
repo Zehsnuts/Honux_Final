@@ -29,7 +29,8 @@ public class CrystalsUnit_pinOR : CrystalUnitFunctions {
         CrystalsControl.INSTANCE.TurnThisSystemOff(transform);
         isThisSystemOn = false;
 
-        SystemsThisReceivedEnergyFrom.Clear();        
+        if (energyInsideMe < 1)
+            SystemsThisReceivedEnergyFrom.Clear();      
 
     }
 }

@@ -9,17 +9,13 @@ public class CrystalsUnit_Unstable : CrystalUnitFunctions
             EventManager.INSTANCE.CallUnstableTurnOn();
 
         base.TurnMeOn();
-
     }
 
     public override void TurnMeOff()
     {
         if (isThisSystemOn)
-            EventManager.INSTANCE.CallUnstableTurnOff();  
-        
+            EventManager.INSTANCE.CallUnstableTurnOff();          
 
-        base.TurnMeOff();
-
-        
+        base.TurnMeOff();        
     }
 }

@@ -18,6 +18,7 @@ public class ConnectorFunctions : MonoBehaviour
     private CrystalConnection cc;
 
     private GameObject _frameLight;
+    private GameObject _frameLight2;
 
     private SECTR_AudioSource _audioSource;
 
@@ -37,8 +38,10 @@ public class ConnectorFunctions : MonoBehaviour
         _framePosition = transform.FindChild("Frame");
         if (Vector3.Distance(Origin.position, Destination.position) > 10)
         {
-            var go = GameObject.Find("MidPiece");
+            GameObject go = GameObject.Find("MidPiece");
+
             _framePosition.position = Vector3.Lerp(_originPoint.position, go.transform.position, 0.5f);
+            _framePosition.position = new Vector3(_framePosition.position.x, (_destinationPoint.position.y + _originPoint.position.y)/2, _framePosition.position.z);
         }
         else
         _framePosition.position = Vector3.Lerp(_originPoint.position, _destinationPoint.position, 0.5f);
@@ -57,8 +60,14 @@ public class ConnectorFunctions : MonoBehaviour
         _frameLight = Instantiate(Resources.Load("Prefabs/Connection/ConnectionLight"), Origin.transform.position, Origin.transform.rotation) as GameObject;
         _frameLight.transform.parent = _framePosition;
 
-        _frameLight.GetComponent<LightningBolt>().target = Destination;
-        StartCoroutine(GetLightDestination());
+        _frameLight.GetComponent<LightningBolt>().target = _frame.transform.FindChild("OriginEnd");
+        StartCoroutine(GetLightDestination(_frame.transform.FindChild("OriginEnd")));
+
+        _frameLight2 = Instantiate(Resources.Load("Prefabs/Connection/ConnectionLight"), Destination.transform.position, Destination.transform.rotation) as GameObject;
+        _frameLight2.transform.parent = _framePosition;
+
+        _frameLight2.GetComponent<LightningBolt>().target = _frame.transform.FindChild("DestinationBegin");
+        StartCoroutine(GetLightDestination(_frame.transform.FindChild("DestinationBegin")));
 
         if(Origin.GetComponent<CrystalsUnit>().isThisSystemOn)
             TurnTrackOn();
@@ -66,18 +75,18 @@ public class ConnectorFunctions : MonoBehaviour
             TurnTrackOff();
     }
 
-    IEnumerator GetLightDestination()
+    IEnumerator GetLightDestination(Transform dest)
     {
         while (_frameLight.GetComponent<LightningBolt>().target == null)
         {
-            _frameLight.GetComponent<LightningBolt>().target = Destination;
+            _frameLight.GetComponent<LightningBolt>().target = dest;
             yield return 0;
         }        
     }
 
     public void BreakLine()
     {
-        if (Connection == ConnectionEnum.ConnectionType.Fixed || Connection == ConnectionEnum.ConnectionType.ExtendedFixed)
+        if (Connection == ConnectionEnum.ConnectionType.Fixed)
             return;
 
         Debug.Log("Destroy");
@@ -94,6 +103,7 @@ public class ConnectorFunctions : MonoBehaviour
     {   
         _frame.GetComponent<MeshRenderer>().enabled = true;
         _frameLight.GetComponent<ParticleRenderer>().enabled = true;
+        _frameLight2.GetComponent<ParticleRenderer>().enabled = true;
 
         if (_audioSource == null)
             _audioSource = transform.FindChild("Frame").FindChild("Frame").FindChild("AudioSource").GetComponent<SECTR_AudioSource>();
@@ -105,6 +115,7 @@ public class ConnectorFunctions : MonoBehaviour
     {        
         _frame.GetComponent<MeshRenderer>().enabled = false;
         _frameLight.GetComponent<ParticleRenderer>().enabled = false;
+        _frameLight2.GetComponent<ParticleRenderer>().enabled = false;
 
         if (_audioSource == null)
             _audioSource = transform.FindChild("Frame").FindChild("Frame").FindChild("AudioSource").GetComponent<SECTR_AudioSource>();

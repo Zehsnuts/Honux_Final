@@ -810,12 +810,12 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 329715649}
+  - {fileID: 1361141571}
+  - {fileID: 667940182}
+  - {fileID: 1288864533}
   - {fileID: 71755871}
   - {fileID: 881045042}
-  - {fileID: 1288864533}
-  - {fileID: 1361141571}
   - {fileID: 152856170}
-  - {fileID: 667940182}
   - {fileID: 1269191726}
   m_Father: {fileID: 1725627260}
 --- !u!1 &71076205
@@ -2033,7 +2033,6 @@ Transform:
   m_LocalScale: {x: 2.18017602, y: 1.37457669, z: 2.00208092}
   m_Children:
   - {fileID: 1428254302}
-  - {fileID: 1485069911}
   - {fileID: 901413469}
   - {fileID: 71076206}
   - {fileID: 2118318619}
@@ -6558,6 +6557,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 898986300}
+  - {fileID: 1485069911}
   - {fileID: 111088873}
   - {fileID: 1709063796}
   m_Father: {fileID: 0}
@@ -9704,7 +9704,7 @@ GameObject:
   - 65: {fileID: 1485069913}
   - 23: {fileID: 1485069912}
   m_Layer: 0
-  m_Name: BG
+  m_Name: MidPiece
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9717,10 +9717,10 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1485069910}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 18.3204536, y: -4.23805332, z: 1.06631148}
-  m_LocalScale: {x: 1.73749959, y: 21.3781109, z: 1.89205885}
+  m_LocalPosition: {x: 15.8790302, y: .320542336, z: 13.9302387}
+  m_LocalScale: {x: 3.78805494, y: 29.3858528, z: 3.78805494}
   m_Children: []
-  m_Father: {fileID: 258722108}
+  m_Father: {fileID: 990726987}
 --- !u!23 &1485069912
 Renderer:
   m_ObjectHideFlags: 0
@@ -11494,9 +11494,9 @@ MonoBehaviour:
   TimeAvailableInMinutes: 1
   TimeAvailableInSeconds: 0
   MaxUnstableUnitsPowered: 1
-  NumberOfPinsAND: 1
+  NumberOfPinsAND: 0
   NumberOfPinsOR: 0
-  NumberOfPinsXOR: 0
+  NumberOfPinsXOR: 1
 --- !u!1 &1739113515
 GameObject:
   m_ObjectHideFlags: 0

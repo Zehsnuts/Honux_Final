@@ -56,14 +56,13 @@ public class CrystalUnitFunctions : CrystalsUnit
         CheckSystemType(); //Qual tipo de unidade esse GameObject é;
         //CheckConnections(); //Quais conexões ele tem com os outros elementos da fase;
         //CheckEnergy(); //Verifica se ele tem energia para estar ligado ou não; Retorna bool; Não precisa estar aqui pois ChangeSystemStatus usa ele; Coloquei para saber ordem inicial.
-        TurnMeOff();
+        //TurnMeOff();
         ChangeSystemStatus(); //Usa o resultado de CheckEnergy para mudar o status do systema para on ou off;
         Events();
     }
 
     public void GrabAudioSource()
     {
-
         _unitAudioObjectOn = transform.FindChild("AudioSource_on");
         _unitAudioObjectOff = transform.FindChild("AudioSource_off");
 
@@ -147,8 +146,12 @@ public class CrystalUnitFunctions : CrystalsUnit
     
     public virtual void TurnMeOn()
     {
+        if (isThisSystemOn)
+            return;
+
         CrystalsControl.INSTANCE.TurnThisSystemOn(transform);
         isThisSystemOn = true;
+
         TransferEnergyToConnections();
 
         if (_unitAudioSourceOn == null || _unitAudioSourceOff == null)
@@ -162,11 +165,9 @@ public class CrystalUnitFunctions : CrystalsUnit
     {
         CrystalsControl.INSTANCE.TurnThisSystemOff(transform);
         isThisSystemOn = false;
-
-        TransferEnergyToConnections();
         RemoveEnergyFromConnections();
 
-        SystemsThisReceivedEnergyFrom.Clear();
+       //SystemsThisReceivedEnergyFrom.Clear();
 
         if (_unitAudioSourceOn == null || _unitAudioSourceOff== null)
             GrabAudioSource();
@@ -176,18 +177,27 @@ public class CrystalUnitFunctions : CrystalsUnit
     }
 
     public void AddEnergy(GameObject donor)
-    { 
+    {
+        if (SystemsThisDonatedEnergyTo.Contains(donor) || donor.GetComponent<CrystalsUnit>().systemType == SystemType.Pin)
+            return;
         //Adiciona donor a lista de doadores;
-        if (donor != null && !SystemsThisReceivedEnergyFrom.Contains(donor))        
+        if (donor != null && !SystemsThisReceivedEnergyFrom.Contains(donor))
+        {
+            energyInsideMe++;
             SystemsThisReceivedEnergyFrom.Add(donor);
+            TransferEnergyToConnections();
+        }
 
-        energyInsideMe++;
         ChangeSystemStatus();       
     }
 
     public void RemoveEnergy(GameObject donor)
     {
-        energyInsideMe--;
+        if (SystemsThisReceivedEnergyFrom.Contains(donor))
+        {
+            energyInsideMe--;
+            SystemsThisReceivedEnergyFrom.Remove(donor);
+        }
 
         if (energyInsideMe < 0)
             energyInsideMe = 0;
@@ -196,32 +206,36 @@ public class CrystalUnitFunctions : CrystalsUnit
     }
 
     public void TransferEnergyToConnections()
-    {
-        if (!isThisSystemOn)
-            return; 
+    {        
+        if (!isThisSystemOn || energyInsideMe==0 || systemType == SystemType.Pin)
+            return;
 
+        StartCoroutine(WaitBeferoTransferingEnergy());
+    }
+
+    IEnumerator WaitBeferoTransferingEnergy()
+    {
+        yield return new WaitForSeconds(0.5f);
         foreach (GameObject go in ConnectedToMe)
         {
             //ConnectedToMe pode conter alguem que está doando energia para este; Exclui essa possibilidade da lista que receberá energia deste.
             if (SystemsThisReceivedEnergyFrom.Contains(go))
                 continue;
 
-            //Lista quem recebe energia deste;
             if (!SystemsThisDonatedEnergyTo.Contains(go))
             {
                 SystemsThisDonatedEnergyTo.Add(go);
-                //Doa energia para todas as conexões; 
                 go.GetComponent<CrystalUnitFunctions>().AddEnergy(gameObject);
             }
 
-           if (!go.GetComponent<CrystalsUnit>().hasLaidTracks)
+            if (!go.GetComponent<CrystalsUnit>().hasLaidTracks)
                 go.GetComponent<CrystalUnitFunctions>().LineParentAssign();
             else
                 go.GetComponent<CrystalUnitFunctions>().TurnLinesOn();
         }
 
         if (!hasLaidTracks)
-           LineParentAssign();
+            LineParentAssign();
         else
             TurnLinesOn();
     }
@@ -257,12 +271,6 @@ public class CrystalUnitFunctions : CrystalsUnit
             go.GetComponent<CrystalUnitFunctions>().RemoveEnergy(gameObject);
         }
         
-        foreach (GameObject go in TracksOfDonatedEnergy)
-        {
-            //Desativa as linhas de conexão;
-            //go.GetComponent<LineDrawer>().TurnTrackOff();
-        }
-
         SystemsThisDonatedEnergyTo.Clear();
     }
 
@@ -271,7 +279,15 @@ public class CrystalUnitFunctions : CrystalsUnit
         if (ConnectedToMe.Contains(unit))
             return;
 
-       ConnectedToMe.Add(unit);      
+       ConnectedToMe.Add(unit);
+
+       if (energyInsideMe > 0)
+       {
+           unit.GetComponent<CrystalUnitFunctions>().AddEnergy(gameObject);
+           SystemsThisDonatedEnergyTo.Add(unit);
+       }
+       else CheckIfCanReceiveEnergyFromUnit(unit);
+
        CheckConnections();
        
        ChangeSystemStatus();
@@ -284,4 +300,6 @@ public class CrystalUnitFunctions : CrystalsUnit
         if (unit.GetComponent<CrystalsUnit>().energyInsideMe > 0)
             AddEnergy(unit);
     }
+
+    
 }
