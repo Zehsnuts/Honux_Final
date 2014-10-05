@@ -30,10 +30,9 @@ public class GlobalFunctions : MonoBehaviour {
         originScript.ConnectedToMe.Remove(destination.gameObject);
         originScript.SystemsThisDonatedEnergyTo.Remove(destination.gameObject);
 
-
+        destinationScript.ConnectedToMe.Remove(origin.gameObject);    
         destinationScript.RemoveEnergy(origin.gameObject);
-        destinationScript.SystemsThisReceivedEnergyFrom.Remove(origin.gameObject);
-        destinationScript.ConnectedToMe.Remove(origin.gameObject);
+            
     }
 
     public static void BreakThisLine(GameObject line)

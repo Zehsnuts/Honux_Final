@@ -13,7 +13,9 @@ public class CrystalsUnit : MonoBehaviour
     public SystemType systemType;
 
     public bool isThisSystemOn;
-    
+
+    public GameObject PrimarySourceOfEnergy;
+
     public List<GameObject> ConnectedToMe;//Lista todos os elementos que tem uma trilha com este. Mesmo que não forneça ou receba energia deste
 
     public List<GameObject> SystemsThisReceivedEnergyFrom; //Lista de elementos que doaram/repassaram energia para este. Serve para não retornar energia na mesma trilha.
