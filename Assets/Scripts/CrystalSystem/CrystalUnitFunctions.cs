@@ -130,7 +130,7 @@ public class CrystalUnitFunctions : CrystalsUnit
 
     public virtual bool CheckEnergy()
     {
-        if (energyInsideMe >= energyNeededToWork)
+        if (energyInsideMe >= energyNeededToWork && !isAffectedByForceField)
             return true;
         else
             return false;
@@ -163,9 +163,16 @@ public class CrystalUnitFunctions : CrystalsUnit
 
     public virtual void TurnMeOff()
     {
-        CrystalsControl.INSTANCE.TurnThisSystemOff(transform);
         isThisSystemOn = false;
         RemoveEnergyFromConnections();
+
+        if (AskForEnergyFromConnections())
+        {
+            ChangeSystemStatus();
+            return;
+        }
+
+        CrystalsControl.INSTANCE.TurnThisSystemOff(transform);        
 
        //SystemsThisReceivedEnergyFrom.Clear();
 
@@ -173,16 +180,63 @@ public class CrystalUnitFunctions : CrystalsUnit
             GrabAudioSource();
 
         _unitAudioSourceOff.Play();
-        _unitAudioSourceOn.Stop(true);   
+        _unitAudioSourceOn.Stop(true);        
+    }
+
+    bool AskForEnergyFromConnections()
+    {        
+        foreach (var item in ConnectedToMe)
+        {
+            if (item == lastPrimarySourceOfEnergy)
+            {
+                lastPrimarySourceOfEnergy = null;
+                continue;
+            }
+
+            var cu = item.GetComponent<CrystalUnitFunctions>();
+            if (cu.SystemsThisReceivedEnergyFrom.Count > 0 && cu.PrimarySourceOfEnergy != gameObject)
+            {
+                foreach (var system in cu.SystemsThisReceivedEnergyFrom)
+                {
+                    if (cu.SystemsThisReceivedEnergyFrom.Count == 1 && 
+                        cu.SystemsThisReceivedEnergyFrom.Contains(gameObject) 
+                        || cu.systemType== SystemType.Pin )
+                        return false;
+
+                    else if (system == gameObject)
+                        continue;
+                    else
+                    {
+                        AddEnergy(cu.gameObject);
+
+                        cu.SystemsThisDonatedEnergyTo.Add(gameObject);
+
+                        if (cu.SystemsThisReceivedEnergyFrom.Contains(gameObject))
+                            cu.RemoveEnergy(gameObject);
+                        if (SystemsThisDonatedEnergyTo.Contains(cu.gameObject))
+                            SystemsThisDonatedEnergyTo.Remove(cu.gameObject);
+
+                        return true;
+                    }
+                    
+                }
+            }
+        }
+
+        return false;
     }
 
     public void AddEnergy(GameObject donor)
     {
-        if (SystemsThisDonatedEnergyTo.Contains(donor) || donor.GetComponent<CrystalsUnit>().systemType == SystemType.Pin)
+        if (donor.GetComponent<CrystalsUnit>().systemType == SystemType.Pin)
             return;
+
         //Adiciona donor a lista de doadores;
         if (donor != null && !SystemsThisReceivedEnergyFrom.Contains(donor))
         {
+            if (PrimarySourceOfEnergy == null)
+                PrimarySourceOfEnergy = donor;
+
             energyInsideMe++;
             SystemsThisReceivedEnergyFrom.Add(donor);
             TransferEnergyToConnections();
@@ -192,12 +246,21 @@ public class CrystalUnitFunctions : CrystalsUnit
     }
 
     public void RemoveEnergy(GameObject donor)
-    {
+    {      
         if (SystemsThisReceivedEnergyFrom.Contains(donor))
         {
             energyInsideMe--;
             SystemsThisReceivedEnergyFrom.Remove(donor);
-        }
+
+            if (PrimarySourceOfEnergy == donor)
+            {
+                lastPrimarySourceOfEnergy = donor;
+                if (SystemsThisReceivedEnergyFrom.Count > 1)
+                    PrimarySourceOfEnergy = SystemsThisReceivedEnergyFrom[0];
+                else
+                    PrimarySourceOfEnergy = null;
+            }
+        }        
 
         if (energyInsideMe < 0)
             energyInsideMe = 0;
@@ -210,12 +273,21 @@ public class CrystalUnitFunctions : CrystalsUnit
         if (!isThisSystemOn || energyInsideMe==0 || systemType == SystemType.Pin)
             return;
 
-        StartCoroutine(WaitBeferoTransferingEnergy());
+        StartCoroutine(WaitBeforeTransferingEnergy());
     }
 
-    IEnumerator WaitBeferoTransferingEnergy()
+    IEnumerator WaitBeforeTransferingEnergy()
     {
-        yield return new WaitForSeconds(0.5f);
+        if (!hasThisSystemTurnedOnAtLastFrame)
+        {
+            yield return new WaitForEndOfFrame();
+            hasThisSystemTurnedOnAtLastFrame = true;
+        }
+        else
+        {
+            yield return new WaitForSeconds(0.5f);
+        }
+
         foreach (GameObject go in ConnectedToMe)
         {
             //ConnectedToMe pode conter alguem que está doando energia para este; Exclui essa possibilidade da lista que receberá energia deste.
@@ -297,9 +369,7 @@ public class CrystalUnitFunctions : CrystalsUnit
 
     void CheckIfCanReceiveEnergyFromUnit(GameObject unit)
     {
-        if (unit.GetComponent<CrystalsUnit>().energyInsideMe > 0)
+        if (unit.GetComponent<CrystalsUnit>().energyInsideMe > 0 && unit.GetComponent<CrystalsUnit>().SystemsThisReceivedEnergyFrom.Count > 0 && !unit.GetComponent<CrystalsUnit>().SystemsThisReceivedEnergyFrom.Contains(gameObject))
             AddEnergy(unit);
-    }
-
-    
+    }    
 }

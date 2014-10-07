@@ -206,8 +206,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100008}
-  m_LocalRotation: {x: -.00367043144, y: .382680446, z: -.00152034243, w: .923872292}
-  m_LocalPosition: {x: 11.6320839, y: -.548559129, z: -4.00837326}
+  m_LocalRotation: {x: -.00367048406, y: .382680416, z: -.0015204848, w: .923872292}
+  m_LocalPosition: {x: 10.0496349, y: -.299427032, z: 1.40444076}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 400016}
@@ -465,7 +465,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1.70000005, z: 1}
+  m_Size: {x: 1.66999996, y: 4.59000015, z: 1.71000004}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!65 &6500006
 BoxCollider:
@@ -562,6 +562,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   systemType: 2
   isThisSystemOn: 0
+  hasThisSystemTurnedOnAtLastFrame: 0
+  isAffectedByForceField: 0
+  lastPrimarySourceOfEnergy: {fileID: 0}
+  PrimarySourceOfEnergy: {fileID: 0}
   ConnectedToMe: []
   SystemsThisReceivedEnergyFrom: []
   SystemsThisDonatedEnergyTo: []

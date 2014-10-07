@@ -37,8 +37,6 @@ public class ForceField : MonoBehaviour {
     }
     #endregion
 
-
-
     public enum ForceFieldStatus
     { 
         Inactive, 
@@ -47,7 +45,9 @@ public class ForceField : MonoBehaviour {
         Paused
     }
 
-    public ForceFieldStatus FieldStatus;
+    public GameObject affectedSystem;
+
+    public ForceFieldStatus fieldStatus;
     private ForceFieldStatus _lastState;
 
     public GameObject RhythmButton;
@@ -78,13 +78,31 @@ public class ForceField : MonoBehaviour {
 
         _light = transform.FindChild("Light").gameObject;
         _sphere = transform.FindChild("ForceFieldSphere").gameObject;
-         
+
+        TurnOffAffectedSystem();         
     }
 
+    void TurnOffAffectedSystem()
+    {
+        Ray myRay = new Ray(_sphere.transform.position, _sphere.transform.forward);
+        RaycastHit hitInfo;
+
+        if (Physics.SphereCast(myRay, 2, out hitInfo, 2))
+        {
+            Debug.Log(hitInfo.transform.name);
+
+            if (hitInfo.transform.GetComponent<CrystalsUnit>())
+            {
+                affectedSystem = hitInfo.transform.gameObject;
+                affectedSystem.GetComponent<CrystalsUnit>().isAffectedByForceField = true;
+                affectedSystem.GetComponent<CrystalUnitFunctions>().ChangeSystemStatus();
+            }
+        }
+    }
 
     public void StopRhythmSequence()
     {
-        FieldStatus = ForceFieldStatus.Inactive;
+        fieldStatus = ForceFieldStatus.Inactive;
 
         //_light.renderer.material = Resources.Load("Materials/ForceField") as Material;
 
@@ -93,7 +111,7 @@ public class ForceField : MonoBehaviour {
 
     public void BeginRhythmSequence()
     {
-        FieldStatus = ForceFieldStatus.Active;
+        fieldStatus = ForceFieldStatus.Active;
 
         _light.renderer.material = Resources.Load("Materials/Firula") as Material;
 
@@ -104,7 +122,7 @@ public class ForceField : MonoBehaviour {
 
     public void ClickedForceField()
     {
-        if (FieldStatus == ForceFieldStatus.Active)
+        if (fieldStatus == ForceFieldStatus.Active)
         {
             if (_isVunerable)
                 _forceFieldLife--;
@@ -121,6 +139,9 @@ public class ForceField : MonoBehaviour {
     void DestroyForceField()
     {
         _myRhythmButtonScript.ButtonSolved();
+
+        affectedSystem.GetComponent<CrystalsUnit>().isAffectedByForceField = false;
+        affectedSystem.GetComponent<CrystalUnitFunctions>().ChangeSystemStatus();
 
         Destroy(_sphere);
         Destroy(_light);
@@ -157,9 +178,9 @@ public class ForceField : MonoBehaviour {
 
     void PauseUnit()
     {
-        _lastState = FieldStatus;
+        _lastState = fieldStatus;
 
-        FieldStatus = ForceFieldStatus.Paused;
+        fieldStatus = ForceFieldStatus.Paused;
 
         StopRhythmSequence();
 
@@ -168,6 +189,6 @@ public class ForceField : MonoBehaviour {
 
     void UnpauseUnit()
     {
-        FieldStatus = _lastState;
+        fieldStatus = _lastState;
     }
 }

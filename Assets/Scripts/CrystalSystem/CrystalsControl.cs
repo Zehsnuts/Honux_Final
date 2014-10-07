@@ -123,10 +123,10 @@ public class CrystalsControl : MonoBehaviour
         t.gameObject.active = true;
 
         if (t.FindChild("AudioSource_on"))
-            t.FindChild("AudioSource_on").active = true;
+            t.FindChild("AudioSource_on").active = false;
 
         if (t.FindChild("AudioSource_off"))
-            t.FindChild("AudioSource_off").active = false;
+            t.FindChild("AudioSource_off").active = true;
 
         foreach (Transform trans in t)
         {
@@ -153,8 +153,7 @@ public class CrystalsControl : MonoBehaviour
     {
         t.tag = "Off";
         t.FindChild("CoreOff").gameObject.active = true;
-        t.FindChild("Structure").transform.renderer.material = _structureOff;
-        
+        t.FindChild("Structure").transform.renderer.material = _structureOff;        
 
         TurnShadowOn(t);
     }

@@ -9,10 +9,10 @@ public class GridAlignment : MonoBehaviour {
         RaycastHit hitInfo;
 
         if (Physics.SphereCast(transform.position, 2, transform.position, out hitInfo, Mathf.Infinity))
-            if (hitInfo.transform.GetComponent<CrystalsUnit>())
+            if (hitInfo.transform.GetComponent<CrystalsUnit>() || hitInfo.transform.GetComponent<CrystalsUnit_Bridge>())
             {
                 hitInfo.transform.position = transform.position;
-                Debug.Log("Got One.");
+                Debug.Log(hitInfo.transform.name);
             }
 
         Destroy(gameObject);
