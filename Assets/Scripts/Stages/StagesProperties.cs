@@ -238,7 +238,7 @@ public class StagesProperties : MonoBehaviour
         if (_pinsXor <= 0)
             _pinsXor = 0;
 
-        if (_actualUnstableUnitsPowered < 0)
+        if (_actualUnstableUnitsPowered <= 0)
             _actualUnstableUnitsPowered = 0;
     }
 
@@ -247,7 +247,7 @@ public class StagesProperties : MonoBehaviour
     //No caso do pino XOR, quando uma peça conectada à ele for a unica a ser ligada e transferir energia, ele será ligado naquele frame. 
     IEnumerator WaitBeforeCheckingIfStageEnded()
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
         CheckIfStageEnded();     
     }
 }
