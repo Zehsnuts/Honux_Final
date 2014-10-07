@@ -156,7 +156,6 @@ public class SoundManager : MonoBehaviour
     void StageFailWarningStop()
     {
         _alarmSfx.Stop(true);
-        _robotAlarmSfx.Stop(true);
     }
 
     public void PlaysSingleFileByName(string soundname, Vector3 pos)

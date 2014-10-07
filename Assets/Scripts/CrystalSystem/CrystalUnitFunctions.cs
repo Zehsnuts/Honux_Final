@@ -278,15 +278,9 @@ public class CrystalUnitFunctions : CrystalsUnit
 
     IEnumerator WaitBeforeTransferingEnergy()
     {
-        if (!hasThisSystemTurnedOnAtLastFrame)
-        {
-            yield return new WaitForEndOfFrame();
-            hasThisSystemTurnedOnAtLastFrame = true;
-        }
-        else
-        {
-            yield return new WaitForSeconds(0.5f);
-        }
+        
+        yield return new WaitForSeconds(0.5f);
+        
 
         foreach (GameObject go in ConnectedToMe)
         {

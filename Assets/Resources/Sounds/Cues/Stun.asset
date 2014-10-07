@@ -11,7 +11,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e53b6803754c30d4fafeac19b23db57b, type: 3}
   m_Name: Stun
   m_EditorClassIdentifier: 
-  template: {fileID: 11400000, guid: 90ebc8e25a51c724794682cdac312537, type: 2}
+  template: {fileID: 0}
   bus: {fileID: 11400000, guid: c0b9a1d490036464fbb4d57aa52a3e76, type: 2}
   AudioClips:
   - clip: {fileID: 8300000, guid: 36fac58d117d8a1458daad39f84551c0, type: 3}
@@ -24,9 +24,9 @@ MonoBehaviour:
   PlaybackMode: 0
   HDR: 0
   Loudness: {x: 94.8012009, y: 200}
-  Volume: {x: 0, y: 0}
+  Volume: {x: .960244656, y: .960244656}
   Pitch: {x: 1, y: 1}
-  Loops: 1
+  Loops: 0
   Priority: 128
   BypassEffects: 0
   MaxInstances: 10
