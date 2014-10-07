@@ -187,9 +187,12 @@ public class CrystalUnitFunctions : CrystalsUnit
     {        
         foreach (var item in ConnectedToMe)
         {
+            Debug.Log(gameObject.name + " trying to get energy from: " + item.name);
+
             if (item == lastPrimarySourceOfEnergy)
             {
                 lastPrimarySourceOfEnergy = null;
+                Debug.Log(gameObject.name + " has last source: " + item.name);
                 continue;
             }
 
@@ -198,13 +201,15 @@ public class CrystalUnitFunctions : CrystalsUnit
             {
                 foreach (var system in cu.SystemsThisReceivedEnergyFrom)
                 {
-                    if (cu.SystemsThisReceivedEnergyFrom.Count == 1 && 
-                        cu.SystemsThisReceivedEnergyFrom.Contains(gameObject) 
-                        || cu.systemType== SystemType.Pin )
-                        return false;
-
-                    else if (system == gameObject)
+                    if (cu.SystemsThisReceivedEnergyFrom.Count == 1 &&
+                        cu.SystemsThisReceivedEnergyFrom.Contains(gameObject) ||
+                        cu.systemType == SystemType.Pin)
+                    {
+                        Debug.Log(gameObject.name +" can't receive energy from"+ cu.gameObject);
                         continue;
+                    }
+                    else if (system == gameObject)
+                    continue;
                     else
                     {
                         AddEnergy(cu.gameObject);
@@ -247,7 +252,7 @@ public class CrystalUnitFunctions : CrystalsUnit
 
     public void RemoveEnergy(GameObject donor)
     {      
-        if (SystemsThisReceivedEnergyFrom.Contains(donor))
+        if (SystemsThisReceivedEnergyFrom.Contains(donor)) 
         {
             energyInsideMe--;
             SystemsThisReceivedEnergyFrom.Remove(donor);
@@ -335,6 +340,13 @@ public class CrystalUnitFunctions : CrystalsUnit
         foreach (GameObject go in SystemsThisDonatedEnergyTo)
         {
             go.GetComponent<CrystalUnitFunctions>().RemoveEnergy(gameObject);
+        }
+
+        foreach (var item in ConnectedToMe)
+        {
+            var cu = item.GetComponent<CrystalUnitFunctions>();
+            if (cu.SystemsThisReceivedEnergyFrom.Contains(gameObject))
+                cu.RemoveEnergy(gameObject);
         }
         
         SystemsThisDonatedEnergyTo.Clear();
