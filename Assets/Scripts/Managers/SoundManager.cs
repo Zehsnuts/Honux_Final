@@ -95,7 +95,7 @@ public class SoundManager : MonoBehaviour
 
     void GrabAudioSources()
     {
-        _globalSounds = Camera.main.GetComponent<AudioSource>();
+        //_globalSounds = Camera.main.GetComponent<AudioSource>();
 
         _globalSounds = GameObject.Find("ActualCamera").GetComponent<AudioSource>();
 
@@ -120,7 +120,7 @@ public class SoundManager : MonoBehaviour
 
     }
 
-    void PlaySingleFile(AudioClip clip)
+    public void PlaySingleFile(AudioClip clip)
     {
         _globalSounds.PlayOneShot(clip);
     }
@@ -156,7 +156,6 @@ public class SoundManager : MonoBehaviour
     void StageFailWarningStop()
     {
         _alarmSfx.Stop(true);
-        _robotAlarmSfx.Stop(true);
     }
 
     public void PlaysSingleFileByName(string soundname, Vector3 pos)
@@ -171,11 +170,6 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    void ResumeAllSounds()
-    {
-        
-    }
-
     void StopAllSounds()
     {
         _stunSfx.Stop(true);
@@ -183,5 +177,4 @@ public class SoundManager : MonoBehaviour
         _robotCollectSfx.Stop(true);
         _robotAlarmSfx.Stop(true);
     }
-
 }

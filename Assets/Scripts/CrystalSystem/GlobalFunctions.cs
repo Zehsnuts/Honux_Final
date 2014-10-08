@@ -27,10 +27,25 @@ public class GlobalFunctions : MonoBehaviour {
         var destinationScript = destination.GetComponent<CrystalUnitFunctions>();
 
         originScript.TracksOfDonatedEnergy.Remove(line);
+
+        if (originScript.PrimarySourceOfEnergy == destination ||
+            originScript.SystemsThisReceivedEnergyFrom.Contains(destination.gameObject) &&
+            !originScript.SystemsThisDonatedEnergyTo.Contains(destination.gameObject))
+        {
+            var go = destination;
+            destination = origin;
+            origin = go;
+            originScript = origin.GetComponent<CrystalUnitFunctions>();
+            destinationScript = destination.GetComponent<CrystalUnitFunctions>();
+        }
+
         originScript.ConnectedToMe.Remove(destination.gameObject);
         originScript.SystemsThisDonatedEnergyTo.Remove(destination.gameObject);
 
+<<<<<<< HEAD
         destinationScript.ConnectedToMe.Remove(origin.gameObject);    
+=======
+>>>>>>> new_branch
         destinationScript.RemoveEnergy(origin.gameObject);
             
     }
@@ -48,11 +63,8 @@ public class GlobalFunctions : MonoBehaviour {
 
         originScript.TracksOfDonatedEnergy.Remove(line);
         originScript.ConnectedToMe.Remove(destination.gameObject);
-        originScript.SystemsThisDonatedEnergyTo.Remove(destination.gameObject);
-
 
         destinationScript.RemoveEnergy(origin.gameObject);
-        destinationScript.SystemsThisReceivedEnergyFrom.Remove(origin.gameObject);
         destinationScript.ConnectedToMe.Remove(origin.gameObject);
 
         Destroy(line);

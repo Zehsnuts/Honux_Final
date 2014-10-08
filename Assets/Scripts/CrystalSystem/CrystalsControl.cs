@@ -115,6 +115,13 @@ public class CrystalsControl : MonoBehaviour
         t.tag = "On";
 
         t.FindChild("Structure").gameObject.GetComponent<MeshRenderer>().material = Resources.Load("Materials/PinOn") as Material;
+
+        if (t.FindChild("AudioSource_on"))
+            t.FindChild("AudioSource_on").active = true;
+
+        if (t.FindChild("AudioSource_off"))
+            t.FindChild("AudioSource_off").active = false;
+        
     }
 
     void TurnShadowOn(Transform t)
@@ -123,10 +130,10 @@ public class CrystalsControl : MonoBehaviour
         t.gameObject.active = true;
 
         if (t.FindChild("AudioSource_on"))
-            t.FindChild("AudioSource_on").active = true;
+            t.FindChild("AudioSource_on").active = false;
 
         if (t.FindChild("AudioSource_off"))
-            t.FindChild("AudioSource_off").active = false;
+            t.FindChild("AudioSource_off").active = true;
 
         foreach (Transform trans in t)
         {
@@ -153,8 +160,7 @@ public class CrystalsControl : MonoBehaviour
     {
         t.tag = "Off";
         t.FindChild("CoreOff").gameObject.active = true;
-        t.FindChild("Structure").transform.renderer.material = _structureOff;
-        
+        t.FindChild("Structure").transform.renderer.material = _structureOff;        
 
         TurnShadowOn(t);
     }
@@ -171,6 +177,12 @@ public class CrystalsControl : MonoBehaviour
         t.FindChild("Structure").gameObject.GetComponent<MeshRenderer>().material = Resources.Load("Materials/PinOff") as Material;
 
         t.tag = "Off";
+
+        if (t.FindChild("AudioSource_on"))
+            t.FindChild("AudioSource_on").active = false;
+
+        if (t.FindChild("AudioSource_off"))
+            t.FindChild("AudioSource_off").active = true;
     }
 
     void TurnShadowOff(Transform t)

@@ -14,7 +14,6 @@ public class StagesProperties : MonoBehaviour
         EventManager.PINTURNOFF_AND += PinAndTurnedOff;
 
         EventManager.UNSTABLETURNON += TurnRobotOn;
-        EventManager.UNSTABLETURNOFF += TurnRobotOff;
 
         EventManager.UNSTABLETURNON += AddToUnstableCount;
         EventManager.UNSTABLETURNOFF += RemoveFromUnstableCount;
@@ -31,7 +30,6 @@ public class StagesProperties : MonoBehaviour
         EventManager.PINTURNOFF_AND -= PinAndTurnedOff;
 
         EventManager.UNSTABLETURNON -= TurnRobotOn;
-        EventManager.UNSTABLETURNOFF -= TurnRobotOff;
 
         EventManager.UNSTABLETURNON -= AddToUnstableCount;
         EventManager.UNSTABLETURNOFF -= RemoveFromUnstableCount;
@@ -142,18 +140,17 @@ public class StagesProperties : MonoBehaviour
     void RemoveFromUnstableCount()
     {
         _actualUnstableUnitsPowered--;
+
         ImpossibilityCheck();
 
         if (_actualUnstableUnitsPowered == 0)
         {
-            EventManager.INSTANCE.CallRobotTurnOff();
+            TurnRobotOff();
             EventManager.INSTANCE.CallRobotCreationSequenceStop();
         }
 
         if (_isCoutingDownToStageFail && _actualUnstableUnitsPowered < MaxUnstableUnitsPowered || _actualUnstableUnitsPowered == 0)
         {
-            Debug.Log("Unstable stop");
-
             StopCoroutine("StageFailCountDown");
             _isCoutingDownToStageFail = false;
             EventManager.INSTANCE.CallStageFailSequenceStop();
@@ -180,18 +177,18 @@ public class StagesProperties : MonoBehaviour
 
     IEnumerator CreateRobot()
     {
+        Debug.Log("Robot turning on event");
         _isRobotOn = true;
-        yield return new WaitForSeconds(3);        
-        EventManager.INSTANCE.CallRobotTurnOn();
+        yield return new WaitForSeconds(5);        
+            EventManager.INSTANCE.CallRobotTurnOn();
     }
 
     void TurnRobotOff()
-    {
+    {  
+        Debug.Log("Stop robot creation");
         StopCoroutine("CreateRobot");
         _isRobotOn = false;
-
-        if (_actualUnstableUnitsPowered == 0)
-            EventManager.INSTANCE.CallRobotCreationSequenceStop();
+        EventManager.INSTANCE.CallRobotCreationSequenceStop();
     }
 
     #endregion
@@ -238,7 +235,7 @@ public class StagesProperties : MonoBehaviour
         if (_pinsXor <= 0)
             _pinsXor = 0;
 
-        if (_actualUnstableUnitsPowered < 0)
+        if (_actualUnstableUnitsPowered <= 0)
             _actualUnstableUnitsPowered = 0;
     }
 
@@ -247,7 +244,7 @@ public class StagesProperties : MonoBehaviour
     //No caso do pino XOR, quando uma peça conectada à ele for a unica a ser ligada e transferir energia, ele será ligado naquele frame. 
     IEnumerator WaitBeforeCheckingIfStageEnded()
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
         CheckIfStageEnded();     
     }
 }

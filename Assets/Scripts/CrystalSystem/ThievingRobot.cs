@@ -79,6 +79,8 @@ public class ThievingRobot : MonoBehaviour {
     private SECTR_AudioSource _audioSourceOn;
     private SECTR_AudioSource _audioSourceOff;
 
+    private AudioClip _pickupSound;
+
     #region Movement Variables
     public float speed = 0.5f;
 
@@ -119,7 +121,8 @@ public class ThievingRobot : MonoBehaviour {
 
 
     void Start()
-    {       
+    {
+        _pickupSound = Resources.Load("Sounds/PickingUpTrackBot") as AudioClip;
         _robot = transform.FindChild("Robot");
         lastKnownState = States.Patrol;
 
@@ -276,7 +279,8 @@ public class ThievingRobot : MonoBehaviour {
         {
             _target.parent.parent.GetComponent<ConnectorFunctions>().BreakLine();
             state = States.RunAway;
-            ResourcesManager.INSTANCE.RemoveTrack();
+            //ResourcesManager.INSTANCE.RemoveTrack();
+            SoundManager.INSTANCE.PlaySingleFile(_pickupSound);
             _currentWaypoint = Random.Range(0, _waypoints.Count + 1);
             if (_currentWaypoint >= _waypoints.Count)
                 _currentWaypoint = 0;      
@@ -295,11 +299,13 @@ public class ThievingRobot : MonoBehaviour {
     {
         Debug.Log(state);
 
+        if (state == States.Pause)
+            return;
+
         if (state == States.RunAway)
         {            
             ResourcesManager.INSTANCE.AddTrack();
         }
-
 
         state = States.Stun;
 

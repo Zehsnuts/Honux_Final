@@ -21,7 +21,7 @@ public class ForceField_Button : MonoBehaviour {
     {
         ForceField = go;
         _myForceFieldScript = ForceField.GetComponent<ForceField>();
-        ButtonStatus = _myForceFieldScript.FieldStatus;
+        ButtonStatus = _myForceFieldScript.fieldStatus;
 
         _buttonCore = transform.FindChild("ButtonCore").gameObject;
         _structure = transform.FindChild("Structure").gameObject;

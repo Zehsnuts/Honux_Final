@@ -30,15 +30,15 @@ public class CameraControl : MonoBehaviour {
     {
         if (_camPosition == "Left")
         {
-            iTween.RotateAdd(_actualCamera, iTween.Hash("y", 90));
-            iTween.RotateAdd(_mainCamera, iTween.Hash("y", 90));
+            iTween.RotateTo(_actualCamera, iTween.Hash("y", 90));
+            iTween.RotateTo(_mainCamera, iTween.Hash("y", 90));
 
             _camPosition = "Right";
         }
         else            
             {
-                iTween.RotateAdd(_actualCamera, iTween.Hash("y", -90));
-                iTween.RotateAdd(_mainCamera, iTween.Hash("y", -90));
+                iTween.RotateTo(_actualCamera, iTween.Hash("y", 0));
+                iTween.RotateTo(_mainCamera, iTween.Hash("y", 0));
 
                 _camPosition = "Left";
             }
