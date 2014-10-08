@@ -21,6 +21,7 @@ public class Skill_StunRay : MonoBehaviour {
     #endregion
 
     private Transform _sphere;
+    private Transform _stunSFX;
     private Vector3 _initialScale;
     private Vector3 _initialPosition;
 
@@ -28,8 +29,8 @@ public class Skill_StunRay : MonoBehaviour {
 
 	void Start () 
     {
-
         _sphere = transform.FindChild("Sphere");
+        _stunSFX = transform.Find("StunSFX");
         _initialPosition = _sphere.position;
         _initialScale = _sphere.localScale;
 	}
@@ -61,6 +62,8 @@ public class Skill_StunRay : MonoBehaviour {
     void ReturnSphereToOriginal()
     {
         _canCast = true;
+        transform.position = _initialPosition;
+        _stunSFX.position = _initialPosition;
         _sphere.position = _initialPosition;
         _sphere.localScale = _initialScale;
     }

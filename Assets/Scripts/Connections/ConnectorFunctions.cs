@@ -20,7 +20,8 @@ public class ConnectorFunctions : MonoBehaviour
     private GameObject _frameLight;
     private GameObject _frameLight2;
 
-    private SECTR_AudioSource _audioSource;
+    private Transform _audioSourceOff;
+    private Transform _audioSourceOn;
 
     public void InitializeConnection(CrystalConnection cristalConnection)
     {
@@ -46,15 +47,34 @@ public class ConnectorFunctions : MonoBehaviour
         else
         _framePosition.position = Vector3.Lerp(_originPoint.position, _destinationPoint.position, 0.5f);
 
-        if (Connection == ConnectionEnum.ConnectionType.Fixed)
-            _lineOnMat = Resources.Load("Materials/Line") as Material;
-        else
-            _lineOnMat = Resources.Load("Materials/LineTemp") as Material;
-
+       
         _frame = Instantiate(Resources.Load("Prefabs/Connection/Frame"), _framePosition.transform.position, _framePosition.transform.rotation) as GameObject;
         _frame.transform.parent = _framePosition;
         _frame.name = "Frame";
         _frame.transform.LookAt(Destination.position);
+
+        if (Connection == ConnectionEnum.ConnectionType.Fixed)
+        {
+            Destroy(_frame.transform.FindChild("AudioSource_on_temp").gameObject);
+            Destroy(_frame.transform.FindChild("AudioSource_off_temp").gameObject);
+            _audioSourceOff = _frame.transform.FindChild("AudioSource_off_fixo");
+            _audioSourceOn = _frame.transform.FindChild("AudioSource_on_fixo");
+            
+            _lineOnMat = Resources.Load("Materials/Line") as Material;
+        }
+        else
+        {
+            Destroy(_frame.transform.FindChild("AudioSource_on_fixo").gameObject);
+            Destroy(_frame.transform.FindChild("AudioSource_off_fixo").gameObject);
+            _audioSourceOff = _frame.transform.FindChild("AudioSource_off_temp");
+            _audioSourceOn = _frame.transform.FindChild("AudioSource_on_temp");
+
+            _lineOnMat = Resources.Load("Materials/LineTemp") as Material;
+        }
+
+        _audioSourceOff.name = "AudioSource_off";
+        _audioSourceOn.name = "AudioSource_on";
+
         _frame.renderer.material = _lineOnMat;
 
         _frameLight = Instantiate(Resources.Load("Prefabs/Connection/ConnectionLight"), Origin.transform.position, Origin.transform.rotation) as GameObject;
@@ -105,10 +125,9 @@ public class ConnectorFunctions : MonoBehaviour
         _frameLight.GetComponent<ParticleRenderer>().enabled = true;
         _frameLight2.GetComponent<ParticleRenderer>().enabled = true;
 
-        if (_audioSource == null)
-            _audioSource = transform.FindChild("Frame").FindChild("Frame").FindChild("AudioSource").GetComponent<SECTR_AudioSource>();
-
-        _audioSource.Play();
+        _audioSourceOff.active = false;
+        _audioSourceOn.active = true;
+        
     }
 
     public void TurnTrackOff()
@@ -117,11 +136,7 @@ public class ConnectorFunctions : MonoBehaviour
         _frameLight.GetComponent<ParticleRenderer>().enabled = false;
         _frameLight2.GetComponent<ParticleRenderer>().enabled = false;
 
-        if (_audioSource == null)
-            _audioSource = transform.FindChild("Frame").FindChild("Frame").FindChild("AudioSource").GetComponent<SECTR_AudioSource>();
-
-        _audioSource.gameObject.active = true;
-
-        _audioSource.Play();     
+        _audioSourceOff.active = true;
+        _audioSourceOn.active = false;    
     }
 }
