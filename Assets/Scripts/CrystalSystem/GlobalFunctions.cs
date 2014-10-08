@@ -42,10 +42,8 @@ public class GlobalFunctions : MonoBehaviour {
         originScript.ConnectedToMe.Remove(destination.gameObject);
         originScript.SystemsThisDonatedEnergyTo.Remove(destination.gameObject);
 
-<<<<<<< HEAD
-        destinationScript.ConnectedToMe.Remove(origin.gameObject);    
-=======
->>>>>>> new_branch
+        destinationScript.ConnectedToMe.Remove(origin.gameObject);   
+
         destinationScript.RemoveEnergy(origin.gameObject);
             
     }
