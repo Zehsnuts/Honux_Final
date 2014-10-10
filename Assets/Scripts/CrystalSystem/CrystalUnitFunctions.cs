@@ -66,7 +66,6 @@ public class CrystalUnitFunctions : CrystalsUnit
         _unitAudioObjectOn = transform.FindChild("AudioSource_on");
         _unitAudioObjectOff = transform.FindChild("AudioSource_off");
 
-
         while(_unitAudioSourceOn==null)
             _unitAudioSourceOn = _unitAudioObjectOn.GetComponent<SECTR_AudioSource>();
 
@@ -184,7 +183,10 @@ public class CrystalUnitFunctions : CrystalsUnit
     }
 
     bool AskForEnergyFromConnections()
-    {        
+    {
+        if (isAffectedByForceField)
+            return false;   
+
         foreach (var item in ConnectedToMe)
         {
             Debug.Log(gameObject.name + " trying to get energy from: " + item.name);
@@ -284,7 +286,7 @@ public class CrystalUnitFunctions : CrystalsUnit
     IEnumerator WaitBeforeTransferingEnergy()
     {
         
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.01f);
         
 
         foreach (GameObject go in ConnectedToMe)

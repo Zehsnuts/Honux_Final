@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿// Copyright (c) 2014 Make Code Now! LLC
+#if !(UNITY_4_0 || UNITY_4_1)
+#define UNITY_VC
+#endif
+
+using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
@@ -6,16 +11,16 @@ public static class SECTR_VC
 {
 	public static bool HasVC()
 	{
-#if UNITY_3_5 || UNITY_4_0 || UNITY_4_1
-		return false;
-#else
+#if UNITY_VC
 		return UnityEditor.VersionControl.Provider.enabled && UnityEditor.VersionControl.Provider.isActive;
+#else
+		return false;
 #endif
 	}
 	
 	public static void WaitForVC()
 	{
-#if !(UNITY_3_5 || UNITY_4_0 || UNITY_4_1)
+#if UNITY_VC
 		if(HasVC())
 		{
 			while(UnityEditor.VersionControl.Provider.activeTask != null)
@@ -31,9 +36,7 @@ public static class SECTR_VC
 	
 	public static bool CheckOut(string path)
 	{
-#if UNITY_3_5 || UNITY_4_0 || UNITY_4_1
-		return true;
-#else
+#if UNITY_VC
 		if(HasVC())
 		{
 			UnityEditor.VersionControl.Asset vcAsset = UnityEditor.VersionControl.Provider.GetAssetByPath(path);
@@ -44,12 +47,14 @@ public static class SECTR_VC
 			}
 		}
 		return IsEditable(path);
+#else
+		return true;
 #endif
 	}
 	
 	public static void Revert(string path)
 	{
-#if !(UNITY_3_5 || UNITY_4_0 || UNITY_4_1)
+#if UNITY_VC
 		if(HasVC())
 		{
 			UnityEditor.VersionControl.Asset vcAsset = UnityEditor.VersionControl.Provider.GetAssetByPath(path);
@@ -65,9 +70,7 @@ public static class SECTR_VC
 	
 	public static bool IsEditable(string path)
 	{
-#if UNITY_3_5 || UNITY_4_0 || UNITY_4_1
-		return true;
-#else
+#if UNITY_VC
 		if(HasVC())
 		{
 			UnityEditor.VersionControl.Asset vcAsset = UnityEditor.VersionControl.Provider.GetAssetByPath(path);
@@ -77,6 +80,9 @@ public static class SECTR_VC
 		{
 			return true;
 		}
+#else
+		return true;
+
 #endif
 	}
 }

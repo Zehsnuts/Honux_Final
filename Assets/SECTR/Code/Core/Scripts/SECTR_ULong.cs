@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿// Copyright (c) 2014 Make Code Now! LLC
+
+using UnityEngine;
 using System.Collections;
 
 // Utiltiy class for serializing ulong, which Unity can't do by default.

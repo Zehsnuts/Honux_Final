@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿// Copyright (c) 2014 Make Code Now! LLC
+
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

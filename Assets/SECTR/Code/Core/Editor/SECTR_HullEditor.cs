@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Nathan Martz
+// Copyright (c) 2014 Make Code Now! LLC
 
 using UnityEngine;
 using UnityEditor;
@@ -157,7 +157,7 @@ public abstract class SECTR_HullEditor : SECTR_Editor
 			}
 			Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
 			float hitDistance = 10000f;
-			collisionProxy.collider.Raycast(ray, out lastHit, hitDistance);
+			collider.Raycast(ray, out lastHit, hitDistance);
 
 			if(collisionIsTerrain)
 			{

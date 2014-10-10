@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Nathan Martz
+// Copyright (c) 2014 Make Code Now! LLC
 
 using UnityEditor;
 using UnityEngine;
@@ -7,8 +7,8 @@ using System.Collections.Generic;
 public class SECTR_CoreMenu : SECTR_Menu 
 {
 	const string rootCreatePath = createMenuRootPath + "CORE/";
-	const string createSectorItem = rootCreatePath + "Sector #&S";
-	const string createPortalItem = rootCreatePath + "Portal #&P";
+	const string createSectorItem = rootCreatePath + "Sector #&s";
+	const string createPortalItem = rootCreatePath + "Portal #&p";
 	const string createMemberItem = rootCreatePath + "Member";
 	const string createDoorItem = rootCreatePath + "Core Door";
 	const int createSectorPriority = corePriority + 0;
@@ -16,6 +16,8 @@ public class SECTR_CoreMenu : SECTR_Menu
 	const int createMemberPriority = corePriority + 10;
 	const int createDoorPriority = corePriority + 50;
 
+	const string introWindowItem = windowMenuRootPath + "Quick Start";
+	const int introWindowPriority = windowPriority;
 	const string terrainWindowItem = windowMenuRootPath + "Terrain";
 	const int terrainWindowPriority = windowPriority;
 	
@@ -188,6 +190,13 @@ public class SECTR_CoreMenu : SECTR_Menu
 	public static void CreateCoreDoor()
 	{
 		CreateDoor<SECTR_Door>("SECTR Core Door");
+	}
+
+	[MenuItem(introWindowItem, false, introWindowPriority)]
+	public static void OpenIntroWindow()
+	{
+		// Get existing open window or if none, make a new one:
+		SECTR_IntroWindow.ShowWindow();
 	}
 
 	[MenuItem(terrainWindowItem, false, terrainWindowPriority)]

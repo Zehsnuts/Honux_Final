@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿// Copyright (c) 2014 Make Code Now! LLC
+
+using UnityEngine;
 using System;
 
 public static class SECTR_Modules
@@ -8,11 +10,12 @@ public static class SECTR_Modules
 	public static bool STREAM = false;
 	public static bool LOGIC = false;
 	public static bool DEV = false;
+	public static string VERSION = "1.1.4c";
 
 	static SECTR_Modules()
 	{
 		AUDIO = Type.GetType("SECTR_AudioSystem") != null;
-		VIS = Type.GetType("SECTR_Culler") != null;
+		VIS = Type.GetType("SECTR_CullingCamera") != null;
 		STREAM = Type.GetType("SECTR_Chunk") != null;
 		LOGIC = false; // COMING SOON!
 		DEV = Type.GetType("SECTR_Tests") != null;
@@ -20,10 +23,15 @@ public static class SECTR_Modules
 
 	public static bool HasPro()
 	{
-		#if UNITY_3_5 || UNITY_4_0
+		#if UNITY_4_0
 		return false; // 4.0 and below users, set this to true or false based on what you have.
 		#else
 		return Application.HasProLicense();
 		#endif
+	}
+
+	public static bool HasComplete()
+	{
+		return AUDIO && VIS && STREAM;
 	}
 }

@@ -23,6 +23,9 @@ public class ConnectorFunctions : MonoBehaviour
     private Transform _audioSourceOff;
     private Transform _audioSourceOn;
 
+    private SECTR_PointSource _audioPointSourceOff;
+    private SECTR_PointSource _audioPointSourceOn;
+
     public void InitializeConnection(CrystalConnection cristalConnection)
     {
         Origin = transform.parent;
@@ -73,7 +76,9 @@ public class ConnectorFunctions : MonoBehaviour
         }
 
         _audioSourceOff.name = "AudioSource_off";
+        _audioPointSourceOff = _audioSourceOff.GetComponent<SECTR_PointSource>();
         _audioSourceOn.name = "AudioSource_on";
+        _audioPointSourceOn = _audioSourceOn.GetComponent<SECTR_PointSource>();
 
         _frame.renderer.material = _lineOnMat;
 
@@ -120,23 +125,25 @@ public class ConnectorFunctions : MonoBehaviour
     }
 
     public void TurnTrackOn()
-    {   
+    {
         _frame.GetComponent<MeshRenderer>().enabled = true;
         _frameLight.GetComponent<ParticleRenderer>().enabled = true;
         _frameLight2.GetComponent<ParticleRenderer>().enabled = true;
 
         _audioSourceOff.active = false;
         _audioSourceOn.active = true;
-        
+        _audioPointSourceOn.Play();        
     }
 
     public void TurnTrackOff()
-    {        
-        _frame.GetComponent<MeshRenderer>().enabled = false;
+    {
+        if (Application.loadedLevelName != "Stage_Null")    
+            _frame.GetComponent<MeshRenderer>().enabled = false;
         _frameLight.GetComponent<ParticleRenderer>().enabled = false;
         _frameLight2.GetComponent<ParticleRenderer>().enabled = false;
 
         _audioSourceOff.active = true;
+        _audioPointSourceOff.Play();
         _audioSourceOn.active = false;    
     }
 }

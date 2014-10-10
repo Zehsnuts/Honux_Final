@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Nathan Martz
+// Copyright (c) 2014 Make Code Now! LLC
 
 using UnityEngine;
 using UnityEditor;
@@ -235,6 +235,7 @@ public class SECTR_PortalEditor : SECTR_HullEditor
 				{
 					myPortal.FrontSector = sector;
 				}
+				EditorUtility.SetDirty(myPortal);
 				pickFront = false;
 				pickBack = false;
 				_EndSelection();
@@ -257,6 +258,7 @@ public class SECTR_PortalEditor : SECTR_HullEditor
 		myPortal.BackSector = null;
 		myPortal.FrontSector = oldBack;
 		myPortal.BackSector = oldFront;
+		EditorUtility.SetDirty(myPortal);
 	}
 
 	SECTR_Sector _GetSectorFromSelection()

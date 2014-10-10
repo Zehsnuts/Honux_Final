@@ -1,3 +1,5 @@
+// Copyright (c) 2014 Make Code Now! LLC
+
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -565,10 +567,12 @@ public class SECTR_CharacterMotor : MonoBehaviour
             movement.hitPoint = hit.point;
 			if(hit.collider.GetType() == typeof(TerrainCollider))
 			{
-				#if UNITY_3_5 || UNITY_4_0 || UNITY_4_1 || UNITY_4_2
+				#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2
 				movement.hitMaterial = hit.collider.sharedMaterial;
-				#else
+				#elif UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6
 				movement.hitMaterial = ((TerrainCollider)hit.collider).terrainData.physicMaterial;
+				#else
+				movement.hitMaterial = ((TerrainCollider)hit.collider).material;
 				#endif
 			}
 			else

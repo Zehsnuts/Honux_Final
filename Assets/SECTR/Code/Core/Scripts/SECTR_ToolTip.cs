@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Nathan Martz
+﻿// Copyright (c) 2014 Make Code Now! LLC
 
 [System.AttributeUsage(System.AttributeTargets.Field)]
 public class SECTR_ToolTip : System.Attribute

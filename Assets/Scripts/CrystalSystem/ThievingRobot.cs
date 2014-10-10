@@ -73,11 +73,13 @@ public class ThievingRobot : MonoBehaviour {
     public States state = States.Patrol;
     public States lastKnownState = States.Patrol;
     #endregion
-    
+
+    public SECTR_PointSource audioSourceOn;
+    public SECTR_PointSource audioSourceOff;
+
     private Transform _robot;
     private Transform _destination;
-    private SECTR_AudioSource _audioSourceOn;
-    private SECTR_AudioSource _audioSourceOff;
+    
 
     private AudioClip _pickupSound;
 
@@ -102,13 +104,13 @@ public class ThievingRobot : MonoBehaviour {
     {
         state = States.Pause;
 
-        _audioSourceOn.Stop(true);
-        _audioSourceOff.Stop(true);        
+        audioSourceOn.Stop(true);
+        audioSourceOff.Stop(true);        
     }
 
     public void UnpauseUnit()
     {
-        _audioSourceOn.Play();
+        audioSourceOn.Play();
 
         state = lastKnownState;
     }
@@ -144,10 +146,6 @@ public class ThievingRobot : MonoBehaviour {
                 _waypointsRight.Add(t);
         }        
 
-        _audioSourceOn = _robot.FindChild("AudioSource_on").GetComponent<SECTR_AudioSource>();
-        _audioSourceOff = _robot.FindChild("AudioSource_off").GetComponent<SECTR_AudioSource>();
-
-
         _robot.transform.position = _waypoints[Random.Range(0, _waypoints.Count)].position;
 
         PauseUnit();
@@ -181,15 +179,15 @@ public class ThievingRobot : MonoBehaviour {
 
     void PlaySound()
     {
-        if (!_audioSourceOn.IsPlaying && state != States.StandBy && state!=States.Pause)
+        if (!audioSourceOn.IsPlaying && state != States.StandBy && state!=States.Pause)
         {
-            _audioSourceOn.Play();
-            _audioSourceOff.Stop(true);
+            audioSourceOn.Play();
+            audioSourceOff.Stop(true);
         }
-        else if (!_audioSourceOff.IsPlaying && state == States.Stun)
+        else if (!audioSourceOff.IsPlaying && state == States.Stun)
         {
-            _audioSourceOff.Play();
-            _audioSourceOn.Stop(true);
+            audioSourceOff.Play();
+            audioSourceOn.Stop(true);
         }
     }
 

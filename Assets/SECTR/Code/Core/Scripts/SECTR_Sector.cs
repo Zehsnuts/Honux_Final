@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Nathan Martz
+// Copyright (c) 2014 Make Code Now! LLC
 
 using UnityEngine;
 using System.Collections;
@@ -110,6 +110,77 @@ public class SECTR_Sector : SECTR_Member {
 	{
 		get { return members; }
 	}
+
+	/// Sets up the terrain neighbors structure.
+	public void ConnectTerrainNeighbors()
+	{
+		Terrain myTerrain = GetComponentInChildren<Terrain>();
+		if(myTerrain)
+		{
+			myTerrain.SetNeighbors(LeftTerrain ? LeftTerrain.GetComponentInChildren<Terrain>() : null,
+			                       TopTerrain ? TopTerrain.GetComponentInChildren<Terrain>() : null,
+			                       RightTerrain ? RightTerrain.GetComponentInChildren<Terrain>() : null,
+			                       BottomTerrain ? BottomTerrain.GetComponentInChildren<Terrain>() : null);
+		}
+	}
+
+	/// Disconnects this terrain from all neighbors and vice versa.
+	/// Works around a crash in some versions of Unity.
+	public void DisonnectTerrainNeighbors()
+	{
+		// Set my neighbors to null
+		Terrain myTerrain = GetComponentInChildren<Terrain>();
+		if(myTerrain)
+		{
+			myTerrain.SetNeighbors(null, null, null, null);
+		}
+
+		// Remove self from neighbor terrains.
+		if(TopTerrain)
+		{
+			Terrain topTerrain = TopTerrain.GetComponentInChildren<Terrain>();
+			if(topTerrain)
+			{
+				topTerrain.SetNeighbors(TopTerrain.LeftTerrain ? TopTerrain.LeftTerrain.GetComponentInChildren<Terrain>() : null,
+				                        TopTerrain.TopTerrain ? TopTerrain.TopTerrain.GetComponentInChildren<Terrain>() : null,
+				                        TopTerrain.RightTerrain ? TopTerrain.RightTerrain.GetComponentInChildren<Terrain>() : null,
+				                        null);
+			}
+		}
+		if(BottomTerrain)
+		{
+			Terrain bottomTerrain = BottomTerrain.GetComponentInChildren<Terrain>();
+			if(bottomTerrain)
+			{
+				bottomTerrain.SetNeighbors(BottomTerrain.LeftTerrain ? BottomTerrain.LeftTerrain.GetComponentInChildren<Terrain>() : null,
+				                           null,
+				                           BottomTerrain.RightTerrain ? BottomTerrain.RightTerrain.GetComponentInChildren<Terrain>() : null,
+				                           BottomTerrain.BottomTerrain ? BottomTerrain.BottomTerrain.GetComponentInChildren<Terrain>() : null);
+			}
+		}
+		if(LeftTerrain)
+		{
+			Terrain leftTerrain = LeftTerrain.GetComponentInChildren<Terrain>();
+			if(leftTerrain)
+			{
+				leftTerrain.SetNeighbors(LeftTerrain.LeftTerrain ? LeftTerrain.LeftTerrain.GetComponentInChildren<Terrain>() : null,
+				                         LeftTerrain.TopTerrain ? LeftTerrain.TopTerrain.GetComponentInChildren<Terrain>() : null,
+				                         null,
+				                         LeftTerrain.BottomTerrain ? LeftTerrain.BottomTerrain.GetComponentInChildren<Terrain>() : null);
+			}
+		}
+		if(RightTerrain)
+		{
+			Terrain rightTerrain = RightTerrain.GetComponentInChildren<Terrain>();
+			if(rightTerrain)
+			{
+				rightTerrain.SetNeighbors(null,
+				                          RightTerrain.TopTerrain ? RightTerrain.TopTerrain.GetComponentInChildren<Terrain>() : null,
+				                          RightTerrain.RightTerrain ? RightTerrain.RightTerrain.GetComponentInChildren<Terrain>() : null,
+				                          RightTerrain.BottomTerrain ? RightTerrain.BottomTerrain.GetComponentInChildren<Terrain>() : null);
+			}
+		}
+	}
 	
 	#if UNITY_EDITOR
 	public List<SECTR_Member.Child> GetSharedChildren()
@@ -194,6 +265,10 @@ public class SECTR_Sector : SECTR_Member {
 	protected override void OnEnable()
 	{
 		allSectors.Add(this);
+		if(TopTerrain || BottomTerrain || RightTerrain || LeftTerrain)
+		{
+			ConnectTerrainNeighbors();
+		}
 		base.OnEnable();
     }
 	

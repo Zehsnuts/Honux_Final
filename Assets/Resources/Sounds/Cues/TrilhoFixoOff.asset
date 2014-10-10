@@ -11,7 +11,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e53b6803754c30d4fafeac19b23db57b, type: 3}
   m_Name: TrilhoFixoOff
   m_EditorClassIdentifier: 
-  template: {fileID: 0}
+  template: {fileID: 11400000, guid: a33df589ae0105a4a9b6293605017cb5, type: 2}
   bus: {fileID: 11400000, guid: c0b9a1d490036464fbb4d57aa52a3e76, type: 2}
   AudioClips:
   - clip: {fileID: 8300000, guid: 41120ea905e5ee741b6a95539edb8185, type: 3}
@@ -36,8 +36,8 @@ MonoBehaviour:
   Spread: 230
   Pan2D: 0
   Falloff: 0
-  MaxDistance: 3.67384291
-  MinDistance: 1.42304945
+  MaxDistance: 2
+  MinDistance: .699999988
   DopplerLevel: .485000014
   ProximityLimit: 213
   ProximityRange: 10

@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿// Copyright (c) 2014 Make Code Now! LLC
+
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -40,17 +42,18 @@ public class SECTR_RegionSource : SECTR_PointSource
 
 	void Update()
 	{
-		if(instance && collider != null)
+		if(instance)
 		{
 			Vector3 systemPosition = SECTR_AudioSystem.Listener.position;
-			Vector3 closestPoint;
-			if(Raycast)
+			Vector3 closestPoint = transform.position;
+			Collider regionCollider = GetComponent<Collider>();
+			if(Raycast && regionCollider)
 			{
 				RaycastHit hit;
 				Vector3 vecToCollider = transform.position - systemPosition;
 				float distance = vecToCollider.magnitude;
 				vecToCollider /= distance;
-				if(collider.Raycast(new Ray(systemPosition, vecToCollider), out hit, distance))
+				if(regionCollider.Raycast(new Ray(systemPosition, vecToCollider), out hit, distance))
 				{
 					closestPoint = hit.point;
 				}
@@ -59,15 +62,15 @@ public class SECTR_RegionSource : SECTR_PointSource
 					closestPoint = systemPosition;
 				}
 			}
-			else
+			else if(regionCollider)
 			{
-				if(collider.bounds.Contains(systemPosition))
+				if(regionCollider.bounds.Contains(systemPosition))
 				{
 					closestPoint = systemPosition;
 				}
 				else
 				{
-					closestPoint = collider.ClosestPointOnBounds(systemPosition);
+					closestPoint = regionCollider.ClosestPointOnBounds(systemPosition);
 				}
 			}
 

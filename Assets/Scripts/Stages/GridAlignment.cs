@@ -11,8 +11,10 @@ public class GridAlignment : MonoBehaviour {
         if (Physics.SphereCast(transform.position, 2, transform.position, out hitInfo, Mathf.Infinity))
             if (hitInfo.transform.GetComponent<CrystalsUnit>() || hitInfo.transform.GetComponent<CrystalsUnit_Bridge>())
             {
-                hitInfo.transform.position = transform.position;
-                Debug.Log(hitInfo.transform.name);
+                var dist = Vector3.Distance(hitInfo.transform.position, transform.position);
+
+                if(dist < 4)
+                    hitInfo.transform.position = this.transform.position;
             }
 
         Destroy(gameObject);

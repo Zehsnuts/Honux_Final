@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Nathan Martz
+// Copyright (c) 2014 Make Code Now! LLC
 
 using UnityEngine;
 using System;
@@ -94,12 +94,15 @@ public abstract class SECTR_Hull : MonoBehaviour
 			if(HullMesh)
 			{
 				ComputeVerts();
-				Matrix4x4 hullMatrix = transform.localToWorldMatrix;
-				int numVerts = vertsCW.Length;
-				for(int vertIndex = 0; vertIndex < numVerts; ++vertIndex)
+				if(vertsCW != null)
 				{
-					hullBounds.Encapsulate(hullMatrix.MultiplyPoint3x4(vertsCW[vertIndex]));
-				}				
+					Matrix4x4 hullMatrix = transform.localToWorldMatrix;
+					int numVerts = vertsCW.Length;
+					for(int vertIndex = 0; vertIndex < numVerts; ++vertIndex)
+					{
+						hullBounds.Encapsulate(hullMatrix.MultiplyPoint3x4(vertsCW[vertIndex]));
+					}	
+				}
 			}
 			return hullBounds;
 		}
@@ -117,7 +120,7 @@ public abstract class SECTR_Hull : MonoBehaviour
 		Vector3 localP = transform.worldToLocalMatrix.MultiplyPoint3x4(p);
 		Vector3 projectedP = localP - (Vector3.Dot(localP - meshCentroid, meshNormal) * meshNormal);
 		// Reject any points that are too far from the plane.
-		if(Vector3.SqrMagnitude(localP - projectedP) < (distanceTolerance * distanceTolerance))
+		if(vertsCW != null && Vector3.SqrMagnitude(localP - projectedP) < (distanceTolerance * distanceTolerance))
 		{
 			// A point is guaranteed to be inside a convex hull if the angles between
 			// that point and all pairs of vertices equal 2 * PI.
@@ -261,7 +264,7 @@ public abstract class SECTR_Hull : MonoBehaviour
     #if UNITY_EDITOR
 	protected void DrawHull(Color hullColor)
 	{
-		if(HullMesh != null && !hidden)
+		if(HullMesh != null && vertsCW != null && !hidden)
 		{
 			Gizmos.color = hullColor;
 			for(int vertIndex = 0; vertIndex < vertsCW.Length; ++vertIndex)

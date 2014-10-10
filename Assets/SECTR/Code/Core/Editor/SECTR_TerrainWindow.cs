@@ -1,3 +1,12 @@
+// Copyright (c) 2014 Make Code Now! LLC
+#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2 || UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6
+#define UNITY_4
+#endif
+
+#if UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6
+#define UNITY_4_LATE
+#endif
+
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
@@ -13,12 +22,13 @@ public class SECTR_TerrainWindow : SECTR_Window
 	private int sectorsLength = 4;
 	private bool sectorizeConnected = false;
 	private bool splitTerrain = false;
+	private bool createPortalGeo = false;
 	private bool groupStaticObjects = false;
 	private bool groupDynamicObjects = false;
 	#endregion
 	
 	#region Public Interface
-	public static void SectorizeTerrain(Terrain terrain, int sectorsWidth, int sectorsLength, int sectorsHeight, bool splitTerrain, bool includeStatic, bool includeDynamic)
+	public static void SectorizeTerrain(Terrain terrain, int sectorsWidth, int sectorsLength, int sectorsHeight, bool splitTerrain, bool createPortalGeo, bool includeStatic, bool includeDynamic)
 	{
 		if(!terrain)
 		{
@@ -37,7 +47,7 @@ public class SECTR_TerrainWindow : SECTR_Window
 		{
 			SECTR_Sector newSector = terrain.gameObject.AddComponent<SECTR_Sector>();
 			SECTR_Undo.Created(newSector, undoString);
-			newSector.ForceUpdate();
+			newSector.ForceUpdate(true);
 			return;
 		}
 		
@@ -92,7 +102,6 @@ public class SECTR_TerrainWindow : SECTR_Window
 					string newName = terrain.name + " " + widthIndex + "-" + lengthIndex + "-" + heightIndex;
 					GameObject newSectorObject = new GameObject("SECTR " + newName + " Sector");
 					newSectorObject.transform.parent = baseTransform;
-					newSectorObject.isStatic = terrain.gameObject.isStatic;
 					Vector3 sectorCorner = new Vector3(widthIndex * sectorWidth,
 					                                   heightIndex * sectorHeight,
 					                                   lengthIndex * sectorLength) + terrain.transform.position;
@@ -106,7 +115,13 @@ public class SECTR_TerrainWindow : SECTR_Window
 					
 					if(splitTerrain && heightIndex == 0)
 					{
-						Terrain newTerrain = newSectorObject.AddComponent<Terrain>();
+						GameObject newTerrainObject = new GameObject(newName + " Terrain");
+						newTerrainObject.transform.parent = newSectorObject.transform;
+						newTerrainObject.transform.localPosition = Vector3.zero;
+						newTerrainObject.transform.localRotation = Quaternion.identity;
+						newTerrainObject.transform.localScale = Vector3.one;
+						newTerrainObject.isStatic = true;
+						Terrain newTerrain = newTerrainObject.AddComponent<Terrain>();
 						newTerrain.terrainData = SECTR_Asset.Create<TerrainData>(exportFolder, newName, new TerrainData());
 						EditorUtility.SetDirty(newTerrain.terrainData);
 						SECTR_VC.WaitForVC();
@@ -183,7 +198,7 @@ public class SECTR_TerrainWindow : SECTR_Window
 						}
 						
 						// Copy physics
-						#if !UNITY_3_5 && !UNITY_4_0 && !UNITY_4_1 && !UNITY_4_2				
+						#if UNITY_4_LATE
 						newTerrain.terrainData.physicMaterial = terrain.terrainData.physicMaterial;
 						#endif
 						
@@ -197,16 +212,17 @@ public class SECTR_TerrainWindow : SECTR_Window
 						TerrainCollider terrainCollider = terrain.GetComponent<TerrainCollider>();
 						if(terrainCollider)
 						{
-							TerrainCollider newCollider = newSectorObject.AddComponent<TerrainCollider>();	
-							#if UNITY_3_5 || UNITY_4_0 || UNITY_4_1 || UNITY_4_2
+							TerrainCollider newCollider = newTerrainObject.AddComponent<TerrainCollider>();	
+							#if !UNITY_4_LATE
 							newCollider.sharedMaterial = terrainCollider.sharedMaterial;
 							#endif
 							newCollider.terrainData = newTerrain.terrainData;
 						}
 						
 						newTerrains[widthIndex,lengthIndex] = newTerrain;
+						SECTR_Undo.Created(newTerrainObject, undoString);
 					}
-					newSector.ForceUpdate();
+					newSector.ForceUpdate(true);
 					SECTR_Undo.Created(newSectorObject, undoString);
 					
 					_Encapsulate(newSector, rootTransforms, rootBounds, undoString);
@@ -214,7 +230,7 @@ public class SECTR_TerrainWindow : SECTR_Window
 			}
 		}
 		
-		// Create portals
+		// Create portals and neighbors
 		for(int widthIndex = 0; widthIndex < sectorsWidth; ++widthIndex)
 		{
 			for(int lengthIndex = 0; lengthIndex < sectorsLength; ++lengthIndex)
@@ -223,30 +239,26 @@ public class SECTR_TerrainWindow : SECTR_Window
 				{
 					if(widthIndex < sectorsWidth - 1)
 					{
-						_CreatePortal(newSectors[widthIndex + 1, lengthIndex, heightIndex], newSectors[widthIndex, lengthIndex, heightIndex], baseTransform, undoString);
+						_CreatePortal(createPortalGeo, newSectors[widthIndex + 1, lengthIndex, heightIndex], newSectors[widthIndex, lengthIndex, heightIndex], baseTransform, undoString);
 					}
 					
 					if(lengthIndex < sectorsLength - 1)
 					{
-						_CreatePortal(newSectors[widthIndex, lengthIndex + 1, heightIndex], newSectors[widthIndex, lengthIndex, heightIndex], baseTransform, undoString);
+						_CreatePortal(createPortalGeo, newSectors[widthIndex, lengthIndex + 1, heightIndex], newSectors[widthIndex, lengthIndex, heightIndex], baseTransform, undoString);
 					}
 					
 					if(heightIndex > 0)						
 					{
-						_CreatePortal(newSectors[widthIndex, lengthIndex, heightIndex], newSectors[widthIndex, lengthIndex, heightIndex - 1], baseTransform, undoString);
+						_CreatePortal(createPortalGeo, newSectors[widthIndex, lengthIndex, heightIndex], newSectors[widthIndex, lengthIndex, heightIndex - 1], baseTransform, undoString);
 					}
 					else if(splitTerrain)
 					{
-						Terrain leftNeighbor = widthIndex > 0 ? newTerrains[widthIndex - 1, lengthIndex] : null;
-						Terrain rightNeighbor = widthIndex < sectorsWidth - 1 ? newTerrains[widthIndex + 1, lengthIndex] : null;
-						Terrain bottomNeighbor = lengthIndex > 0 ? newTerrains[widthIndex, lengthIndex - 1] : null;
-						Terrain topNeighbor = lengthIndex < sectorsLength - 1 ? newTerrains[widthIndex, lengthIndex + 1] : null;
-						newTerrains[widthIndex, lengthIndex].SetNeighbors(leftNeighbor, topNeighbor, rightNeighbor, bottomNeighbor);
 						SECTR_Sector terrainSector = newSectors[widthIndex, lengthIndex, 0];
-						terrainSector.TopTerrain = topNeighbor ? topNeighbor.GetComponent<SECTR_Sector>() : null;
-						terrainSector.BottomTerrain = bottomNeighbor ? bottomNeighbor.GetComponent<SECTR_Sector>() : null;
-						terrainSector.LeftTerrain = leftNeighbor ? leftNeighbor.GetComponent<SECTR_Sector>() : null;
-						terrainSector.RightTerrain = rightNeighbor ? rightNeighbor.GetComponent<SECTR_Sector>() : null;
+						terrainSector.LeftTerrain = widthIndex > 0 ? newSectors[widthIndex - 1, lengthIndex, 0] : null;
+						terrainSector.RightTerrain = widthIndex < sectorsWidth - 1 ? newSectors[widthIndex + 1, lengthIndex, 0] : null;
+						terrainSector.BottomTerrain = lengthIndex > 0 ? newSectors[widthIndex, lengthIndex - 1, 0] : null;
+						terrainSector.TopTerrain = lengthIndex < sectorsLength - 1 ? newSectors[widthIndex, lengthIndex + 1, 0] : null;
+						terrainSector.ConnectTerrainNeighbors();
 					}
 				}
 			}
@@ -259,13 +271,13 @@ public class SECTR_TerrainWindow : SECTR_Window
 		}
 	}
 	
-	public static void SectorizeConnected(Terrain terrain, bool includeStatic, bool includeDynamic)
+	public static void SectorizeConnected(Terrain terrain, bool createPortalGeo, bool includeStatic, bool includeDynamic)
 	{
 		Dictionary<Terrain, Terrain> processedTerrains = new Dictionary<Terrain, Terrain>();
 		List<Transform> rootTransforms = new List<Transform>();
 		List<Bounds> rootBounds = new List<Bounds>();
 		_GetRoots(includeStatic, includeDynamic, rootTransforms, rootBounds);
-		_SectorizeConnected(terrain, includeStatic, includeDynamic, processedTerrains, rootTransforms, rootBounds);
+		_SectorizeConnected(terrain, createPortalGeo, includeStatic, includeDynamic, processedTerrains, rootTransforms, rootBounds);
 	}
 	#endregion
 	
@@ -316,7 +328,10 @@ public class SECTR_TerrainWindow : SECTR_Window
 					}
 					parent = parent.parent;
 				}
+
+#if UNITY_4
 				hasTerrainComposer |= terrain.GetComponent("TerrainNeighbors") != null;
+#endif
 				
 				Rect clipRect = EditorGUILayout.BeginHorizontal();
 				if(selected)
@@ -367,14 +382,20 @@ public class SECTR_TerrainWindow : SECTR_Window
 		sectorsLength = Mathf.Max(sectorsLength, 1);
 		sectorsHeight = EditorGUILayout.IntField(new GUIContent("Sectors Height", "Number of Sectors to create across terrain height."), sectorsHeight);
 		sectorsHeight = Mathf.Max(sectorsHeight, 1);
-		
-		sectorizeConnected = EditorGUILayout.Toggle(new GUIContent("Include Connected", "Sectorizes all terrains directly or indirectly connected to selected terrain."), sectorizeConnected);
-		
+
+		if(hasTerrainComposer)
+		{
+			sectorizeConnected = EditorGUILayout.Toggle(new GUIContent("Include Connected", "Sectorizes all terrains directly or indirectly connected to selected terrain."), sectorizeConnected);
+		}
+
 		bool canSplitTerrain = selectedTerrain != null &&
 			sectorsWidth > 1 && sectorsLength > 1 && sectorsWidth == sectorsLength &&
 				Mathf.IsPowerOfTwo(sectorsWidth) && Mathf.IsPowerOfTwo(sectorsLength) &&
 				(selectedTerrain.terrainData.heightmapResolution - 1) / sectorsWidth >= 32;
 		splitTerrain = EditorGUILayout.Toggle(new GUIContent("Split Terrain", "Splits terrain into multiple objects (for streaming or culling)."), splitTerrain);
+#if !UNITY_4_0 && !UNITY_4_1
+		createPortalGeo = EditorGUILayout.Toggle(new GUIContent("Create Mesh for Portals", "Creates a mesh for the portal for games that need it. Not required."), createPortalGeo);
+#endif
 		groupStaticObjects = EditorGUILayout.Toggle(new GUIContent("Group Static Objects", "Make all static game objects on the terrain children of the Sector."), groupStaticObjects);
 		groupDynamicObjects = EditorGUILayout.Toggle(new GUIContent("Group Dynamic Objects", "Make all dynamic game objects on the terrain children of the Sector."), groupDynamicObjects);
 		EditorGUILayout.EndVertical();
@@ -425,12 +446,12 @@ public class SECTR_TerrainWindow : SECTR_Window
 		{
 			if(sectorizeConnected)
 			{
-				SectorizeConnected(selectedTerrain, groupStaticObjects, groupDynamicObjects);
+				SectorizeConnected(selectedTerrain, createPortalGeo, groupStaticObjects, groupDynamicObjects);
 				doRepaint = true;
 			}
-			else if(!splitTerrain || selectedTerrain.lightmapIndex < 0 || EditorUtility.DisplayDialog("Lightmap Warning", "Splitting terrain will not preserve lightmaps. They will need to be rebaked. Continue sectorization?", "Yes", "No"))
+			else if(!splitTerrain || selectedTerrain.lightmapIndex < 0 || LightmapSettings.lightmaps.Length == 0 || EditorUtility.DisplayDialog("Lightmap Warning", "Splitting terrain will not preserve lightmaps. They will need to be rebaked. Continue sectorization?", "Yes", "No"))
 			{
-				SectorizeTerrain(selectedTerrain, sectorsWidth, sectorsLength, sectorsHeight, canSplitTerrain && splitTerrain, groupStaticObjects, groupDynamicObjects);
+				SectorizeTerrain(selectedTerrain, sectorsWidth, sectorsLength, sectorsHeight, canSplitTerrain && splitTerrain, createPortalGeo, groupStaticObjects, groupDynamicObjects);
 				doRepaint = true;
 			}
 		}
@@ -446,18 +467,57 @@ public class SECTR_TerrainWindow : SECTR_Window
 	#endregion
 	
 	#region Private Interface
-	private static void _CreatePortal(SECTR_Sector front, SECTR_Sector back, Transform parent, string undoString)
+	private static void _CreatePortal(bool createGeo, SECTR_Sector front, SECTR_Sector back, Transform parent, string undoString)
 	{
 		if(front && back)
 		{
-			GameObject newPortalObject = new GameObject("SECTR Terrain Portal");
-			SECTR_Portal newPortal = newPortalObject.AddComponent<SECTR_Portal>();
+			string portalName = "SECTR Terrain Portal";
+			GameObject newPortalObject;
+			SECTR_Portal newPortal;
+#if !UNITY_4_0 && !UNITY_4_1
+			if(createGeo)
+			{
+				newPortalObject = GameObject.CreatePrimitive(PrimitiveType.Quad);
+				newPortalObject.name = portalName;
+				Mesh quadResource = newPortalObject.GetComponent<MeshFilter>().sharedMesh;
+				GameObject.DestroyImmediate(newPortalObject.GetComponent<MeshFilter>());
+				GameObject.DestroyImmediate(newPortalObject.GetComponent<MeshRenderer>());
+				GameObject.DestroyImmediate(newPortalObject.GetComponent<Collider>());
+				newPortal = newPortalObject.AddComponent<SECTR_Portal>();
+				newPortal.HullMesh = quadResource;
+			}
+			else
+#endif
+			{
+				newPortalObject = new GameObject(portalName);
+				newPortal = newPortalObject.AddComponent<SECTR_Portal>();
+			}
 			newPortal.SetFlag(SECTR_Portal.PortalFlags.PassThrough, true);
 			newPortal.FrontSector = front;
 			newPortal.BackSector = back;
-			newPortalObject.transform.parent = parent;
-			newPortalObject.transform.position = (front.TotalBounds.center + back.TotalBounds.center) * 0.5f;
-			newPortalObject.transform.LookAt(front.TotalBounds.center);
+			newPortal.transform.parent = parent;
+			newPortal.transform.position = (front.TotalBounds.center + back.TotalBounds.center) * 0.5f;
+			if(createGeo)
+			{
+				newPortal.transform.LookAt(back.TotalBounds.center);
+				Vector3 orientation = newPortal.transform.forward;
+				if(Mathf.Abs(orientation.x) >= Mathf.Abs(orientation.y) && Mathf.Abs(orientation.x) >= Mathf.Abs(orientation.z))
+				{
+					newPortal.transform.localScale = new Vector3(front.TotalBounds.size.z, front.TotalBounds.size.y, 1f);
+				}
+				else if(Mathf.Abs(orientation.y) >= Mathf.Abs(orientation.x) && Mathf.Abs(orientation.y) >= Mathf.Abs(orientation.z))
+				{
+					newPortal.transform.localScale = new Vector3(front.TotalBounds.size.x, front.TotalBounds.size.z, 1f);
+				}
+				else if(Mathf.Abs(orientation.z) >= Mathf.Abs(orientation.x) && Mathf.Abs(orientation.z) >= Mathf.Abs(orientation.y))
+				{
+					newPortal.transform.localScale = new Vector3(front.TotalBounds.size.x, front.TotalBounds.size.y, 1f);
+				}
+			}
+			else
+			{
+				newPortal.transform.LookAt(front.TotalBounds.center);
+			}
 			SECTR_Undo.Created(newPortalObject, undoString);
 		}
 	}
@@ -522,69 +582,81 @@ public class SECTR_TerrainWindow : SECTR_Window
 		}
 	}
 	
-	private static void _SectorizeConnected(Terrain terrain, bool includeStatic, bool includeDynamic, Dictionary<Terrain, Terrain> processedTerrains, List<Transform> rootTransforms, List<Bounds> rootBounds)
+	private static void _SectorizeConnected(Terrain terrain, bool createPortalGeo, bool includeStatic, bool includeDynamic, Dictionary<Terrain, Terrain> processedTerrains, List<Transform> rootTransforms, List<Bounds> rootBounds)
 	{
 		if(terrain && !processedTerrains.ContainsKey(terrain))
 		{
 			string undoString = "Sectorize Connected";
 			processedTerrains[terrain] = terrain;
 			terrain.gameObject.isStatic = true;
-			SECTR_Sector newSector = terrain.gameObject.AddComponent<SECTR_Sector>();
-			newSector.ForceUpdate();
-			SECTR_Undo.Created(newSector, undoString);
+			GameObject newSectorObject = new GameObject(terrain.name + " Sector");
+			newSectorObject.isStatic = true;
+			newSectorObject.transform.parent = terrain.transform.parent;
+			newSectorObject.transform.localPosition = terrain.transform.localPosition;
+			newSectorObject.transform.localRotation = terrain.transform.localRotation;
+			newSectorObject.transform.localScale = terrain.transform.localScale;
+			terrain.transform.parent = newSectorObject.transform;
+			SECTR_Sector newSector = newSectorObject.AddComponent<SECTR_Sector>();
+			newSector.ForceUpdate(true);
+			SECTR_Undo.Created(newSectorObject, undoString);
 			_Encapsulate(newSector, rootTransforms, rootBounds, undoString);
-			
+
+#if UNITY_4
 			Component terrainNeighbors = terrain.GetComponent("TerrainNeighbors");
+#else
+			// TODO: Fix for 5.x
+			Component terrainNeighbors = null;
+#endif
 			if(terrainNeighbors)
 			{
 				System.Type neighborsType = terrainNeighbors.GetType();
 				Terrain topTerrain = neighborsType.GetField("top").GetValue(terrainNeighbors) as Terrain;
 				if(topTerrain)
 				{
-					SECTR_Sector neighborSector = topTerrain.GetComponent<SECTR_Sector>();
+					SECTR_Sector neighborSector = topTerrain.transform.parent ? topTerrain.transform.parent.GetComponent<SECTR_Sector>() : null;
 					if(neighborSector)
 					{
 						newSector.TopTerrain = neighborSector;
 						neighborSector.BottomTerrain = newSector;
-						_CreatePortal(newSector, neighborSector, terrain.transform.parent, undoString);
+						_CreatePortal(createPortalGeo, newSector, neighborSector, terrain.transform.parent, undoString);
 					}
-					_SectorizeConnected(topTerrain, includeStatic, includeDynamic, processedTerrains, rootTransforms, rootBounds);
+					_SectorizeConnected(topTerrain, createPortalGeo, includeStatic, includeDynamic, processedTerrains, rootTransforms, rootBounds);
 				}
 				Terrain bottomTerrain = neighborsType.GetField("bottom").GetValue(terrainNeighbors) as Terrain;
 				if(bottomTerrain)
 				{
-					SECTR_Sector neighborSector = bottomTerrain.GetComponent<SECTR_Sector>();
+					SECTR_Sector neighborSector = bottomTerrain.transform.parent ? bottomTerrain.transform.parent.GetComponent<SECTR_Sector>() : null;
 					if(neighborSector)
 					{
 						newSector.BottomTerrain = neighborSector;
 						neighborSector.TopTerrain = newSector;
-						_CreatePortal(newSector, neighborSector, terrain.transform.parent, undoString);
+						_CreatePortal(createPortalGeo, newSector, neighborSector, terrain.transform.parent, undoString);
 					}
-					_SectorizeConnected(bottomTerrain, includeStatic, includeDynamic, processedTerrains, rootTransforms, rootBounds);
+					_SectorizeConnected(bottomTerrain, createPortalGeo, includeStatic, includeDynamic, processedTerrains, rootTransforms, rootBounds);
 				}
 				Terrain leftTerrain = neighborsType.GetField("left").GetValue(terrainNeighbors) as Terrain;
 				if(leftTerrain)
 				{
-					SECTR_Sector neighborSector = leftTerrain.GetComponent<SECTR_Sector>();
+					SECTR_Sector neighborSector = leftTerrain.transform.parent ? leftTerrain.transform.parent.GetComponent<SECTR_Sector>() : null;
 					if(neighborSector)
 					{
 						newSector.LeftTerrain = neighborSector;
 						neighborSector.RightTerrain = newSector;
-						_CreatePortal(newSector, neighborSector, terrain.transform.parent, undoString);
+						_CreatePortal(createPortalGeo, newSector, neighborSector, terrain.transform.parent, undoString);
 					}
-					_SectorizeConnected(leftTerrain, includeStatic, includeDynamic, processedTerrains, rootTransforms, rootBounds);
+					_SectorizeConnected(leftTerrain, createPortalGeo, includeStatic, includeDynamic, processedTerrains, rootTransforms, rootBounds);
 				}
 				Terrain rightTerrain = neighborsType.GetField("right").GetValue(terrainNeighbors) as Terrain;
 				if(rightTerrain)
 				{
-					SECTR_Sector neighborSector = rightTerrain.GetComponent<SECTR_Sector>();
+					SECTR_Sector neighborSector = rightTerrain.transform.parent ? rightTerrain.transform.parent.GetComponent<SECTR_Sector>() : null;
 					if(neighborSector)
 					{
 						newSector.RightTerrain = neighborSector;
 						neighborSector.LeftTerrain = newSector;
-						_CreatePortal(newSector, neighborSector, terrain.transform.parent, undoString);
+						_CreatePortal(createPortalGeo, newSector, neighborSector, terrain.transform.parent, undoString);
 					}
-					_SectorizeConnected(rightTerrain, includeStatic, includeDynamic, processedTerrains, rootTransforms, rootBounds);
+					_SectorizeConnected(rightTerrain, createPortalGeo, includeStatic, includeDynamic, processedTerrains, rootTransforms, rootBounds);
 				}
 			}
 		}

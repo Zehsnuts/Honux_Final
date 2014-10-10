@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Nathan Martz
+// Copyright (c) 2014 Make Code Now! LLC
 
 using UnityEngine;
 using UnityEditor;
@@ -26,6 +26,7 @@ public class SECTR_MemberEditor : SECTR_Editor
 		DrawProperty("BoundsOverride");
 		if(SECTR_Modules.VIS)
 		{
+			DrawProperty("ChildCulling");
 			DrawProperty("DirShadowCaster");
 			DrawProperty("DirShadowDistance");
 		}

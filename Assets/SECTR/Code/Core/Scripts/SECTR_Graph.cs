@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Nathan Martz
+// Copyright (c) 2014 Make Code Now! LLC
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -103,7 +103,7 @@ public static class SECTR_Graph
 		root.Visited = true;
 		int exploredNodes = 0;
 		
-		while(exploredNodes < numSectors && nodeStack.Count > 0)
+		while(nodeStack.Count > 0)
 		{
 			Node nextNode = nodeStack.Pop();
 			nodes.Add(nextNode);
@@ -174,7 +174,7 @@ public static class SECTR_Graph
 		root.Visited = true;
 		int exploredNodes = 0;
 		
-		while(exploredNodes < numSectors && nodeQueue.Count > 0)
+		while(nodeQueue.Count > 0)
 		{
 			Node nextNode = nodeQueue.Dequeue();
 			nodes.Add(nextNode);

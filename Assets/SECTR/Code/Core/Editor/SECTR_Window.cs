@@ -6,7 +6,7 @@ public class SECTR_Window : EditorWindow
 {
 	#region Private Details
 	protected int headerHeight = 25;
-	#if UNITY_3_5 || UNITY_4_0 || UNITY_4_1 || UNITY_4_2
+	#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2
 	protected int lineHeight = 16;
 	#else
 	protected int lineHeight = (int)EditorGUIUtility.singleLineHeight;
@@ -15,6 +15,8 @@ public class SECTR_Window : EditorWindow
 	protected GUIStyle elementStyle = null;
 	protected GUIStyle selectionBoxStyle = null;
 	protected GUIStyle iconButtonStyle = null;
+	protected GUIStyle searchBoxStyle = null;
+	protected GUIStyle searchCancelStyle = null;
 	protected Texture2D selectionBG = null;
 	#endregion
 
@@ -61,6 +63,16 @@ public class SECTR_Window : EditorWindow
 			iconButtonStyle = new GUIStyle(GUI.skin.button);
 			iconButtonStyle.padding = new RectOffset(2,2,2,2);
 		}
+
+		if(searchBoxStyle == null)
+		{
+			searchBoxStyle = GUI.skin.FindStyle("ToolbarSeachTextField");
+		}
+
+		if(searchCancelStyle == null)
+		{
+			searchCancelStyle = GUI.skin.FindStyle("ToolbarSeachCancelButton");
+		}
 	}
 
 	protected Rect DrawHeader(string title, ref string searchString, float searchWidth, bool center)
@@ -74,8 +86,9 @@ public class SECTR_Window : EditorWindow
 		GUILayout.Label(title, headerStyle);
 		if(searchString != null)
 		{
-			searchString = GUILayout.TextField(searchString, GUI.skin.FindStyle("ToolbarSeachTextField"), GUILayout.Width(searchWidth));
-			if (GUILayout.Button("", GUI.skin.FindStyle("ToolbarSeachCancelButton")))
+			GUI.SetNextControlName(title + "_Header");
+			searchString = EditorGUILayout.TextField(searchString, searchBoxStyle, GUILayout.Width(searchWidth));
+			if(GUILayout.Button("", searchCancelStyle))
 			{
 				// Remove focus if cleared
 				searchString = "";
@@ -83,7 +96,7 @@ public class SECTR_Window : EditorWindow
 			}
 		}
 		GUILayout.FlexibleSpace();
-		GUILayout.EndHorizontal();
+		EditorGUILayout.EndHorizontal();
 		return headerRect;
 	}
 }

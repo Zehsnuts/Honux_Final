@@ -1,14 +1,23 @@
-// Copyright (c) 2014 Nathan Martz
+// Copyright (c) 2014 Make Code Now! LLC
+#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2 || UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6
+#define UNITY_4
+#endif
+
+#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2 
+#define UNITY_4_EARLY
+#endif
 
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
 [CustomEditor(typeof(SECTR_AudioCue))]
+[CanEditMultipleObjects]
 public class SECTR_AudioCueEditor : SECTR_Editor
 {
 	#region Private Details
-	private bool commonFoldout = true;
+	private bool basicFoldout = true;
+	private bool advancedFoldout = true;
 	private bool clipFoldout = true;
 	private bool spatializationFoldout = true;
 	private Texture playIcon = null;
@@ -16,6 +25,8 @@ public class SECTR_AudioCueEditor : SECTR_Editor
 	private GUIStyle clipStyle = null;
 	private GUIStyle iconButtonStyle = null;
 	private SECTR_ComputeRMS bakeMaster = null;
+	private SerializedProperty busProp;
+	private SerializedProperty templateProp;
 	#endregion
 
 	#region Public Interface
@@ -28,6 +39,8 @@ public class SECTR_AudioCueEditor : SECTR_Editor
 		base.OnEnable();
 		playIcon = SECTR_AudioWindow.LoadIcon("PlayIcon.psd");
 		removeIcon = SECTR_AudioWindow.LoadIcon("RemoveClipIcon.psd");
+		busProp = serializedObject.FindProperty("bus");
+		templateProp = serializedObject.FindProperty("template");
 	}
 
 	public override void OnInspectorGUI()
@@ -57,6 +70,25 @@ public class SECTR_AudioCueEditor : SECTR_Editor
 	void DrawProperties(SECTR_AudioCue myCue)
 	{
 		bool wasEnabled = GUI.enabled;
+		bool multiSelect = targets.Length > 1;
+
+		bool drawTemplate = !multiSelect || !myCue.IsTemplate;
+		bool draw2D3D = true;
+		if(multiSelect)
+		{
+			for(int targetIndex = 1; targetIndex < targets.Length; ++targetIndex)
+			{
+				SECTR_AudioCue targetCue = (SECTR_AudioCue)(targets[targetIndex]);
+				if(targetCue.Spatialization != myCue.Spatialization)
+				{
+					draw2D3D = false;
+				}
+				if(targetCue.IsTemplate != myCue.IsTemplate)
+				{
+					drawTemplate = false;
+				}
+			}
+		}
 
 		if(DrawBus)
 		{
@@ -64,26 +96,43 @@ public class SECTR_AudioCueEditor : SECTR_Editor
 			SECTR_AudioBus newBus = ObjectField<SECTR_AudioBus>("Bus", "Mixing Bus for this Cue.", oldBus, false);
 			if(oldBus != newBus)
 			{
-				SECTR_Undo.Record(myCue, "Edit Cue Template");
-				myCue.Bus = newBus;
+				if(oldBus)
+				{
+					oldBus.RemoveCue(myCue);
+				}
+				busProp.objectReferenceValue = newBus;
+				if(newBus)
+				{
+					newBus.AddCue(myCue);
+				}
 			}
 		}
 
-		if(!myCue.IsTemplate)
+		if(drawTemplate)
 		{
-			SECTR_AudioCue oldTemplate = myCue.Template;
-			SECTR_AudioCue newTemplate = ObjectField<SECTR_AudioCue>("Template", "An optional reuse settings from another Cue.", oldTemplate, false);
-			if(newTemplate != oldTemplate)
+			if(!myCue.IsTemplate)
 			{
-				SECTR_Undo.Record(myCue, "Edit Cue Template");
-				myCue.Template = newTemplate;
+				SECTR_AudioCue oldTemplate = myCue.Template;
+				SECTR_AudioCue newTemplate = ObjectField<SECTR_AudioCue>("Template", "An optional reuse settings from another Cue.", oldTemplate, false);
+				if(newTemplate != oldTemplate)
+				{
+					if(oldTemplate)
+					{
+						oldTemplate.RemoveTemplateRef();
+					}
+					templateProp.objectReferenceValue = newTemplate;
+					if(newTemplate)
+					{
+						newTemplate.AddTemplateRef();
+					}
+				}
 			}
-		}
-		else
-		{
-			GUI.enabled = false;
-			EditorGUILayout.IntField(new GUIContent("Template References", "Number of Cues that use this Cue as a template."), myCue.RefCount);
-			GUI.enabled = wasEnabled;
+			else
+			{
+				GUI.enabled = false;
+				EditorGUILayout.IntField(new GUIContent("Template References", "Number of Cues that use this Cue as a template."), myCue.RefCount);
+				GUI.enabled = wasEnabled;
+			}
 		}
 
 		bool hasTemplate = myCue.Template != null;
@@ -96,7 +145,10 @@ public class SECTR_AudioCueEditor : SECTR_Editor
 
 		DrawCommon(myCue, srcCue);
 
-		Draw2D3D(srcCue);
+		if(draw2D3D)
+		{
+			Draw2D3D(srcCue);
+		}
 
 		if(hasTemplate)
 		{
@@ -104,7 +156,10 @@ public class SECTR_AudioCueEditor : SECTR_Editor
 		}
 		GUI.enabled = wasEnabled;
 
-		DrawAudioClips(myCue, srcCue);
+		if(!multiSelect)
+		{
+			DrawAudioClips(myCue, srcCue);
+		}
 
 		if(srcCue.MinDistance > srcCue.MaxDistance)
 		{
@@ -118,8 +173,8 @@ public class SECTR_AudioCueEditor : SECTR_Editor
 
 	void DrawCommon(SECTR_AudioCue myCue, SECTR_AudioCue srcCue)
 	{
-		commonFoldout = EditorGUILayout.Foldout(commonFoldout, "Basic Properties");
-		if(commonFoldout)
+		basicFoldout = EditorGUILayout.Foldout(basicFoldout, "Basic Properties");
+		if(basicFoldout)
 		{
 			++EditorGUI.indentLevel;
 			DrawProperty("Loops");
@@ -133,20 +188,29 @@ public class SECTR_AudioCueEditor : SECTR_Editor
 				DrawMinMaxProperty("Volume", 0, 1);
 			}
 			DrawMinMaxProperty("Pitch", 0, 2);
-			DrawProperty("Spread");
 			bool wasEnabled = GUI.enabled;
 			float minLength = myCue.MinClipLength();
 			GUI.enabled &= minLength > 0 || myCue.IsTemplate;
 			DrawSliderProperty("FadeInTime", 0, minLength > 0 ? minLength : 1);
 			DrawSliderProperty("FadeOutTime", 0, minLength > 0 ? minLength : 1);
 			GUI.enabled = wasEnabled;
+			DrawProperty("Spatialization");
+			--EditorGUI.indentLevel;
+		}
+
+		advancedFoldout = EditorGUILayout.Foldout(basicFoldout, "Advanced Properties");
+		if(advancedFoldout)
+		{
+			++EditorGUI.indentLevel;
+			DrawMinMaxProperty("Delay", 0, 100f);
+			DrawProperty("PlayProbability");
+			DrawProperty("Spread");
 			DrawProperty("MaxInstances");
 			DrawProperty("Priority");
 			if(SECTR_Modules.HasPro())
 			{
 				DrawProperty("BypassEffects");
 			}
-			DrawProperty("Spatialization");
 			--EditorGUI.indentLevel;
 		}
 	}
@@ -154,14 +218,13 @@ public class SECTR_AudioCueEditor : SECTR_Editor
 	void Draw2D3D(SECTR_AudioCue srcCue)
 	{
 		// 2D/3D Stuff
-		bool is3D = srcCue.Is3D;
-		if(!is3D || !srcCue.IsLocal)
+		if(!srcCue.Is3D || !srcCue.IsLocal)
 		{
-			spatializationFoldout = EditorGUILayout.Foldout(spatializationFoldout, (is3D ? "3D" : "2D") + " Properties");
+			spatializationFoldout = EditorGUILayout.Foldout(spatializationFoldout, (srcCue.Is3D ? "3D" : "2D") + " Properties");
 			if(spatializationFoldout)
 			{
 				++EditorGUI.indentLevel;
-				if(is3D)
+				if(srcCue.Is3D)
 				{
 					if(srcCue.Spatialization != SECTR_AudioCue.Spatializations.Infinite3D)
 					{
@@ -192,7 +255,7 @@ public class SECTR_AudioCueEditor : SECTR_Editor
 		
 			bool hasClips = myCue.AudioClips.Count > 0;
 
-#if UNITY_3_5 || UNITY_4_0 || UNITY_4_1 || UNITY_4_2 
+#if UNITY_4_EARLY
 			int lineHeight = 16;
 #else
 			int lineHeight = (int)EditorGUIUtility.singleLineHeight;
@@ -254,7 +317,6 @@ public class SECTR_AudioCueEditor : SECTR_Editor
 				if(clipData != null && clipData.Clip != null)
 				{
 					AudioClip clip = clipData.Clip;
-					AudioImporter importer = (AudioImporter)AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(clip));
 
 					bool reallyWasEnabled = GUI.enabled;
 					GUI.enabled = true;
@@ -280,13 +342,15 @@ public class SECTR_AudioCueEditor : SECTR_Editor
 					{
 						hdrProblem = true;
 					}
-
+#if UNITY_4
+					AudioImporter importer = (AudioImporter)AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(clip));
 					if(importer.threeD != srcCue.Is3D)
 					{
 						clipProblem = true;
 						clipStyle.normal.textColor = Color.red;
 					}
 					else
+#endif
 					{
 						clipStyle.normal.textColor = EditorGUIUtility.isProSkin ? Color.gray : Color.black;
 					}
@@ -324,6 +388,13 @@ public class SECTR_AudioCueEditor : SECTR_Editor
 					if(Event.current.type == EventType.ContextClick && clipRect.Contains(Event.current.mousePosition))
 					{
 						currentClipIndex = clipIndex;
+					}
+				}
+				else
+				{
+					if(GUILayout.Button(new GUIContent("Remove NULL Clip", "Removes NULL audio clip reference.")))
+					{
+						clipToRemove = clipIndex;
 					}
 				}
 			}
@@ -386,14 +457,14 @@ public class SECTR_AudioCueEditor : SECTR_Editor
 			{
 				if(bakeMaster)
 				{
-					#if UNITY_3_5 || UNITY_4_0 || UNITY_4_1 || UNITY_4_2
+#if UNITY_4_EARLY
 					GUI.enabled = false;
 					GUILayout.Button("Baking HDR Data: " + bakeMaster.Progress * 100f + "%");
 					GUI.enabled = wasEnabled;
-					#else
+#else
 					Rect controlRect = EditorGUILayout.GetControlRect();
 					EditorGUI.ProgressBar(controlRect, bakeMaster.Progress, "Baking HDR Data");
-					#endif
+#endif
 				}
 				else
 				{

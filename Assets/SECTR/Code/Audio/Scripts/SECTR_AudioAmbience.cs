@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿// Copyright (c) 2014 Make Code Now! LLC
+
+using UnityEngine;
 using System.Collections.Generic;
 
 /// Defines the data specific to a particular SECTR_AudioEnvironment.

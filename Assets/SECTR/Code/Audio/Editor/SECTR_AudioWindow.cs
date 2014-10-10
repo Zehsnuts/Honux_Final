@@ -1,12 +1,25 @@
-// Copyright (c) 2014 Nathan Martz
+// Copyright (c) 2014 Make Code Now! LLC
+#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2 || UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6
+#define UNITY_4
+#endif
 
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using System.IO;
 
 public class SECTR_AudioWindow : SECTR_Window 
 {
 	#region Private Details
+#if !UNITY_4
+	enum SampleOpt
+	{
+		None,
+		Auto,
+		Manual
+	}
+#endif
+
 	private class TreeItem
 	{
 		#region Private Details
@@ -14,6 +27,7 @@ public class SECTR_AudioWindow : SECTR_Window
 		private SECTR_AudioBus bus;
 		private SECTR_AudioCue cue;
 		private AudioClip clip;
+		private AudioImporter importer;
 		#endregion
 
 		#region Public Interface
@@ -40,17 +54,28 @@ public class SECTR_AudioWindow : SECTR_Window
 			window.hierarchyItems.Add(AsObject, this);
 		}
 
-		public TreeItem(SECTR_AudioWindow window, AudioClip clip, string path)
+		public TreeItem(AudioImporter importer, string path, string name)
 		{
-			this.clip = clip;
+			this.importer = importer;
 			this.path = path;
-			this.Name = clip.name;
+			this.Name = name;
 		}
 
-		public string Path { get { return path; } }
-		public SECTR_AudioBus Bus { get { return bus; } }
-		public SECTR_AudioCue Cue { get { return cue; } }
-		public AudioClip Clip { get { return clip; } }
+		public string Path 				{ get { return path; } }
+		public SECTR_AudioBus Bus 		{ get { return bus; } }
+		public SECTR_AudioCue Cue 		{ get { return cue; } }
+		public AudioImporter Importer 	{ get { return importer; } }
+		public AudioClip Clip 			
+		{
+			get 
+			{
+				if(importer && !clip)
+				{
+					clip = (AudioClip)AssetDatabase.LoadAssetAtPath(path, typeof(AudioClip));
+				}
+				return clip;
+			}
+		}
 
 		public string DefaultName
 		{
@@ -58,7 +83,7 @@ public class SECTR_AudioWindow : SECTR_Window
 			{
 				if(bus) return bus.name;
 				if(cue) return cue.name;
-				if(clip) return clip.name;
+				if(importer) return System.IO.Path.GetFileName(path);
 				return "";
 			}
 		}
@@ -69,7 +94,7 @@ public class SECTR_AudioWindow : SECTR_Window
 			{
 				if(bus) return bus;
 				if(cue) return cue;
-				if(clip) return clip;
+				if(importer) return importer;
 				return null;
 			}
 		}
@@ -160,31 +185,27 @@ public class SECTR_AudioWindow : SECTR_Window
 	private int lastHeight = 0;
 	private int indent = 0;
 
-	private TreeItem selectedTreeItem = null;
-	private List<TreeItem> selectedTreeItems = new List<TreeItem>();
-	private List<TreeItem> displayedTreeItems = new List<TreeItem>();
+	private TreeItem selectedHierarchyItem = null;
+	private List<TreeItem> selectedHierarchyItems = new List<TreeItem>();
+	private List<TreeItem> displayedHierarchyItems = new List<TreeItem>();
 	private TreeItem selectedClipItem = null;
 	private List<TreeItem> selectedClipItems = new List<TreeItem>();
 	private List<TreeItem> displayedClipItems = new List<TreeItem>();
 	private TreeItem dragHoverItem = null;
-	private TreeItem dragTreeItem = null;
+	private TreeItem dragHierarchyItem = null;
 	private TreeItem dragClipItem = null;
-	private bool lastSelectedTree = true;
+	private bool lastSelectedHierarchy = true;
+	private bool changedAudioClip = false;
 	private Rect clipScrollRect;
-#if !UNITY_3_5
 	private SECTR_Editor propertyEditor = null;
-#endif
-
-	// 
+	
 	private Dictionary<string, AudioClipFolder> clipItems = new Dictionary<string, AudioClipFolder>(256);
 	private Dictionary<Object, TreeItem> hierarchyItems = new Dictionary<Object, TreeItem>(256);
 	private List<TreeItem> deadItems = new List<TreeItem>();
 	private List<SECTR_AudioBus> newBuses = new List<SECTR_AudioBus>();
 	private List<SECTR_AudioCue> newCues = new List<SECTR_AudioCue>();
 
-	// editor state vars
-	private bool changingBitrate = false;
-	private bool confirmBitrate = false;
+	// Editor state vars
 	private bool showFullClipDetails = false;
 	private bool showProperties = true;
 	private bool showHierarchy = true;
@@ -335,29 +356,29 @@ public class SECTR_AudioWindow : SECTR_Window
 
 		if(leftSplitter.pos == -1)
 		{
-			leftSplitter.pos = (int)(Screen.width * 0.3f);
+			leftSplitter.pos = (int)(position.width * 0.3f);
 		}
 		if(bottomSplitter.pos == -1)
 		{
-			bottomSplitter.pos = (int)(Screen.height * 0.6f);
+			bottomSplitter.pos = (int)(position.height * 0.6f);
 		}
 
 		if(lastWidth == 0 && lastHeight == 0)
 		{
-			lastWidth = Screen.width;
-			lastHeight = Screen.height;
+			lastWidth = (int)position.width;
+			lastHeight = (int)position.height;
 		}
-		else if(Screen.width != lastWidth || Screen.height != lastHeight)
+		else if(position.width != lastWidth || position.height != lastHeight)
 		{
 			float leftFrac = leftSplitter.pos / (float)lastWidth;
 			float bottomFrac = bottomSplitter.pos / (float)lastHeight;
-			leftSplitter.pos = (int)(Screen.width * leftFrac);
-			bottomSplitter.pos = (int)(Screen.height * bottomFrac);
-			lastWidth = Screen.width;
-			lastHeight = Screen.height;
+			leftSplitter.pos = (int)(position.width * leftFrac);
+			bottomSplitter.pos = (int)(position.height * bottomFrac);
+			lastWidth = (int)position.width;
+			lastHeight = (int)position.height;
 		}
 
-		displayedTreeItems.Clear();
+		displayedHierarchyItems.Clear();
 		displayedClipItems.Clear();
 
 		if(showHierarchy)
@@ -408,40 +429,50 @@ public class SECTR_AudioWindow : SECTR_Window
 		List<string> paths = new List<string>(128);
 
 		// Add all Buses
-		List<SECTR_AudioBus> buses = SECTR_Asset.GetAll<SECTR_AudioBus>(audioRootPath, assetExtensions, ref paths);
+		List<SECTR_AudioBus> buses = SECTR_Asset.GetAll<SECTR_AudioBus>(audioRootPath, assetExtensions, ref paths, false);
 		for(int busIndex = 0; busIndex < buses.Count; ++busIndex)
 		{
 			SECTR_AudioBus bus = buses[busIndex];
-			new TreeItem(this, bus, paths[busIndex]);
+			if(bus != null)
+			{
+				new TreeItem(this, bus, paths[busIndex]);
+			}
 		}
 
 		// Add all Cues
-		List<SECTR_AudioCue> cues = SECTR_Asset.GetAll<SECTR_AudioCue>(audioRootPath, assetExtensions, ref paths);
+		List<SECTR_AudioCue> cues = SECTR_Asset.GetAll<SECTR_AudioCue>(audioRootPath, assetExtensions, ref paths, false);
 		for(int cueIndex = 0; cueIndex < cues.Count; ++cueIndex)
 		{
 			SECTR_AudioCue cue = cues[cueIndex];
-			new TreeItem(this, cue, paths[cueIndex]);
+			if(cue != null)
+			{
+				new TreeItem(this, cue, paths[cueIndex]);
+			}
 		}
 
 		// Build the list of AudioClips
-		List<AudioClip> clips = SECTR_Asset.GetAll<AudioClip>(audioRootPath, clipExtensions, ref paths);
-		for(int clipIndex = 0; clipIndex < clips.Count; ++clipIndex)
+		SECTR_Asset.GetAll<AudioClip>(audioRootPath, clipExtensions, ref paths, true);
+		for(int pathIndex = 0; pathIndex < paths.Count; ++pathIndex)
 		{
-			AudioClip clip = (AudioClip)clips[clipIndex];
-			TreeItem item = new TreeItem(this, clip, paths[clipIndex]);
-
-			string dirPath = "";
-			string fileName = "";
-			SECTR_Asset.SplitPath(item.Path, out dirPath, out fileName);
-			AudioClipFolder folder;
-			if(!clipItems.TryGetValue(dirPath, out folder))
+			string path = paths[pathIndex];
+			if(!string.IsNullOrEmpty(path))
 			{
-				folder = new AudioClipFolder();
-				bool userExpanded = EditorPrefs.GetBool(expandedPrefPrefix + dirPath, false);
-				folder.expanded = userExpanded;
-				clipItems.Add(dirPath, folder);
+				string dirPath = "";
+				string fileName = "";
+				SECTR_Asset.SplitPath(path, out dirPath, out fileName);
+
+				TreeItem item = new TreeItem((AudioImporter)AssetImporter.GetAtPath(path), path, fileName);
+
+				AudioClipFolder folder;
+				if(!clipItems.TryGetValue(dirPath, out folder))
+				{
+					folder = new AudioClipFolder();
+					bool userExpanded = EditorPrefs.GetBool(expandedPrefPrefix + dirPath, false);
+					folder.expanded = userExpanded;
+					clipItems.Add(dirPath, folder);
+				}
+				folder.items.Add(item);
 			}
-			folder.items.Add(item);
 		}
 	}
 	
@@ -466,7 +497,7 @@ public class SECTR_AudioWindow : SECTR_Window
 			{
 				if((item.Cue && item.Cue.Bus == null) || (item.Bus && item.Bus.Parent == null))
 				{
-					_DrawTreeItem(item, headerRect.height, searchString);
+					_DrawHierarchyItem(item, headerRect.height, searchString);
 				}
 			}
 			else
@@ -479,13 +510,13 @@ public class SECTR_AudioWindow : SECTR_Window
 		GUILayout.EndArea();
 	}
 
-	private void _DrawTreeItem(TreeItem item, float initialOffset, string searchString)
+	private void _DrawHierarchyItem(TreeItem item, float initialOffset, string searchString)
 	{
 		if(item != null && (item.Bus || item.Cue) && _ChildVisible(item, searchString))
 		{
 			item.ScrollRect = EditorGUILayout.BeginHorizontal();
-			bool selected = selectedTreeItems.Contains(item);
-			if(selected)
+			bool selected = selectedHierarchyItems.Contains(item);
+			if(selected && lastSelectedHierarchy)
 			{
 				Rect selectionRect = item.ScrollRect;
 				selectionRect.y += 3;
@@ -503,10 +534,17 @@ public class SECTR_AudioWindow : SECTR_Window
 			}
 			else
 			{
-				elementStyle.normal.textColor = UnselectedItemColor;
 				if(item.Cue && item.Cue.IsTemplate)
 				{
 					elementStyle.normal.textColor = Color.blue;
+				}
+				else if(item.Cue && item.Cue.Template != null)
+				{
+					elementStyle.normal.textColor = Color.yellow;
+				}
+				else
+				{
+					elementStyle.normal.textColor = UnselectedItemColor;
 				}
 			}
 
@@ -530,7 +568,7 @@ public class SECTR_AudioWindow : SECTR_Window
 			Texture typeIcon = null;
 			if(item.Bus != null) typeIcon = busIcon;
 			if(item.Cue != null) typeIcon = cueIcon;
-			if(item.Clip != null) typeIcon = playIcon;
+			if(item.Importer != null) typeIcon = playIcon;
 			if(typeIcon)
 			{
 				GUILayout.Label(typeIcon, elementStyle, GUILayout.Width(iconSize), GUILayout.Height(iconSize));
@@ -549,7 +587,7 @@ public class SECTR_AudioWindow : SECTR_Window
 			EditorGUILayout.EndHorizontal();
 			GUI.enabled = wasEnabled;
 
-			displayedTreeItems.Add(item);
+			displayedHierarchyItems.Add(item);
 
 			if(item.Expanded && item.Bus)
 			{
@@ -560,7 +598,7 @@ public class SECTR_AudioWindow : SECTR_Window
 					{
 						if(hierarchyItems.ContainsKey(bus))
 						{
-							_DrawTreeItem(hierarchyItems[bus], initialOffset, searchString);
+							_DrawHierarchyItem(hierarchyItems[bus], initialOffset, searchString);
 						}
 						else if(!newBuses.Contains(bus))
 						{
@@ -574,7 +612,7 @@ public class SECTR_AudioWindow : SECTR_Window
 					{
 						if(hierarchyItems.ContainsKey(cue))
 						{
-							_DrawTreeItem(hierarchyItems[cue], initialOffset, searchString);
+							_DrawHierarchyItem(hierarchyItems[cue], initialOffset, searchString);
 						}
 						else if(!newCues.Contains(cue))
 						{
@@ -626,9 +664,9 @@ public class SECTR_AudioWindow : SECTR_Window
 		                             width,
 		                             showClipList ? bottomSplitter.pos : Screen.height));
 
-		bool allCues = selectedTreeItems.Count > 0;
-		bool allBuses = selectedTreeItems.Count > 0;
-		foreach(TreeItem item in selectedTreeItems)
+		bool allCues = selectedHierarchyItems.Count > 0;
+		bool allBuses = selectedHierarchyItems.Count > 0;
+		foreach(TreeItem item in selectedHierarchyItems)
 		{
 			allCues &= item.Cue != null;
 			allBuses &= item.Bus != null;
@@ -642,10 +680,10 @@ public class SECTR_AudioWindow : SECTR_Window
 			EditorGUILayout.BeginHorizontal();
 			string searchString = busSearchString.ToLower();
 
-			List<TreeItem> drawnBuses = new List<TreeItem>(selectedTreeItems.Count);
+			List<TreeItem> drawnBuses = new List<TreeItem>(selectedHierarchyItems.Count);
 			foreach(TreeItem item in hierarchyItems.Values)
 			{
-				if(selectedTreeItems.Contains(item) && !drawnBuses.Contains(item))
+				if(selectedHierarchyItems.Contains(item) && !drawnBuses.Contains(item))
 				{
 					_DrawBus(item, searchString, drawnBuses);
 				}
@@ -658,44 +696,51 @@ public class SECTR_AudioWindow : SECTR_Window
 		else if(allCues)
 		{
 			string nullSearch = null;
-			DrawHeader("PROPERTIES (" + selectedTreeItem.Cue.name + ")", ref nullSearch, 0, true);
+			if(selectedHierarchyItems.Count > 1)
+			{
+				DrawHeader("PROPERTIES (" + selectedHierarchyItems.Count + " SELECTED)", ref nullSearch, 0, true);
+			}
+			else
+			{
+				DrawHeader("PROPERTIES (" + selectedHierarchyItem.Cue.name + ")", ref nullSearch, 0, true);
+			}
 
 			propertyScrollPos = EditorGUILayout.BeginScrollView(propertyScrollPos);
 			bool wasEnabled = GUI.enabled;
-#if UNITY_3_5
-			GUI.enabled = false;
-			elementStyle.alignment = TextAnchor.MiddleCenter;
-			GUILayout.Box("Unity 3.5 Cannot Embed Inspector. Please Use Main Inspector To Edit.", elementStyle, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
-			if(selectedTreeItem.Cue)
+			GUI.enabled &= SECTR_VC.IsEditable(selectedHierarchyItem.Path);
+			if(selectedHierarchyItem.Cue && (propertyEditor == null || propertyEditor.target != selectedHierarchyItem.Cue))
 			{
-				Selection.activeObject = selectedTreeItem.Cue;
-			}
-			else if(selectedTreeItem.Bus)
-			{
-				Selection.activeObject = selectedTreeItem.Bus;
-			}
-#else
-			GUI.enabled &= SECTR_VC.IsEditable(selectedTreeItem.Path);
-			if(selectedTreeItem.Cue && (propertyEditor == null || propertyEditor.target != selectedTreeItem.Cue))
-			{
-				SECTR_AudioCueEditor cueEditor = (SECTR_AudioCueEditor)Editor.CreateEditor(selectedTreeItem.Cue);
+				int numSelected = selectedHierarchyItems.Count;
+				SECTR_AudioCueEditor cueEditor = null;
+				if(numSelected > 1)
+				{
+					SECTR_AudioCue[] cues = new SECTR_AudioCue[selectedHierarchyItems.Count];
+					for(int selectedIndex = 0; selectedIndex < numSelected; ++selectedIndex)
+					{
+						cues[selectedIndex] = selectedHierarchyItems[selectedIndex].Cue;
+					}
+					cueEditor = (SECTR_AudioCueEditor)Editor.CreateEditor(cues);
+				}
+				else
+				{
+					cueEditor = (SECTR_AudioCueEditor)Editor.CreateEditor(selectedHierarchyItem.Cue);
+				}
 				cueEditor.DrawBus = false;
 				propertyEditor = cueEditor;
 			}
-			else if(selectedTreeItem.Bus && (propertyEditor == null || propertyEditor.target != selectedTreeItem.Bus))
+			else if(selectedHierarchyItem.Bus && (propertyEditor == null || propertyEditor.target != selectedHierarchyItem.Bus))
 			{
-				propertyEditor = (SECTR_Editor)Editor.CreateEditor(selectedTreeItem.Bus);
+				propertyEditor = (SECTR_Editor)Editor.CreateEditor(selectedHierarchyItem.Bus);
 			}
 			if(propertyEditor)
 			{
 				propertyEditor.WidthOverride = width;
 				propertyEditor.OnInspectorGUI();
 			}
-#endif
 			GUI.enabled = wasEnabled;
 			EditorGUILayout.EndScrollView();
 		}
-		else if(selectedTreeItems.Count > 0)
+		else if(selectedHierarchyItems.Count > 0)
 		{
 			string nullSearch = null;
 			DrawHeader("MIXED SELECTION", ref nullSearch, 0, true);
@@ -769,48 +814,78 @@ public class SECTR_AudioWindow : SECTR_Window
 		headerStyle.alignment = TextAnchor.MiddleCenter;
 		GUILayout.Label(GUIContent.none, GUILayout.Width(iconSize * 2), GUILayout.MaxWidth(iconSize * 2), GUILayout.MinWidth(iconSize * 2), GUILayout.ExpandWidth(false), GUILayout.Height(headerHeight));
 		string[] categories = {
+#if UNITY_4
 			"NAME",
-			"3D",
 			"LENGTH",
-			"SIZE",
 			"CHANNELS",
-			"MONO",
-			"HARDWARE",
-			"STREAM",
+			"CMPRESN",
+			"LOAD",
+			"3D",
+			// ADVANCED
+			"HRDWARE",
 			"LOOP",
-			"COMPRESSED",
 			"BITRATE",
+			"MONO",
+#else
+			"NAME",
+			"LENGTH",
+			"CHANNELS",
+			"CMPRESN",
+			"LOAD",
+			// ADVANCED
+			"QUALITY",
+			"SMPLOPT",
+			"SMPLRTE",
+			"BKGRND",
+			"PRE LD",
+			"MONO",
+#endif
 		};
 		float[] widthScales = {
-			2.5f,
-			0.5f,
-			0.75f,
-			0.75f,
-			1.0f,
-			0.6f,
-			1.0f,
-			0.75f,
-			0.6f,
-			1.2f,
-			0.9f,
+#if UNITY_4
+			1.75f, // NAME
+			0.6f, // LENGTH
+			0.8f, // CHANNELS
+			0.8f, // CMPRESN
+			0.7f, // LOAD
+			0.4f, // 3D
+			// ADVANCED
+			0.7f, // HARDWARE
+			0.4f, // LOOP
+			0.6f, // BITRATE
+			0.4f, // MONO
+#else
+			1.75f, // NAME
+			0.6f, // LENGTH
+			0.65f, // CHANNELS
+			0.6f, // CMPRESN
+			0.6f, // LOAD
+			// ADVANCED
+			0.6f, // QUALITY
+			0.6f, // SMPLOPT
+			0.6f, // SMPLRTE
+			0.5f, // BKGRND
+			0.45f, // PRE LD
+			0.45f, // MONO
+#endif
 		};
 		int[] widths = new int[categories.Length];
+#if UNITY_4
+		int advancedStart = 6;
+#else
 		int advancedStart = 5;
+#endif
 
-		int baseColumnWidth;
-		if(showFullClipDetails)
+		float weightSum = 0;
+		for(int catIndex = 0; catIndex < (showFullClipDetails ? categories.Length : advancedStart); ++catIndex)
 		{
-			baseColumnWidth = screenWidth / categories.Length;
-		}
-		else
-		{
-			baseColumnWidth = screenWidth / advancedStart;
+			weightSum += widthScales[catIndex];
 		}
 
 		int columnSum = 0;
 		for(int catIndex = 0; catIndex < (showFullClipDetails ? categories.Length : advancedStart); ++catIndex)
 		{
-			int width = showFullClipDetails ? (int)(widthScales[catIndex] * baseColumnWidth) : baseColumnWidth;
+			int width = (int)(screenWidth * 0.98f * (widthScales[catIndex] / weightSum));
 			GUI.Label(new Rect(columnRect.x + columnSum, columnRect.y, width, columnRect.height), categories[catIndex], headerStyle);
 			columnSum += width;
 			widths[catIndex] = width;
@@ -844,19 +919,13 @@ public class SECTR_AudioWindow : SECTR_Window
 				deadItems.Clear();
 				foreach(TreeItem item in folder.items)
 				{
-					if(item.Clip == null || string.IsNullOrEmpty(item.Path))
+					AudioImporter importer = item.Importer;
+					if(importer == null || string.IsNullOrEmpty(item.Path))
 					{
 						deadItems.Add(item);
 					}
 					else if((string.IsNullOrEmpty(clipSearchString) || item.Name.ToLower().Contains(searchString)))
 					{
-						AudioImporter importer = AssetImporter.GetAtPath(item.Path) as AudioImporter;
-						if(importer == null)
-						{
-							deadItems.Add(item);
-							continue;
-						}
-
 						item.ScrollRect = EditorGUILayout.BeginHorizontal();
 						item.WindowRect = item.ScrollRect;
 						item.WindowRect.y += bottomSplitter.pos;
@@ -867,7 +936,7 @@ public class SECTR_AudioWindow : SECTR_Window
 
 						bool selected = selectedClipItems.Contains(item);
 
-						if(selected && selectionBoxStyle != null)
+						if(selected && !lastSelectedHierarchy)
 						{
 							Rect selectionRect = item.ScrollRect;
 							selectionRect.y += 1;
@@ -898,27 +967,49 @@ public class SECTR_AudioWindow : SECTR_Window
 						columnSum = (int)item.ScrollRect.x;
 
 						// Editable properties
+#if UNITY_4
+						AudioImporterFormat newCompressed = importer.format;
+						AudioImporterLoadType newStream = importer.loadType;
+
 						bool new3D = importer.threeD;
-						bool newMono = importer.forceToMono;
 						bool newHardware = importer.hardware;
-						bool newStream = importer.loadType == AudioImporterLoadType.StreamFromDisc;
 						bool newLoop = importer.loopable;
-						bool compressed = importer.format == AudioImporterFormat.Compressed;
 						int bitrate = importer.compressionBitrate;
+#else
+						AudioClipFormat newCompressed = importer.format;
+						AudioClipLoadType newStream = importer.loadType;
+						float newQuality = importer.quality;
+						SampleOpt newSampleOpt = SampleOpt.None;
+						if(importer.overrideSampleRate)
+						{
+							newSampleOpt = importer.optimizeSampleRate ? SampleOpt.Auto : SampleOpt.Manual;
+						}
+						SampleOpt oldSampleOpt = newSampleOpt;
+						float newSampleRate = importer.sampleRate;
+						bool newBackground = importer.loadInBackground;
+						bool newPreload = importer.preloadAudioData;
+#endif
+						bool newMono = importer.forceToMono;
 
 						// Name
 						columnWidth = widths[columnIndex++];
 						elementStyle.alignment = TextAnchor.MiddleLeft;
 						float shift = iconSize * 2.5f;
-						GUI.Label(new Rect(columnSum + shift, rowY, columnWidth - shift, item.ScrollRect.height), item.Name, elementStyle);
+						Rect nameRect = new Rect(columnSum + shift, rowY, columnWidth - shift, item.ScrollRect.height);
+						if(item.Rename)
+						{
+							string focusName = "RenamingItem";
+							GUI.SetNextControlName(focusName);
+							item.Name = GUI.TextField(nameRect, item.Name);
+							GUI.FocusControl(focusName);
+						}
+						else
+						{
+							GUI.Label(nameRect, item.Name, elementStyle);
+						}
 						elementStyle.alignment = TextAnchor.UpperCenter;
 						columnSum += columnWidth;
 
-						// 3D
-						columnWidth = widths[columnIndex++];
-						new3D = EditorGUI.Toggle(new Rect(columnSum - checkSize / 2 + columnWidth / 2, rowY, checkSize, item.ScrollRect.height), new3D);
-						columnSum += columnWidth;
-						
 						// Length
 						columnWidth = widths[columnIndex++];
 						float length = item.Clip.length;
@@ -931,31 +1022,6 @@ public class SECTR_AudioWindow : SECTR_Window
 						EditorGUI.LabelField(new Rect(columnSum, rowY, columnWidth, item.ScrollRect.height), length.ToString("N2") + " " + label, elementStyle);
 						columnSum += columnWidth;
 
-						// Size
-						int sizeKB;
-						if(importer.format == AudioImporterFormat.Compressed)
-						{
-							int effectiveBitrate = bitrate > 0 ? bitrate : 156000;
-							sizeKB = (int)(item.Clip.length * effectiveBitrate / 8);
-						}
-						else
-						{
-							sizeKB = (int)(item.Clip.length * item.Clip.frequency * item.Clip.channels * 2); // 2 assumes 16 bits per sample.
-						}
-						sizeKB /= 1024;
-						string size = "~";
-						if(sizeKB >= 1000)
-						{
-							size += (sizeKB / 1024f).ToString("N2") + " MB";
-						}
-						else
-						{
-							size += sizeKB + " KB";
-						}
-						columnWidth = widths[columnIndex++];
-						EditorGUI.LabelField(new Rect(columnSum, rowY, columnWidth, item.ScrollRect.height), size, elementStyle);
-						columnSum += columnWidth;
-
 						// Channels
 						string channels = item.Clip.channels + "ch";
 						channels += " @ " + (item.Clip.frequency / 1000f) + "k";
@@ -963,22 +1029,38 @@ public class SECTR_AudioWindow : SECTR_Window
 						EditorGUI.LabelField(new Rect(columnSum, rowY, columnWidth, item.ScrollRect.height), channels, elementStyle);
 						columnSum += columnWidth;
 
+						// Compressed
+						columnWidth = widths[columnIndex++];
+#if UNITY_4
+						newCompressed = (AudioImporterFormat)EditorGUI.EnumPopup(new Rect(columnSum, rowY, columnWidth * 0.9f, item.ScrollRect.height), newCompressed);
+#else
+						newCompressed = (AudioClipFormat)EditorGUI.EnumPopup(new Rect(columnSum, rowY, columnWidth * 0.9f, item.ScrollRect.height), newCompressed);
+#endif					
+						columnSum += columnWidth;
+
+						// Stream vs In Memory
+						columnWidth = widths[columnIndex++];
+#if UNITY_4
+						newStream = (AudioImporterLoadType)EditorGUI.EnumPopup(new Rect(columnSum, rowY, columnWidth * 0.9f, item.ScrollRect.height), newStream);
+#else
+						newStream = (AudioClipLoadType)EditorGUI.EnumPopup(new Rect(columnSum, rowY, columnWidth * 0.9f, item.ScrollRect.height), newStream);
+#endif
+						columnSum += columnWidth;
+
+#if UNITY_4
+						// 3D
+						columnWidth = widths[columnIndex++];
+						new3D = EditorGUI.Toggle(new Rect(columnSum - checkSize / 2 + columnWidth / 2, rowY, checkSize, item.ScrollRect.height), new3D);
+						columnSum += columnWidth;
+#endif
+
 						// Advanced Stuff
 						if(showFullClipDetails)
 						{
-							// Force Mono
-							columnWidth = widths[columnIndex++];
-							newMono = EditorGUI.Toggle(new Rect(columnSum - checkSize / 2 + columnWidth / 2, rowY, checkSize, item.ScrollRect.height), newMono);
-							columnSum += columnWidth;
-
+#if UNITY_4
 							// Hardware
 							columnWidth = widths[columnIndex++];
 							newHardware = EditorGUI.Toggle(new Rect(columnSum - checkSize / 2 + columnWidth / 2, rowY, checkSize, item.ScrollRect.height), newHardware);
-							columnSum += columnWidth;
-
-							// Stream vs In Memory
-							columnWidth = widths[columnIndex++];
-							newStream = EditorGUI.Toggle(new Rect(columnSum - checkSize / 2 + columnWidth / 2, rowY, checkSize, item.ScrollRect.height), newStream);
 							columnSum += columnWidth;
 
 							// Loop
@@ -986,50 +1068,145 @@ public class SECTR_AudioWindow : SECTR_Window
 							newLoop = EditorGUI.Toggle(new Rect(columnSum - checkSize / 2 + columnWidth / 2, rowY, checkSize, item.ScrollRect.height), newLoop);
 							columnSum += columnWidth;
 
-							// Compressed
-							columnWidth = widths[columnIndex++];
-							compressed = EditorGUI.Toggle(new Rect(columnSum - checkSize / 2 + columnWidth / 2, rowY, checkSize, item.ScrollRect.height), compressed);
-							columnSum += columnWidth;
-
 							// Bitrate
 							int labelWidth = 40;
-							GUI.enabled &= compressed;
+							GUI.enabled &= (newCompressed == AudioImporterFormat.Compressed);
 							columnWidth = widths[columnIndex++];
 							if(bitrate > 0 )
 							{
+								GUI.SetNextControlName("Clip Bitrate");
 								bitrate =  EditorGUI.IntField(new Rect(columnSum - labelWidth / 2 + columnWidth / 2, rowY, labelWidth, item.ScrollRect.height), bitrate / 1000, busFieldStyle) * 1000;
-
 							}
 							else
 							{
-								int userBitrate = EditorGUI.IntField(new Rect(columnSum - labelWidth / 2 + columnWidth / 2, rowY, labelWidth, item.ScrollRect.height), 156, busFieldStyle) * 1000;
-								if(userBitrate != 156000)
+								const int kDefaultBitrate = 156000;
+								GUI.SetNextControlName("Clip Bitrate");
+								int userBitrate = EditorGUI.IntField(new Rect(columnSum - labelWidth / 2 + columnWidth / 2, rowY, labelWidth, item.ScrollRect.height), kDefaultBitrate / 1000, busFieldStyle) * 1000;
+								if(userBitrate != kDefaultBitrate)
 								{
 									bitrate = userBitrate;
 								}
 							}
-							columnSum += columnWidth;     
+							GUI.enabled = true;
+							columnSum += columnWidth; 
+#else
+							// Quality
+							int labelWidth = 40;
+							GUI.enabled &= newCompressed == AudioClipFormat.Compressed;
+							columnWidth = widths[columnIndex++];
+							if(newQuality >= 0)
+							{
+								GUI.SetNextControlName("Clip Quality");
+								newQuality = EditorGUI.FloatField(new Rect(columnSum - labelWidth / 2 + columnWidth / 2, rowY, labelWidth, item.ScrollRect.height), newQuality, busFieldStyle);
+								newQuality = Mathf.Clamp(newQuality, 0f, 1f);
+							}
+							else
+							{
+								const float kDefaultQuality = 0.5f;
+								GUI.SetNextControlName("Clip Quality");
+								float userQuality = EditorGUI.FloatField(new Rect(columnSum - labelWidth / 2 + columnWidth / 2, rowY, labelWidth, item.ScrollRect.height), kDefaultQuality, busFieldStyle);
+								if(userQuality != kDefaultQuality)
+								{
+									newQuality = Mathf.Clamp(userQuality, 0f, 1f);
+								}
+							}
+							GUI.enabled = true;
+							columnSum += columnWidth; 
+
+							// Sample Opt
+							columnWidth = widths[columnIndex++];
+							GUI.enabled &= newCompressed != AudioClipFormat.Compressed;
+							newSampleOpt = (SampleOpt)EditorGUI.EnumPopup(new Rect(columnSum, rowY, columnWidth * 0.9f, item.ScrollRect.height), newSampleOpt);
+							columnSum += columnWidth;
+							
+							// Sample Rate
+							GUI.enabled &= newSampleOpt == SampleOpt.Manual;
+							columnWidth = widths[columnIndex++];
+							GUI.SetNextControlName("Clip Sample Rate");
+							newSampleRate =  EditorGUI.FloatField(new Rect(columnSum - labelWidth / 2 + columnWidth / 2, rowY, labelWidth, item.ScrollRect.height), newSampleRate / 1000, busFieldStyle) * 1000;
+							GUI.enabled = true;
+							columnSum += columnWidth;
+
+							// Load in background
+							columnWidth = widths[columnIndex++];
+							newBackground = EditorGUI.Toggle(new Rect(columnSum - checkSize / 2 + columnWidth / 2, rowY, checkSize, item.ScrollRect.height), newBackground);
+							columnSum += columnWidth;
+
+							// Preload
+							columnWidth = widths[columnIndex++];
+							newPreload = EditorGUI.Toggle(new Rect(columnSum - checkSize / 2 + columnWidth / 2, rowY, checkSize, item.ScrollRect.height), newPreload);
+							columnSum += columnWidth;
+#endif
+
+							// Force Mono
+							columnWidth = widths[columnIndex++];
+							newMono = EditorGUI.Toggle(new Rect(columnSum - checkSize / 2 + columnWidth / 2, rowY, checkSize, item.ScrollRect.height), newMono);
+							columnSum += columnWidth;
 						}
 
-						if((newMono != importer.forceToMono) || 
+						if((newMono != importer.forceToMono) ||
+						   (newStream != importer.loadType) ||
+						   (newCompressed != importer.format) ||
+#if UNITY_4
 						   (new3D != importer.threeD) ||
 						   (newHardware != importer.hardware) ||
-						   (newStream != (importer.loadType == AudioImporterLoadType.StreamFromDisc)) ||
 						   (newLoop != importer.loopable) ||
-						   (compressed != (importer.format == AudioImporterFormat.Compressed)) ||
-						   (confirmBitrate))
+						   (bitrate != importer.compressionBitrate) ||
+#else
+						   (newQuality != importer.quality) ||
+						   (newSampleOpt != oldSampleOpt) ||
+						   (newSampleRate != importer.sampleRate) ||
+						   (newBackground != importer.loadInBackground) ||
+						   (newPreload != importer.preloadAudioData) ||
+#endif
+						   (newMono != importer.forceToMono) ||
+						   changedAudioClip)
 						{
-							importer.forceToMono = newMono;
+							importer.loadType = newStream;
+							importer.format = newCompressed;
+#if UNITY_4
+							bool changedText = changedAudioClip || bitrate != importer.compressionBitrate;
 							importer.threeD = new3D;
 							importer.hardware = newHardware;
-							importer.loadType = newStream ? AudioImporterLoadType.StreamFromDisc : AudioImporterLoadType.CompressedInMemory;
 							importer.loopable = newLoop;
-							importer.format = compressed ? AudioImporterFormat.Compressed : AudioImporterFormat.Native;
 							importer.compressionBitrate = bitrate;
-							confirmBitrate = false;
+#else
+							bool changedText = changedAudioClip || (importer.quality != newQuality || importer.sampleRate != newSampleRate);
+							importer.quality = newQuality;
+							if(newSampleOpt != oldSampleOpt)
+							{
+								switch(newSampleOpt)
+								{
+								case SampleOpt.Auto:
+									importer.optimizeSampleRate = true;
+									importer.overrideSampleRate = true;
+									break;
+								case SampleOpt.Manual:
+									importer.optimizeSampleRate = false;
+									importer.overrideSampleRate = true;
+									break;
+								case SampleOpt.None:
+								default:
+									importer.optimizeSampleRate = false;
+									importer.overrideSampleRate = false;
+									break;
+								}
+							}
+							importer.sampleRate = newSampleRate;
+							importer.loadInBackground = newBackground;
+							importer.preloadAudioData = newPreload;
+#endif
+							importer.forceToMono = newMono;
+							changedAudioClip = true;
+
 							EditorUtility.SetDirty(importer);
-							AssetDatabase.WriteImportSettingsIfDirty(item.Path);
-							AssetDatabase.Refresh();
+							if(changedAudioClip && string.IsNullOrEmpty(GUI.GetNameOfFocusedControl()) && 
+							   (!changedText || GUIUtility.keyboardControl == 0))
+							{
+								AssetDatabase.WriteImportSettingsIfDirty(item.Path);
+								AssetDatabase.Refresh();
+								changedAudioClip = false;
+							}
 						}
 
 						GUI.enabled = wasEnabled;
@@ -1058,13 +1235,11 @@ public class SECTR_AudioWindow : SECTR_Window
 	{
 		if(Event.current != null)
 		{
-#if !UNITY_3_5
 			if(!string.IsNullOrEmpty(Event.current.commandName) && Event.current.commandName == "UndoRedoPerformed")
 			{
 				Repaint();
 				return;
 			}
-#endif
 
 			if((showHierarchy && showProperties && leftSplitter.HandleEvents(this)) || (showClipList && (showHierarchy || showProperties) && bottomSplitter.HandleEvents(this)))
 			{
@@ -1072,7 +1247,11 @@ public class SECTR_AudioWindow : SECTR_Window
 				return;
 			}
 
+#if UNITY_EDITOR_OSX
+			bool heldControl = (Event.current.modifiers & EventModifiers.Command) != 0;
+#else
 			bool heldControl = (Event.current.modifiers & EventModifiers.Control) != 0;
+#endif
 			bool heldShift = (Event.current.modifiers & EventModifiers.Shift) != 0;
 
 			switch(Event.current.type)
@@ -1082,7 +1261,7 @@ public class SECTR_AudioWindow : SECTR_Window
 				{
 					if(Event.current.mousePosition.x < leftSplitter.pos && Event.current.mousePosition.y < bottomSplitter.pos)
 					{
-						foreach(TreeItem item in displayedTreeItems)
+						foreach(TreeItem item in displayedHierarchyItems)
 						{
 							if(item.WindowRect.Contains(Event.current.mousePosition))
 							{
@@ -1090,16 +1269,12 @@ public class SECTR_AudioWindow : SECTR_Window
 								{
 									if(SECTR_VC.IsEditable(item.Path))
 									{									
-										selectedTreeItem = item;
-										selectedTreeItems.Clear();
-										selectedTreeItems.Add(item);
-										selectedTreeItem.Rename = true;
-										Repaint();
+										_StartRenameItem(item, true);
 									}
 								}
 								else
 								{
-									dragTreeItem = item;
+									dragHierarchyItem = item;
 								}
 								break;
 							}
@@ -1111,7 +1286,17 @@ public class SECTR_AudioWindow : SECTR_Window
 						{
 							if(item.WindowRect.Contains(Event.current.mousePosition))
 							{
-								dragClipItem = item;
+								if(Event.current.clickCount > 1)
+								{
+									if(SECTR_VC.IsEditable(item.Path))
+									{									
+										_StartRenameItem(item, false);
+									}
+								}
+								else
+								{
+									dragClipItem = item;
+								}
 								break;
 							}
 						}
@@ -1119,85 +1304,82 @@ public class SECTR_AudioWindow : SECTR_Window
 				}
 				break;
 			case EventType.MouseUp:
-				dragTreeItem = null;
+				dragHierarchyItem = null;
 				dragClipItem = null;
 				dragHoverItem = null;
 
-				if(selectedTreeItem != null && selectedTreeItem.Rename && !selectedTreeItem.WindowRect.Contains(Event.current.mousePosition))
+				if(selectedHierarchyItem != null && selectedHierarchyItem.Rename && !selectedHierarchyItem.WindowRect.Contains(Event.current.mousePosition))
 				{
-					selectedTreeItem.Name = selectedTreeItem.DefaultName;
-					selectedTreeItem.Rename = false;
-					Repaint();
+					_CancelRename(selectedHierarchyItem);
+				}
+				else if(selectedClipItem != null && selectedClipItem.Rename && !selectedClipItem.WindowRect.Contains(Event.current.mousePosition))
+				{
+					_CancelRename(selectedClipItem);
 				}
 				else if(Event.current.mousePosition.x < leftSplitter.pos && Event.current.mousePosition.y < bottomSplitter.pos)
 				{
-					lastSelectedTree = true;
-					TreeItem newSelection = Event.current.button == 0 ? null : selectedTreeItem;
-					foreach(TreeItem item in displayedTreeItems)
+					lastSelectedHierarchy = true;
+					TreeItem newSelection = Event.current.button == 0 ? null : selectedHierarchyItem;
+					foreach(TreeItem item in displayedHierarchyItems)
 					{
 						if(item.WindowRect.Contains(Event.current.mousePosition))
 						{
 							newSelection = item;
-							if(Event.current.clickCount > 1 && SECTR_VC.IsEditable(item.Path))
-							{
-								newSelection.Rename = true;
-								Repaint();
-							}
 							break;
 						}
 					}
 
-					if(newSelection != selectedTreeItem || heldControl || heldShift)
+					if(newSelection != selectedHierarchyItem || heldControl || heldShift)
 					{
 						if(newSelection == null)
 						{
-							selectedTreeItem = null;
-							selectedTreeItems.Clear();
+							selectedHierarchyItem = null;
+							selectedHierarchyItems.Clear();
 						}
 						else if(heldControl)
 						{
-							if(selectedTreeItems.Contains(newSelection))
+							if(selectedHierarchyItems.Contains(newSelection))
 							{
-								selectedTreeItems.Remove(newSelection);
-								if(selectedTreeItems.Count > 0)
+								selectedHierarchyItems.Remove(newSelection);
+								if(selectedHierarchyItems.Count > 0)
 								{
-									selectedTreeItem = selectedTreeItems[0];
+									selectedHierarchyItem = selectedHierarchyItems[0];
 								}
 								else
 								{
-									selectedTreeItem = null;
+									selectedHierarchyItem = null;
 								}
 							}
 							else
 							{
-								selectedTreeItems.Add(newSelection);
-								selectedTreeItem = newSelection;
+								selectedHierarchyItems.Add(newSelection);
+								selectedHierarchyItem = newSelection;
 							}
 						}
-						else if(heldShift && selectedTreeItem != null)
+						else if(heldShift && selectedHierarchyItem != null)
 						{
-							foreach(TreeItem item in displayedTreeItems)
+							foreach(TreeItem item in displayedHierarchyItems)
 							{
-								if((item.WindowRect.y >= selectedTreeItem.WindowRect.y && item.WindowRect.y <= newSelection.WindowRect.y) ||
-								   (item.WindowRect.y <= selectedTreeItem.WindowRect.y && item.WindowRect.y >= newSelection.WindowRect.y))
+								if((item.WindowRect.y >= selectedHierarchyItem.WindowRect.y && item.WindowRect.y <= newSelection.WindowRect.y) ||
+								   (item.WindowRect.y <= selectedHierarchyItem.WindowRect.y && item.WindowRect.y >= newSelection.WindowRect.y))
 								{
-									if(!selectedTreeItems.Contains(item))
+									if(!selectedHierarchyItems.Contains(item))
 									{
-										selectedTreeItems.Add(item);
+										selectedHierarchyItems.Add(item);
 									}
 								}
 								else
 								{
-									selectedTreeItems.Remove(item);
+									selectedHierarchyItems.Remove(item);
 								}
 							}
-							selectedTreeItem = newSelection;
+							selectedHierarchyItem = newSelection;
 						}
 						else
 						{
-							selectedTreeItem = newSelection;
-							selectedTreeItems.Clear();
-							selectedTreeItems.Add(selectedTreeItem);
+							selectedHierarchyItem = newSelection;
+							selectedHierarchyItems.Clear();
+							selectedHierarchyItems.Add(selectedHierarchyItem);
 						}
 						propertyEditor = null;
 						GUI.FocusControl(null);
@@ -1206,7 +1388,7 @@ public class SECTR_AudioWindow : SECTR_Window
 				}
 				else if(Event.current.mousePosition.y > bottomSplitter.pos)
 				{
-					lastSelectedTree = false;
+					lastSelectedHierarchy = false;
 					TreeItem newSelection = Event.current.button == 0 ? null : selectedClipItem;
 					foreach(TreeItem item in displayedClipItems)
 					{
@@ -1277,20 +1459,32 @@ public class SECTR_AudioWindow : SECTR_Window
 			case EventType.MouseDrag:
 				if(Event.current.mousePosition.y > bottomSplitter.pos && dragClipItem != null)
 				{
+					if(!selectedClipItems.Contains(dragClipItem))
+					{
+						selectedClipItem = dragClipItem;
+						selectedClipItems.Clear();
+						selectedClipItems.Add(selectedClipItem);
+					}
 					DragAndDrop.PrepareStartDrag();
 					Object[] objects = new Object[1];
-					objects[0] = dragClipItem.AsObject;
+					objects[0] = dragClipItem.Clip;
 					DragAndDrop.objectReferences = objects;
-					DragAndDrop.StartDrag("Dragging Audio Item");
+					DragAndDrop.StartDrag("Dragging " + dragClipItem.Name + " (AudioClip)");
 					Event.current.Use();
 				}
-				else if(Event.current.mousePosition.x < leftSplitter.pos && dragTreeItem != null)
+				else if(Event.current.mousePosition.x < leftSplitter.pos && dragHierarchyItem != null)
 				{
+					if(!selectedHierarchyItems.Contains(dragHierarchyItem))
+					{
+						selectedHierarchyItem = dragHierarchyItem;
+						selectedHierarchyItems.Clear();
+						selectedHierarchyItems.Add(selectedHierarchyItem);
+					}
 					DragAndDrop.PrepareStartDrag();
 					Object[] objects = new Object[1];
-					objects[0] = dragTreeItem.AsObject;
+					objects[0] = dragHierarchyItem.AsObject;
 					DragAndDrop.objectReferences = objects;
-					DragAndDrop.StartDrag("Dragging Audio Item");
+					DragAndDrop.StartDrag("Dragging " + dragHierarchyItem.Name + " (" + objects[0].GetType() + ")");
 					Event.current.Use();
 				}
 				break;
@@ -1302,7 +1496,7 @@ public class SECTR_AudioWindow : SECTR_Window
 					Object dragObject = DragAndDrop.objectReferences[0];
 					if(dragObject && dragObject.GetType() == typeof(AudioClip))
 					{
-						foreach(TreeItem item in displayedTreeItems)
+						foreach(TreeItem item in displayedHierarchyItems)
 						{
 							if(item.WindowRect.Contains(Event.current.mousePosition))
 							{
@@ -1313,14 +1507,14 @@ public class SECTR_AudioWindow : SECTR_Window
 										SECTR_Undo.Record(item.Cue, "Add Clip");
 										foreach(TreeItem selectedItem in selectedClipItems)
 										{
-											if(selectedItem.Clip != null)
+											if(selectedItem.Importer != null)
 											{
 												item.Cue.AddClip(selectedItem.Clip, false);
 											}
 										}
-										selectedTreeItem = item;
-										selectedTreeItems.Clear();
-										selectedTreeItems.Add(selectedTreeItem);
+										selectedHierarchyItem = item;
+										selectedHierarchyItems.Clear();
+										selectedHierarchyItems.Add(selectedHierarchyItem);
 										DragAndDrop.AcceptDrag();
 										Repaint();
 									}
@@ -1328,15 +1522,17 @@ public class SECTR_AudioWindow : SECTR_Window
 									{
 										foreach(TreeItem selectedItem in selectedClipItems)
 										{
-											if(selectedItem.Clip != null)
+											if(selectedItem.Importer != null)
 											{
 												TreeItem newItem = _CreateTreeItem(item, false, selectedItem.Clip.name);
 												if(newItem != null)
 												{
 													SECTR_AudioCue cue = newItem.Cue;
-													AudioImporter importer = (AudioImporter)AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(selectedItem.Clip));
+#if UNITY_4
+													AudioImporter importer = selectedItem.Importer;
 													cue.Loops = importer.loopable;
 													cue.Spatialization = importer.threeD ? SECTR_AudioCue.Spatializations.Local3D : SECTR_AudioCue.Spatializations.Simple2D;
+#endif
 													cue.AddClip(selectedItem.Clip, false);
 													newItem.Rename = selectedClipItems.Count == 1;
 												}
@@ -1360,7 +1556,7 @@ public class SECTR_AudioWindow : SECTR_Window
 					else if(dragObject && dragObject.GetType() == typeof(SECTR_AudioBus))
 					{
 						SECTR_AudioBus bus = ((SECTR_AudioBus)dragObject);
-						foreach(TreeItem item in displayedTreeItems)
+						foreach(TreeItem item in displayedHierarchyItems)
 						{
 							if(item.WindowRect.Contains(Event.current.mousePosition))
 							{
@@ -1369,7 +1565,7 @@ public class SECTR_AudioWindow : SECTR_Window
 								{
 									if(Event.current.type == EventType.DragPerform)
 									{
-										foreach(TreeItem selectedItem in selectedTreeItems)
+										foreach(TreeItem selectedItem in selectedHierarchyItems)
 										{
 											if(selectedItem.Bus != null && selectedItem.Bus.Parent != item.Bus && !selectedItem.Bus.IsAncestorOf(item.Bus) &&
 											   SECTR_VC.IsEditable(selectedItem.Path))
@@ -1394,7 +1590,7 @@ public class SECTR_AudioWindow : SECTR_Window
 					else if(dragObject && dragObject.GetType() == typeof(SECTR_AudioCue))
 					{
 						SECTR_AudioCue cue = ((SECTR_AudioCue)dragObject);
-						foreach(TreeItem item in displayedTreeItems)
+						foreach(TreeItem item in displayedHierarchyItems)
 						{
 							if(item.WindowRect.Contains(Event.current.mousePosition))
 							{
@@ -1403,7 +1599,7 @@ public class SECTR_AudioWindow : SECTR_Window
 								{
 									if(Event.current.type == EventType.DragPerform)
 									{
-										foreach(TreeItem selectedItem in selectedTreeItems)
+										foreach(TreeItem selectedItem in selectedHierarchyItems)
 										{
 											if(selectedItem.Cue && selectedItem.Cue.Bus != item.Bus &&
 											   SECTR_VC.IsEditable(selectedItem.Path))
@@ -1434,27 +1630,55 @@ public class SECTR_AudioWindow : SECTR_Window
 				}
 				break;
 			case EventType.KeyUp:
-				if(selectedTreeItem != null && selectedTreeItem.Rename)
+				bool renameHierarchy = lastSelectedHierarchy && selectedHierarchyItem != null && selectedHierarchyItem.Rename;
+				bool renameClip = !lastSelectedHierarchy && selectedClipItem != null && selectedClipItem.Rename;
+				if(renameHierarchy || renameClip)
 				{
 					if(Event.current.keyCode == KeyCode.Escape)
 					{
-						selectedTreeItem.Name = selectedTreeItem.DefaultName;
-						selectedTreeItem.Rename = false;
-						Repaint();
+						if(renameHierarchy)
+						{
+							_CancelRename(selectedHierarchyItem);
+						}
+						else if(renameClip)
+						{
+							_CancelRename(selectedClipItem);
+						}
 					}
 					else if(Event.current.keyCode == KeyCode.Return)
 					{
-						string newPath = selectedTreeItem.Path.Replace(selectedTreeItem.DefaultName + ".asset", selectedTreeItem.Name + ".asset");
-						bool bus = selectedTreeItem.Bus != null;
-						bool cue = selectedTreeItem.Cue != null;
-						bool clip = selectedTreeItem.Clip != null;
-						AssetDatabase.RenameAsset(selectedTreeItem.Path, selectedTreeItem.Name);
-						SECTR_VC.WaitForVC();
+						string newPath = "";
+						bool cue = selectedHierarchyItem != null && selectedHierarchyItem.Cue != null;
+						bool bus = selectedHierarchyItem != null && selectedHierarchyItem.Bus != null;
+						bool importer = selectedClipItem != null && selectedClipItem.Importer != null;
 
-						_RemoveTreeItem(selectedTreeItem);
+						if(renameHierarchy)
+						{
+							newPath = selectedHierarchyItem.Path.Replace(selectedHierarchyItem.DefaultName, selectedHierarchyItem.Name);
+							if(newPath == selectedHierarchyItem.Path)
+							{
+								_CancelRename(selectedHierarchyItem);
+								return;
+							}
+							AssetDatabase.RenameAsset(selectedHierarchyItem.Path, selectedHierarchyItem.Name);
+							SECTR_VC.WaitForVC();
+							_RemoveHierarchyItem(selectedHierarchyItem);
+						}
+						else if(renameClip)
+						{
+							newPath = selectedClipItem.Path.Replace(Path.GetFileNameWithoutExtension(selectedClipItem.Path), selectedClipItem.Name);
+							if(newPath == selectedClipItem.Path)
+							{
+								_CancelRename(selectedClipItem);
+								return;
+							}
+							AssetDatabase.RenameAsset(selectedClipItem.Path, selectedClipItem.Name);
+							SECTR_VC.WaitForVC();
+							_RemoveClipItem(selectedClipItem);
+						}
 
 						TreeItem renamedItem = null;
-						if(bus)
+						if(renameHierarchy && cue)
 						{
 							SECTR_AudioBus newBus = (SECTR_AudioBus)AssetDatabase.LoadAssetAtPath(newPath, typeof(SECTR_AudioBus));
 							if(newBus)
@@ -1462,7 +1686,7 @@ public class SECTR_AudioWindow : SECTR_Window
 								renamedItem = new TreeItem(this, newBus, newPath);
 							}
 						}
-						else if(cue)
+						else if(renameHierarchy && bus)
 						{
 							SECTR_AudioCue newCue = (SECTR_AudioCue)AssetDatabase.LoadAssetAtPath(newPath, typeof(SECTR_AudioCue));
 							if(newCue)
@@ -1470,19 +1694,34 @@ public class SECTR_AudioWindow : SECTR_Window
 								renamedItem = new TreeItem(this, newCue, newPath);
 							}
 						}
-						else if(clip)
+						else if(renameClip && importer)
 						{
-							AudioClip newClip = (AudioClip)AssetDatabase.LoadAssetAtPath(newPath, typeof(AudioClip));
-							if(newClip)
+							AudioImporter newImporter = (AudioImporter)AssetImporter.GetAtPath(newPath);
+							if(newImporter)
 							{
-								renamedItem = new TreeItem(this, newClip, newPath);
+								renamedItem = new TreeItem(newImporter, newPath, Path.GetFileName(newPath));
 							}
+							AudioClipFolder folder = clipItems[Path.GetDirectoryName(newPath) + "/"];
+							folder.items.Add(renamedItem);
+							folder.items.Sort(delegate(TreeItem A, TreeItem B) 
+							{
+								return string.Compare(A.DefaultName, B.DefaultName);
+							});
 						}
 						if(renamedItem != null)
 						{
-							selectedTreeItem = renamedItem;
-							selectedTreeItems.Clear();
-							selectedTreeItems.Add(selectedTreeItem);
+							if(renameHierarchy)
+							{
+								selectedHierarchyItem = renamedItem;
+								selectedHierarchyItems.Clear();
+								selectedHierarchyItems.Add(selectedHierarchyItem);
+							}
+							else if(renameClip)
+							{
+								selectedClipItem = renamedItem;
+								selectedClipItems.Clear();
+								selectedClipItems.Add(selectedHierarchyItem);
+							}
 						}
 						else
 						{
@@ -1493,55 +1732,65 @@ public class SECTR_AudioWindow : SECTR_Window
 						Repaint();
 					}
 				}
-				else if(changingBitrate)
-				{
-					if(Event.current.keyCode == KeyCode.Return)
-					{
-						changingBitrate = false;
-						confirmBitrate = true;
-						GUI.FocusControl(null);
-						Repaint();
-					}
-				}
 				else
 				{
 					switch(Event.current.keyCode)
 					{
 					case KeyCode.Return:
-						if(selectedTreeItem != null && SECTR_VC.IsEditable(selectedTreeItem.Path))
+						if(string.IsNullOrEmpty(GUI.GetNameOfFocusedControl()))
 						{
-							selectedTreeItem.Rename = true;
+							if(lastSelectedHierarchy && selectedHierarchyItem != null && SECTR_VC.IsEditable(selectedHierarchyItem.Path))
+							{
+								_StartRenameItem(selectedHierarchyItem, true);
+							}
+							else if(!lastSelectedHierarchy && selectedClipItem != null && SECTR_VC.IsEditable(selectedClipItem.Path))
+							{
+								_StartRenameItem(selectedClipItem, false);
+								Repaint();
+							}
+						}
+						else if(changedAudioClip)
+						{
+							GUI.FocusControl(null);
 							Repaint();
 						}
 						break;
 					case KeyCode.D:
-						if(selectedTreeItem != null &&
-					#if UNITY_EDITOR_OSX
-						Event.current.command
-					#else
-						Event.current.control
-					#endif
-						)
+						if(heldControl)
 						{
-							_DuplicateSelectedHierarchyItem();
+							if(lastSelectedHierarchy && selectedHierarchyItem != null)
+							{
+								_DuplicateSelected(true);
+							}
+							else if(!lastSelectedHierarchy && selectedClipItem != null)
+							{
+								_DuplicateSelected(false);
+							}
 						}
 						break;
 					case KeyCode.Delete:
 					case KeyCode.Backspace:
-						if(selectedTreeItem != null && SECTR_VC.IsEditable(selectedTreeItem.Path))
+						if(string.IsNullOrEmpty(GUI.GetNameOfFocusedControl()))
 						{
-							_DeleteSelectedHierarchyItem();
+							if(lastSelectedHierarchy && selectedHierarchyItem != null && SECTR_VC.IsEditable(selectedHierarchyItem.Path))
+							{
+								_DeleteSelected(true);
+							}
+							else if(!lastSelectedHierarchy && selectedClipItem != null && SECTR_VC.IsEditable(selectedClipItem.Path))
+							{
+								_DeleteSelected(false);
+							}
 						}
 						break;
 					case KeyCode.Escape:
 						SECTR_AudioSystem.StopAudition();
 						break;
 					case KeyCode.Space:
-						if(lastSelectedTree && selectedTreeItem != null && selectedTreeItem.Cue != null)
+						if(lastSelectedHierarchy && selectedHierarchyItem != null && selectedHierarchyItem.Cue != null)
 						{
-							SECTR_AudioSystem.Audition(selectedTreeItem.Cue);
+							SECTR_AudioSystem.Audition(selectedHierarchyItem.Cue);
 						}
-						else if(!lastSelectedTree && selectedClipItem != null)
+						else if(!lastSelectedHierarchy && selectedClipItem != null)
 						{
 							SECTR_AudioSystem.Audition(selectedClipItem.Clip);
 						}
@@ -1550,39 +1799,51 @@ public class SECTR_AudioWindow : SECTR_Window
 					case KeyCode.DownArrow:
 					case KeyCode.LeftArrow:
 					case KeyCode.RightArrow:
-						if(lastSelectedTree && selectedTreeItem != null)
+						if(lastSelectedHierarchy && selectedHierarchyItem != null)
 						{
-							int numDisplayed = displayedTreeItems.Count;
+							int numDisplayed = displayedHierarchyItems.Count;
 							for(int treeIndex = 0; treeIndex < numDisplayed; ++treeIndex)
 							{
-								if(displayedTreeItems[treeIndex] == selectedTreeItem)
+								if(displayedHierarchyItems[treeIndex] == selectedHierarchyItem)
 								{
 									if(Event.current.keyCode == KeyCode.UpArrow && treeIndex > 0)
 									{
-										selectedTreeItem = displayedTreeItems[treeIndex - 1];
-										selectedTreeItems.Clear();
-										selectedTreeItems.Add(selectedTreeItem);
+										selectedHierarchyItem = displayedHierarchyItems[treeIndex - 1];
+										if(!Event.current.shift)
+										{
+											selectedHierarchyItems.Clear();
+										}
+										if(!selectedHierarchyItems.Contains(selectedHierarchyItem))
+										{
+											selectedHierarchyItems.Add(selectedHierarchyItem);
+										}
 									}
 									else if(Event.current.keyCode == KeyCode.DownArrow && treeIndex < numDisplayed - 1)
 									{
-										selectedTreeItem = displayedTreeItems[treeIndex + 1];
-										selectedTreeItems.Clear();
-										selectedTreeItems.Add(selectedTreeItem);
+										selectedHierarchyItem = displayedHierarchyItems[treeIndex + 1];
+										if(!Event.current.shift)
+										{
+											selectedHierarchyItems.Clear();
+										}
+										if(!selectedHierarchyItems.Contains(selectedHierarchyItem))
+										{
+											selectedHierarchyItems.Add(selectedHierarchyItem);
+										}
 									}
-									else if(Event.current.keyCode == KeyCode.RightArrow && selectedTreeItem.Bus != null)
+									else if(Event.current.keyCode == KeyCode.RightArrow && selectedHierarchyItem.Bus != null)
 									{
-										selectedTreeItem.Expanded = true;
+										selectedHierarchyItem.Expanded = true;
 									}
-									else if(Event.current.keyCode == KeyCode.LeftArrow && selectedTreeItem.Bus != null)
+									else if(Event.current.keyCode == KeyCode.LeftArrow && selectedHierarchyItem.Bus != null)
 									{
-										selectedTreeItem.Expanded = false;
+										selectedHierarchyItem.Expanded = false;
 									}
 									Repaint();
 									break;
 								}
 							}
 						}
-						else if(!lastSelectedTree && selectedClipItem != null)
+						else if(!lastSelectedHierarchy && selectedClipItem != null)
 						{
 							int numDisplayed = displayedClipItems.Count;
 							for(int treeIndex = 0; treeIndex < numDisplayed; ++treeIndex)
@@ -1592,8 +1853,14 @@ public class SECTR_AudioWindow : SECTR_Window
 									if(Event.current.keyCode == KeyCode.UpArrow && treeIndex > 0)
 									{
 										selectedClipItem = displayedClipItems[treeIndex - 1];
-										selectedClipItems.Clear();
-										selectedClipItems.Add(selectedClipItem);
+										if(!Event.current.shift)
+										{
+											selectedClipItems.Clear();
+										}
+										if(!selectedClipItems.Contains(selectedClipItem))
+										{
+											selectedClipItems.Add(selectedClipItem);
+										}
 										if(selectedClipItem.ScrollRect.y < clipScrollPos.y)
 										{
 											clipScrollPos.y = selectedClipItem.ScrollRect.y;
@@ -1602,8 +1869,14 @@ public class SECTR_AudioWindow : SECTR_Window
 									else if(Event.current.keyCode == KeyCode.DownArrow && treeIndex < numDisplayed - 1)
 									{
 										selectedClipItem = displayedClipItems[treeIndex + 1];
-										selectedClipItems.Clear();
-										selectedClipItems.Add(selectedClipItem);
+										if(!Event.current.shift)
+										{
+											selectedClipItems.Clear();
+										}
+										if(!selectedClipItems.Contains(selectedClipItem))
+										{
+											selectedClipItems.Add(selectedClipItem);
+										}
 										if(selectedClipItem.ScrollRect.y > clipScrollPos.y + clipScrollRect.height)
 										{
 											clipScrollPos.y = selectedClipItem.ScrollRect.y;
@@ -1654,7 +1927,7 @@ public class SECTR_AudioWindow : SECTR_Window
 					if(Event.current.mousePosition.x < leftSplitter.pos && Event.current.mousePosition.y < bottomSplitter.pos)
 					{
 						TreeItem cloneItem = null;
-						foreach(TreeItem item in displayedTreeItems)
+						foreach(TreeItem item in displayedHierarchyItems)
 						{
 							if(item.WindowRect.Contains(Event.current.mousePosition))
 							{
@@ -1667,7 +1940,7 @@ public class SECTR_AudioWindow : SECTR_Window
 									{
 										menu.AddItem(new GUIContent("Check Out"), false, delegate() 
 										{
-											foreach(TreeItem selectedItem in selectedTreeItems)
+											foreach(TreeItem selectedItem in selectedHierarchyItems)
 											{
 												SECTR_VC.CheckOut(selectedItem.Path);
 											}
@@ -1679,7 +1952,7 @@ public class SECTR_AudioWindow : SECTR_Window
 										{
 											if(EditorUtility.DisplayDialog("Are you sure?", "Reverting will discard all changes to " + item.Name + ". This cannot be Undone." , "Ok", "Cancel") )
 											{
-												foreach(TreeItem selectedItem in selectedTreeItems)
+												foreach(TreeItem selectedItem in selectedHierarchyItems)
 												{
 													SECTR_VC.Revert(selectedItem.Path);
 												}
@@ -1697,31 +1970,26 @@ public class SECTR_AudioWindow : SECTR_Window
 								});
 								menu.AddSeparator("");
 
-								menu.AddItem(new GUIContent("Duplicate"), false, _DuplicateSelectedHierarchyItem);
+								menu.AddItem(new GUIContent("Duplicate"), false, delegate()
+								{
+									_DuplicateSelected(true);
+								});
 
 								if(editable)
 								{
 									menu.AddItem(new GUIContent("Rename"), false, delegate() 
 									{
-										selectedTreeItem = item;
-										selectedTreeItems.Clear();
-										selectedTreeItems.Add(selectedTreeItem);
-										selectedTreeItem.Rename = true;
-										propertyEditor = null;
-										Repaint();
+										_StartRenameItem(item, true);
+									});
+
+									menu.AddItem(new GUIContent("Delete"), false, delegate() 
+									{
+										_DeleteSelected(true);
 									});
 								}
 								else
 								{
 									menu.AddSeparator("Rename");
-								}
-
-								if(editable)
-								{
-									menu.AddItem(new GUIContent("Delete"), false, _DeleteSelectedHierarchyItem);
-								}
-								else
-								{
 									menu.AddSeparator("Delete");
 								}
 
@@ -1747,10 +2015,11 @@ public class SECTR_AudioWindow : SECTR_Window
 						{
 							if(item.WindowRect.Contains(Event.current.mousePosition))
 							{
+								bool editable = !hasVC || SECTR_VC.IsEditable(item.Path);
 								// Project Items
 								if(SECTR_VC.HasVC())
 								{
-									if(!SECTR_VC.IsEditable(item.Path))
+									if(editable)
 									{
 										menu.AddItem(new GUIContent("Check Out"), false, delegate()
 										{
@@ -1782,15 +2051,40 @@ public class SECTR_AudioWindow : SECTR_Window
 								});
 								menu.AddSeparator("");
 
+								menu.AddItem(new GUIContent("Duplicate"), false, delegate()
+								{
+									_DuplicateSelected(false);
+								});
+								
+								if(editable)
+								{
+									menu.AddItem(new GUIContent("Rename"), false, delegate() 
+									{
+										_StartRenameItem(item, false);
+									});
+									menu.AddItem(new GUIContent("Delete"), false, delegate() 
+									{
+										_DeleteSelected(false);
+									});
+								}
+								else
+								{
+									menu.AddSeparator("Rename");
+									menu.AddSeparator("Delete");
+								}
+
+								menu.AddSeparator("");
+
 								// Creation Items
-								if(selectedTreeItem != null && selectedTreeItem.Cue != null && !selectedTreeItem.Cue.HasClip(item.Clip))
+								if(selectedHierarchyItem != null && selectedHierarchyItem.Cue != null && 
+								   !selectedHierarchyItem.Cue.HasClip(item.Clip))
 								{
 									menu.AddItem(new GUIContent("Add Selected to Cue"), false, delegate()
 									{
-										SECTR_Undo.Record(selectedTreeItem.Cue, "Add Clips");
+										SECTR_Undo.Record(selectedHierarchyItem.Cue, "Add Clips");
 										foreach(TreeItem selectedItem in selectedClipItems)
 										{
-											selectedTreeItem.Cue.AddClip(selectedItem.Clip, false);
+											selectedHierarchyItem.Cue.AddClip(selectedItem.Clip, false);
 										}
 										Repaint();
 									});
@@ -1803,14 +2097,16 @@ public class SECTR_AudioWindow : SECTR_Window
 								{
 									foreach(TreeItem selectedItem in selectedClipItems)
 									{
-										TreeItem newItem = _CreateTreeItem(selectedTreeItem, false, selectedItem.Clip.name);
+										TreeItem newItem = _CreateTreeItem(selectedHierarchyItem, false, selectedItem.Clip.name);
 										if(newItem != null)
 										{
 											newItem.Rename = selectedClipItems.Count == 1;
 											SECTR_AudioCue cue = newItem.Cue;
+#if UNITY_4_0
 											AudioImporter importer = (AudioImporter)AssetImporter.GetAtPath(selectedItem.Path);
 											cue.Spatialization = importer.threeD ? SECTR_AudioCue.Spatializations.Local3D : SECTR_AudioCue.Spatializations.Simple2D;
 											cue.Loops = importer.loopable;
+#endif
 											cue.AddClip(selectedItem.Clip, false);
 										}
 									}
@@ -1849,7 +2145,7 @@ public class SECTR_AudioWindow : SECTR_Window
 					{
 						".asset",
 					};
-					bakeMaster = SECTR_ComputeRMS.BakeList(SECTR_Asset.GetAll<SECTR_AudioCue>(audioRootPath, extensions, ref paths));
+					bakeMaster = SECTR_ComputeRMS.BakeList(SECTR_Asset.GetAll<SECTR_AudioCue>(audioRootPath, extensions, ref paths, false));
 				});
 				menu.AddSeparator(null);
 				menu.AddItem(new GUIContent("Refresh Assets"), false, delegate() 
@@ -1926,29 +2222,43 @@ public class SECTR_AudioWindow : SECTR_Window
 		}
 
 		newItem.Rename = true;
-		selectedTreeItem = newItem;
-		selectedTreeItems.Clear();
-		selectedTreeItems.Add(selectedTreeItem);
+		selectedHierarchyItem = newItem;
+		selectedHierarchyItems.Clear();
+		selectedHierarchyItems.Add(selectedHierarchyItem);
 		propertyEditor = null;
 		return newItem;
 	}
 
-	private void _RemoveTreeItem(TreeItem item)
+	private void _RemoveHierarchyItem(TreeItem item)
 	{
 		if(item.Bus)
 		{
 			EditorPrefs.DeleteKey(expandedPrefPrefix + item.Path);
 		}
-		if(item == selectedTreeItem)
+		if(item == selectedHierarchyItem)
 		{
-			selectedTreeItem = null;
-			selectedTreeItems.Clear();
+			selectedHierarchyItem = null;
+			selectedHierarchyItems.Clear();
 		}
+		hierarchyItems.Remove(item.AsObject);
+	}
+
+	private void _RemoveClipItem(TreeItem item)
+	{
 		if(item == selectedClipItem)
 		{
 			selectedClipItem = null;
+			selectedHierarchyItems.Clear();
 		}
-		hierarchyItems.Remove(item.AsObject);
+		string dirPath;
+		string fileName;
+		SECTR_Asset.SplitPath(item.Path, out dirPath, out fileName);
+		AudioClipFolder clipFolder = clipItems[dirPath];
+		clipFolder.items.Remove(item);
+		if(clipFolder.items.Count == 0)
+		{
+			clipItems.Remove(dirPath);
+		}
 	}
 
 	private void _SelectAudioRoot()
@@ -1960,44 +2270,100 @@ public class SECTR_AudioWindow : SECTR_Window
 		}
 	}
 
-	private void _DeleteSelectedHierarchyItem()
+	private void _DeleteSelected(bool hierarchy)
 	{
-		if(EditorUtility.DisplayDialog("Are you sure?", "Are you sure you want to delete the selected clips? This cannot be Undone." , "Ok", "Cancel") )
+		if(EditorUtility.DisplayDialog("Are you sure?", "Are you sure you want to delete the selected " + (hierarchy ? "cues" : "clips") + "? This cannot be Undone." , "Ok", "Cancel") )
 		{
-			List<TreeItem> oldSelection = new List<TreeItem>(selectedTreeItems);
+			List<TreeItem> oldSelection = new List<TreeItem>(hierarchy ? selectedHierarchyItems : selectedClipItems);
 			foreach(TreeItem selectedItem in oldSelection)
 			{
 				if(selectedItem.Bus != null && (selectedItem.Bus.Children.Count > 0 || selectedItem.Bus.Cues.Count > 0))
 				{
 					EditorUtility.DisplayDialog("Cannot Delete", selectedItem.Name + " cannot be deleted while it has children.", "Ok"); 
 				}
-				else
+				else if(selectedItem.Cue || selectedItem.Bus)
 				{
-					_RemoveTreeItem(selectedItem);
+					_RemoveHierarchyItem(selectedItem);
 					ScriptableObject.DestroyImmediate(selectedItem.AsObject, true);
+					AssetDatabase.DeleteAsset(selectedItem.Path);
+				}
+				else if(selectedItem.Clip)
+				{
+					_RemoveClipItem(selectedItem);
+					ScriptableObject.DestroyImmediate(selectedItem.Clip, true);
 					AssetDatabase.DeleteAsset(selectedItem.Path);
 				}
 			}
 			AssetDatabase.SaveAssets();
 			AssetDatabase.Refresh();
 			Resources.UnloadUnusedAssets();
-			selectedTreeItem = null;
-			selectedTreeItems.Clear();
+			if(hierarchy)
+			{
+				selectedHierarchyItem = null;
+				selectedHierarchyItems.Clear();
+			}
+			else
+			{
+				selectedClipItem = null;
+				selectedClipItems.Clear();
+			}
 			Repaint();
 		}
 	}
 
-	private void _DuplicateSelectedHierarchyItem()
+	private void _StartRenameItem(TreeItem item, bool hierarchy)
 	{
-		List<TreeItem> newItems = new List<TreeItem>(selectedTreeItems.Count);
-		foreach(TreeItem selectedItem in selectedTreeItems)
+		if(item != null)
+		{
+			if(selectedHierarchyItem != null && selectedHierarchyItem.Rename)
+			{
+				selectedHierarchyItem.Rename = false;
+			}
+			if(selectedClipItem != null && selectedClipItem.Rename)
+			{
+				selectedClipItem.Rename = false;
+			}
+
+			if(hierarchy)
+			{
+				selectedHierarchyItem = item;
+				selectedHierarchyItems.Clear();
+				selectedHierarchyItems.Add(selectedHierarchyItem);
+			}
+			else
+			{
+				selectedClipItem = item;
+				selectedClipItems.Clear();
+				selectedClipItems.Add(selectedClipItem);
+				selectedClipItem.Name = Path.GetFileNameWithoutExtension(selectedClipItem.Path);
+			}
+			item.Rename = true;
+			propertyEditor = null;
+			Repaint();
+		}
+	}
+
+	private void _CancelRename(TreeItem item)
+	{
+		item.Name = item.DefaultName;
+		item.Rename = false;
+		GUI.FocusControl(null);
+		Repaint();
+	}
+
+	private void _DuplicateSelected(bool hierarchy)
+	{
+		List<TreeItem> selectedItems = hierarchy ? selectedHierarchyItems : selectedClipItems;
+		List<TreeItem> newItems = new List<TreeItem>(selectedItems.Count);
+		foreach(TreeItem selectedItem in selectedItems)
 		{
 			TreeItem newItem = null;
 			string dirPath = "";
 			string fileName = "";
 			SECTR_Asset.SplitPath(selectedItem.Path, out dirPath, out fileName);
-			
-			string newPath = dirPath + selectedItem.Name + " Copy.asset";
+
+			string copyName = selectedItem.Name + " Copy";
+			string newPath = dirPath + copyName + Path.GetExtension(fileName);
 			if(AssetDatabase.CopyAsset(selectedItem.Path, newPath))
 			{
 				SECTR_VC.WaitForVC();
@@ -2011,6 +2377,12 @@ public class SECTR_AudioWindow : SECTR_Window
 					SECTR_AudioCue cue = SECTR_Asset.Load<SECTR_AudioCue>(newPath);
 					newItem = new TreeItem(this, cue, newPath);
 				}
+				else if(selectedItem.Clip)
+				{
+					newItem = new TreeItem((AudioImporter)AssetImporter.GetAtPath(newPath), newPath, copyName);
+					AudioClipFolder folder = clipItems[dirPath];
+					folder.items.Add(newItem);
+				}
 				
 				if(newItem != null)
 				{
@@ -2018,8 +2390,16 @@ public class SECTR_AudioWindow : SECTR_Window
 				}
 			}
 		}
-		selectedTreeItems = newItems;
-		selectedTreeItem = selectedTreeItems.Count > 0 ? selectedTreeItems[0] : null;
+		if(hierarchy)
+		{
+			selectedHierarchyItems = newItems;
+			selectedHierarchyItem = selectedItems.Count > 0 ? selectedItems[0] : null;
+		}
+		else
+		{
+			selectedClipItems = newItems;
+			selectedClipItem = selectedItems.Count > 0 ? selectedItems[0] : null;
+		}
 		propertyEditor = null;
 		Repaint();
 	}

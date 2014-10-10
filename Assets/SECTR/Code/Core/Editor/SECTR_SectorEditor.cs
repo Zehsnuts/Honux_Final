@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Nathan Martz
+// Copyright (c) 2014 Make Code Now! LLC
 
 using UnityEngine;
 using UnityEditor;
@@ -8,23 +8,36 @@ using System.Collections.Generic;
 [CanEditMultipleObjects]
 public class SECTR_SectorEditor : SECTR_MemberEditor
 {
+	bool terrainFoldout = false;
+
 	public override void OnInspectorGUI()
 	{
 		SECTR_Sector mySector = (SECTR_Sector)target;
-		serializedObject.Update();
-		if(mySector.GetComponent<Terrain>())
-		{
-			DrawProperty("TopTerrain");
-			DrawProperty("BottomTerrain");
-			DrawProperty("LeftTerrain");
-			DrawProperty("RightTerrain");
-		}
-		serializedObject.ApplyModifiedProperties(); 
+		 
 		base.OnInspectorGUI();
 		List<SECTR_Member.Child> sharedChildren = mySector.GetSharedChildren();
 		if(sharedChildren.Count > 0 && GUILayout.Button(new GUIContent("Fix Shared Children", "Adds Member components to any children that extend beyond this Sector and into other sectors.")))
 		{
 			MakeSharedChildrenMembers(mySector, sharedChildren, "Fix Shared Children");
+		}
+
+		if(mySector.GetComponentInChildren<Terrain>())
+		{
+			terrainFoldout = EditorGUILayout.Foldout(terrainFoldout, "Terrain Connections");
+			if(terrainFoldout)
+			{
+				serializedObject.Update();
+				DrawProperty("TopTerrain");
+				DrawProperty("BottomTerrain");
+				DrawProperty("LeftTerrain");
+				DrawProperty("RightTerrain");
+
+				if(GUILayout.Button("Reconnect Neighbors"))
+				{
+					mySector.ConnectTerrainNeighbors();
+				}
+				serializedObject.ApplyModifiedProperties();
+			}
 		}
 	}
 
@@ -54,6 +67,6 @@ public class SECTR_SectorEditor : SECTR_MemberEditor
 				SECTR_Undo.Created(newMember, undoName);
 			}
 		}
-		sector.ForceUpdate();
+		sector.ForceUpdate(true);
 	}
 }

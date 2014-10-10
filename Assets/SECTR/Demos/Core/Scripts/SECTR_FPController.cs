@@ -1,4 +1,7 @@
-﻿// Copyright (c) 2014 Nathan Martz
+﻿// Copyright (c) 2014 Make Code Now! LLC
+#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2 || UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6
+#define UNITY_4
+#endif
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -59,7 +62,12 @@ public abstract class SECTR_FPController : MonoBehaviour
 		}
 
 		// Ensure the cursor is always locked when set
-		Screen.lockCursor = LockCursor;
+#if UNITY_4
+		Screen.lockCursor = true;
+#else
+		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.visible = false;
+#endif
 		Quaternion targetOrientation = Quaternion.Euler(_targetDirection);
 
 		Vector2 mouseDelta;

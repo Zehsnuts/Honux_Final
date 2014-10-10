@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿// Copyright (c) 2014 Make Code Now! LLC
+#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2
+#define UNITY_4_EARLY
+#endif
+
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -111,9 +116,13 @@ public class SECTR_ComputeRMS : MonoBehaviour
 				}
 				return Mathf.Lerp(prevProgress, nextProgress, leastProgress);
 			}
-			else if(audio && audio.isPlaying)
+			else
 			{
-				return audio.time / audio.clip.length;
+				AudioSource audioSource = GetComponent<AudioSource>();
+				if(audioSource)
+				{
+					return audioSource.time / audioSource.clip.length;
+				}
 			}
 			return 1f;
 		}
@@ -200,8 +209,9 @@ public class SECTR_ComputeRMS : MonoBehaviour
 				int samplesPerSecond = AudioSettings.outputSampleRate * numChannels;
 				int numCompleteSamples = (int)(clipData.Clip.length * samplesPerSecond);
 				int sampleTolerance = samplesPerSecond / 10;
-				if((!audio.isPlaying && numSamples >= numCompleteSamples - sampleTolerance) ||
-				   (audio.isPlaying && numSamples >= numCompleteSamples))
+				AudioSource audioSource = GetComponent<AudioSource>();
+				if((!audioSource.isPlaying && numSamples >= numCompleteSamples - sampleTolerance) ||
+				   (audioSource.isPlaying && numSamples >= numCompleteSamples))
 				{
 					int numKeys = Mathf.CeilToInt((float)numSamples / (float)samplesPerSecond) + 1;
 					float[] hdrKeys = new float[numKeys];
@@ -258,7 +268,7 @@ public class SECTR_ComputeRMS : MonoBehaviour
 					}
 					finished = true;
 				}
-				else if(!audio.isPlaying)
+				else if(!audioSource.isPlaying)
 				{
 					finished = true;
 				}
@@ -292,24 +302,25 @@ public class SECTR_ComputeRMS : MonoBehaviour
 	{
 		this.cue = cue;
 		this.clipData = clipData;
-		audio.clip = clipData.Clip;
-		audio.dopplerLevel = 0;
-		#if !(UNITY_3_5 || UNITY_4_0)
-		audio.ignoreListenerPause = true;
-		audio.ignoreListenerVolume = true;
+		AudioSource audioSource = GetComponent<AudioSource>();
+		audioSource.clip = clipData.Clip;
+		audioSource.dopplerLevel = 0;
+		#if !UNITY_4_0
+		audioSource.ignoreListenerPause = true;
+		audioSource.ignoreListenerVolume = true;
 		#endif
-		#if !(UNITY_3_5 || UNITY_4_0 || UNITY_4_1 || UNITY_4_2)
-		audio.bypassListenerEffects = true;
-		audio.bypassReverbZones = true;
+		#if !UNITY_4_EARLY
+		audioSource.bypassListenerEffects = true;
+		audioSource.bypassReverbZones = true;
 		#endif
-		audio.maxDistance = float.MaxValue;
-		audio.minDistance = float.MaxValue;
-		audio.rolloffMode = AudioRolloffMode.Linear;
-		audio.playOnAwake = false;
-		audio.loop = false;
-		audio.volume = 1;
+		audioSource.maxDistance = float.MaxValue;
+		audioSource.minDistance = float.MaxValue;
+		audioSource.rolloffMode = AudioRolloffMode.Linear;
+		audioSource.playOnAwake = false;
+		audioSource.loop = false;
+		audioSource.volume = 1;
 		samples.Clear();
-		audio.Play();
+		GetComponent<AudioSource>().Play();
 	}
 	#endregion
 }

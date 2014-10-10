@@ -1,4 +1,7 @@
-﻿// Copyright (c) 2014 Nathan Martz
+﻿// Copyright (c) 2014 Make Code Now! LLC
+#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2 || UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6
+#define UNITY_4
+#endif
 
 using UnityEngine;
 #if UNITY_EDITOR
@@ -27,11 +30,14 @@ public class SECTR_AudioCue : ScriptableObject
 	#region Private Details
 	[SerializeField] [HideInInspector] private SECTR_AudioCue template;
 	[SerializeField] [HideInInspector] private SECTR_AudioBus bus;
-
-	private int templateReferences = 0;
+	
 	private int clipPlaybackIndex = -1;
 	private bool needsShuffling = true;
 	private bool pingPongIncrement = true;
+
+#if UNITY_EDITOR
+	private int templateReferences = 0;
+#endif
 	#endregion
 
 	#region Public Interface
@@ -139,11 +145,11 @@ public class SECTR_AudioCue : ScriptableObject
 	[SECTR_ToolTip("Determines if the sound should be mixed in HDR or LDR.")]
 	public bool HDR = false;
 	[SECTR_ToolTip("The loudness, in dB(SPL), of this HDR Cue.")]
-	public Vector2 Loudness = new Vector2(50, 50);
+	public Vector2 Loudness = new Vector2(50f, 50f);
 	[SECTR_ToolTip("The volume of this Cue.")]
-	public Vector2 Volume = new Vector2(1, 1);
+	public Vector2 Volume = Vector2.one;
 	[SECTR_ToolTip("The pitch adjustment of this Cue.")]
-	public Vector2 Pitch = new Vector2(1, 1);
+	public Vector2 Pitch = Vector2.one;
 	[SECTR_ToolTip("Set to true to auto-loop this Cue.")]
 	public bool Loops = false;
 	[SECTR_ToolTip("Cue priority, lower is more important.", 0, 255)]
@@ -178,6 +184,10 @@ public class SECTR_AudioCue : ScriptableObject
 	public float ProximityRange = 10;
 	[SECTR_ToolTip("Allows you to scale down the amount of occlusion applied to this Cue (when occluded).", 0f, 1f)]
 	public float OcclusionScale = 1f;
+	[SECTR_ToolTip("The chance that this cue will actually make a sound when played.", 0f, 1f)]
+	public float PlayProbability = 1f;
+	[SECTR_ToolTip("Random delay before start of playback.")]
+	public Vector2 Delay = Vector2.zero;
 
 	/// Accessor for the Template cue of this Cue. If set, the Template will override
 	/// all properties of the Cue except for the list of AudioClips and the parent Bus. 
@@ -187,17 +197,20 @@ public class SECTR_AudioCue : ScriptableObject
 		{
 			if(template != value && value != this)
 			{
+				#if UNITY_EDITOR
 				if(template)
 				{
-					template._RemoveTemplateRef();
+					template.RemoveTemplateRef();
 				}
+				#endif
+
 				template = value;
-				if(template)
-				{
-					template._AddTemplateRef();
-				}
 
 				#if UNITY_EDITOR
+				if(template)
+				{
+					template.AddTemplateRef();
+				}
 				EditorUtility.SetDirty(this);
 				#endif
 			}
@@ -241,16 +254,32 @@ public class SECTR_AudioCue : ScriptableObject
 	}
 
 	/// Returns true if this Cue is Local3D or Infinite3D.
-	public bool Is3D { get { return Spatialization != Spatializations.Simple2D; } }
+	public bool Is3D 
+	{ 
+		get { return Spatialization != Spatializations.Simple2D; } 
+	}
 
 	/// Returns true if this Cue is Simple2D or Infinite3D.
-	public bool IsLocal { get { return Spatialization == Spatializations.Simple2D || Spatialization == Spatializations.Infinite3D; } }
+	public bool IsLocal
+	{ 
+		get { return Spatialization == Spatializations.Simple2D || Spatialization == Spatializations.Infinite3D; } 
+	}
+
+	/// Returns the index of the currently playing AudioClip.
+	public int ClipIndex
+	{
+		get { return clipPlaybackIndex; }
+	}
 
 	/// Returns the next AudioClip to be played, as determined by the PlaybackMode.
 	public ClipData GetNextClip()
 	{
 		int numClips = AudioClips.Count;
-		if(numClips > 0)
+		if(numClips == 1)
+		{
+			return AudioClips[0];
+		}
+		else if(numClips > 0)
 		{
 			switch(PlaybackMode)
 			{
@@ -321,10 +350,32 @@ public class SECTR_AudioCue : ScriptableObject
 		return maxLength;
 	}
 
+	public void ResetClipIndex()
+	{
+		needsShuffling = true;
+		pingPongIncrement = true;
+		clipPlaybackIndex = -1;
+	}
+
 	#if UNITY_EDITOR
 	public bool IsTemplate
 	{
 		get { return templateReferences > 0; }
+	}
+
+	public int RefCount
+	{
+		get { return templateReferences; }
+	}
+
+	public void AddTemplateRef()
+	{
+		++templateReferences;
+	}
+	
+	public void RemoveTemplateRef()
+	{
+		--templateReferences;
 	}
 
 	public void AddClip(AudioClip clip, bool suppressWarnings)
@@ -339,6 +390,7 @@ public class SECTR_AudioCue : ScriptableObject
 
 			AudioClips.Add(new ClipData(clip));
 
+#if UNITY_4
 			string assetPath = AssetDatabase.GetAssetPath(clip);
 			if(!string.IsNullOrEmpty(assetPath))
 			{
@@ -348,11 +400,12 @@ public class SECTR_AudioCue : ScriptableObject
 					Debug.LogWarning("Should Not Add " + (Is3D ? "2D AudioClip to 3D" : "3D AudioClip to 2D") + " Cue");
 				}
 			}
+#endif
 
-			#if UNITY_EDITOR
 			EditorUtility.SetDirty(this);
-			#endif
 		}
+
+		CleanClips();
 	}
 	
 	public void RemoveClip(AudioClip clip)
@@ -365,10 +418,12 @@ public class SECTR_AudioCue : ScriptableObject
 				if(AudioClips[clipIndex].Clip == clip)
 				{
 					RemoveClip(clipIndex);
-					return;
+					break;
 				}
 			}
 		}
+
+		CleanClips();
 	}
 
 	public void RemoveClip(int clipIndex)
@@ -376,11 +431,10 @@ public class SECTR_AudioCue : ScriptableObject
 		if(clipIndex >= 0 && clipIndex < AudioClips.Count)
 		{
 			AudioClips.RemoveAt(clipIndex);
-			clipPlaybackIndex = Mathf.Clamp(clipPlaybackIndex, 0, AudioClips.Count - 1);
-			#if UNITY_EDITOR
 			EditorUtility.SetDirty(this);
-			#endif
 		}
+
+		CleanClips();
 	}
 
 	public bool HasClip(AudioClip clip)
@@ -396,19 +450,39 @@ public class SECTR_AudioCue : ScriptableObject
 		return false;
 	}
 
+	// Wipes the list of AudioClips
 	public void ClearClips()
 	{
 		AudioClips.Clear();
-		_Reset();
-
-		#if UNITY_EDITOR
+		ResetClipIndex();
 		EditorUtility.SetDirty(this);
-		#endif
 	}
 
-	public int RefCount
+	// Removes any NULL clips from the list, which can happen if, for instance,
+	// a user deletes a resource without removing it from the Cue.
+	public void CleanClips()
 	{
-		get { return templateReferences; }
+		int clipIndex = 0;
+		bool cleanedClip = false;
+		while(clipIndex < AudioClips.Count)
+		{
+			if(AudioClips[clipIndex] == null)
+			{
+				AudioClips.RemoveAt(clipIndex);
+				cleanedClip = true;
+			}
+			else
+			{
+				++clipIndex;
+			}
+		}
+
+		ResetClipIndex();
+
+		if(cleanedClip)
+		{
+			EditorUtility.SetDirty(this);
+		}
 	}
 	#endif
 	#endregion
@@ -416,13 +490,13 @@ public class SECTR_AudioCue : ScriptableObject
 	#region Unity Interface
 	void OnEnable()
 	{
+		ResetClipIndex();
+#if UNITY_EDITOR
 		if(template)
 		{
-			template._AddTemplateRef();
+			template.AddTemplateRef();
 		}
-		_Reset();
 
-#if UNITY_EDITOR
 		if(Bus != null)
 		{
 			Bus.AddCue(this);
@@ -432,12 +506,12 @@ public class SECTR_AudioCue : ScriptableObject
 	
 	void OnDisable()
 	{
+#if UNITY_EDITOR
 		if(template)
 		{
-			template._RemoveTemplateRef();
+			template.RemoveTemplateRef();
 		}
 
-#if UNITY_EDITOR
 		if(Bus != null)
 		{
 			Bus.RemoveCue(this);
@@ -447,16 +521,6 @@ public class SECTR_AudioCue : ScriptableObject
 	#endregion
 
 	#region Private Methods
-	private void _AddTemplateRef()
-	{
-		++templateReferences;
-	}
-
-	private void _RemoveTemplateRef()
-	{
-		--templateReferences;
-	}
-
 	private void _ShuffleClips()
 	{
 		System.Random rng = new System.Random();
@@ -468,13 +532,6 @@ public class SECTR_AudioCue : ScriptableObject
 			AudioClips[k] = AudioClips[n];  
 			AudioClips[n] = value;  
 		}
-	}
-
-	private void _Reset()
-	{
-		needsShuffling = true;
-		pingPongIncrement = true;
-		clipPlaybackIndex = -1;
 	}
 	#endregion
 

@@ -178,13 +178,15 @@ public class StagesProperties : MonoBehaviour
     IEnumerator CreateRobot()
     {
         Debug.Log("Robot turning on event");
-        _isRobotOn = true;
         yield return new WaitForSeconds(5);        
             EventManager.INSTANCE.CallRobotTurnOn();
+            _isRobotOn = true;
     }
 
     void TurnRobotOff()
-    {  
+    {
+        if (_isRobotOn)
+            return;
         Debug.Log("Stop robot creation");
         StopCoroutine("CreateRobot");
         _isRobotOn = false;

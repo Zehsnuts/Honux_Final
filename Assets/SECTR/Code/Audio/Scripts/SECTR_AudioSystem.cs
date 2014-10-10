@@ -1,6 +1,14 @@
-// Copyright (c) 2014 Nathan Martz
+// Copyright (c) 2014 Make Code Now! LLC
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
 #define AUDIO_HUD
+#endif
+
+#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2 || UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6
+#define UNITY_4
+#endif
+
+#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2
+#define UNITY_4_EARLY
 #endif
 
 using UnityEngine;
@@ -59,7 +67,7 @@ public class SECTR_AudioSystem : MonoBehaviour
 			// Looping sounds are always active, as are playing and paused sounds,
 			// except when fading out (i.e. stop has been called) at which point they
 			// are logically complete.
-			get { return (Loops || (source && (source.isPlaying || Paused))) && !FadingOut; }
+			get { return (Loops || Delayed || (source && (source.isPlaying || Paused))) && !FadingOut; }
 		}
 
 		public Vector3 Position
@@ -190,6 +198,13 @@ public class SECTR_AudioSystem : MonoBehaviour
 			_SetFlag(Flags.Local, true);
 			_SetFlag(Flags.ThreeD, true);
 			occlusionAlpha = 1;
+			if(source)
+			{
+				source.rolloffMode = AudioRolloffMode.Linear;
+				source.maxDistance = 1000000;
+				source.minDistance = source.maxDistance - EPSILON;
+				source.dopplerLevel = 0f;
+			}
 			Update(0f, true);
 		}
 
@@ -216,6 +231,7 @@ public class SECTR_AudioSystem : MonoBehaviour
 		public bool Occludable  	{ get { return (flags & Flags.Occludable) != 0; } }
 		public bool Occluded		{ get { return (flags & Flags.Occluded) != 0; } }
 		public bool ForcedInfinite	{ get { return (flags & Flags.ForcedInfinite) != 0; } }
+		public bool Delayed			{ get { return (flags & Flags.Delayed) != 0; } }
 
 		public SECTR_AudioBus Bus 	{ get { return audioCue != null ? audioCue.Bus : null; } }
 
@@ -325,7 +341,15 @@ public class SECTR_AudioSystem : MonoBehaviour
 			SECTR_AudioCue.ClipData nextClip = audioCue.GetNextClip();
 			if(nextClip != null && nextClip.Clip != null && _AcquireSource())
 			{
-				if(audioCue.SourceCue.FadeInTime > 0)
+#if !UNITY_4
+				if(!nextClip.Clip.audioDataLoaded)
+				{
+					nextClip.Clip.LoadAudioData();
+				}
+#endif
+
+				SECTR_AudioCue srcCue = audioCue.SourceCue;
+				if(srcCue.FadeInTime > 0)
 				{
 					fadeStarTime = currentTime;
 					_SetFlag(Flags.FadingIn, true);
@@ -339,11 +363,11 @@ public class SECTR_AudioSystem : MonoBehaviour
 
 				if(HDR)
 				{
-					baseVolumeLoudness = Random.Range(audioCue.SourceCue.Loudness.x, audioCue.SourceCue.Loudness.y);
+					baseVolumeLoudness = Random.Range(srcCue.Loudness.x, srcCue.Loudness.y);
 				}
 				else
 				{
-					baseVolumeLoudness = Random.Range(audioCue.SourceCue.Volume.x, audioCue.SourceCue.Volume.y);
+					baseVolumeLoudness = Random.Range(srcCue.Volume.x, srcCue.Volume.y);
 				}
 				baseVolumeLoudness *= nextClip.Volume;
 
@@ -364,7 +388,15 @@ public class SECTR_AudioSystem : MonoBehaviour
 				{
 					_SetFlag(Flags.Paused, false);
 					source.clip = nextClip.Clip;
-					source.Play();
+					if(srcCue.Delay.y > 0f)
+					{
+						_SetFlag(Flags.Delayed, true);
+						nextTestTime = currentTime + Random.Range(srcCue.Delay.x, srcCue.Delay.y);
+					}
+					else
+					{
+						source.Play();
+					}
 				}
 			}
 		}
@@ -394,6 +426,20 @@ public class SECTR_AudioSystem : MonoBehaviour
 		// The workhorse function of Instance, updates volume, position, etc.
 		public void Update(float deltaTime, bool volumeOnly)
 		{
+			if(Delayed)
+			{
+				if(currentTime >= nextTestTime)
+				{
+					source.Play();
+					_SetFlag(Flags.Delayed, false);
+					_ScheduleNextTest();
+				}
+				else
+				{
+					return;
+				}
+			}
+
 			Vector3 worldSpacePosition;
 			if(ThreeD)
 			{
@@ -557,28 +603,35 @@ public class SECTR_AudioSystem : MonoBehaviour
 			if(source && (source.isPlaying || Paused) && !Local && system.BlendNearbySounds)
 			{
 				float listenerDistSqr = Vector3.SqrMagnitude(SECTR_AudioSystem.Listener.position - worldSpacePosition);
+				float spatialBlend = 0f;
 				if(listenerDistSqr <= system.NearBlendRange.x * system.NearBlendRange.x)
 				{
-					source.panLevel = 0f;
+					spatialBlend = 0f;
 				}
 				else if(listenerDistSqr <= system.NearBlendRange.y * system.NearBlendRange.y)
 			   	{
-					source.panLevel = Mathf.Clamp01((Mathf.Sqrt(listenerDistSqr) - system.NearBlendRange.x) / (system.NearBlendRange.y - system.NearBlendRange.x));
+					spatialBlend = Mathf.Clamp01((Mathf.Sqrt(listenerDistSqr) - system.NearBlendRange.x) / (system.NearBlendRange.y - system.NearBlendRange.x));
 				}
 				else
 				{
-					source.panLevel = 1f;
+					spatialBlend = 1f;
 				}
+
+				#if UNITY_4
+				source.panLevel = spatialBlend;
+				#else
+				source.spatialBlend = spatialBlend;
+				#endif
 			}
 
 			// For looping sounds, we need to periodically activate/suspend them.
-			if(Loops)
+			if(Loops && !Paused)
 			{
 				bool actuallyPlaying = (source != null) && (source.isPlaying);
 				bool canPlayHDR = !actuallyPlaying && (!HDR || baseVolumeLoudness >= windowHDRMin);
 				if(Local)
 				{
-					if(!actuallyPlaying && canPlayHDR && _CheckInstances(audioCue))
+					if(!actuallyPlaying && canPlayHDR && _CheckInstances(audioCue, actuallyPlaying))
 					{
 						Play();
 					}
@@ -590,7 +643,7 @@ public class SECTR_AudioSystem : MonoBehaviour
 					if(currentTime >= nextTestTime)
 					{
 						bool inRange = _CheckProximity(audioCue, parent, localPosition, this);
-						if(inRange && !actuallyPlaying && canPlayHDR && _CheckInstances(audioCue))
+						if(inRange && !actuallyPlaying && canPlayHDR && _CheckInstances(audioCue, actuallyPlaying))
 						{
 							Play();
 						}
@@ -653,6 +706,7 @@ public class SECTR_AudioSystem : MonoBehaviour
 			Occludable  	= 1 << 8,
 			Occluded  		= 1 << 9,
 			ForcedInfinite  = 1 << 10,
+			Delayed			= 1 << 11,
 		};
 		
 		private void _SetFlag(Flags flag, bool on)
@@ -709,8 +763,17 @@ public class SECTR_AudioSystem : MonoBehaviour
 					}
 
 					// Set to defauls so that they aren't inherited from previous instances.
+#if UNITY_4
 					source.pan = 0f;
 					source.panLevel = 1f;
+#else
+					source.panStereo = 0f;
+					source.spatialBlend = 1f;
+#endif
+
+					#if !UNITY_4_EARLY
+					source.bypassReverbZones = Local;
+					#endif
 
 					if(Local)
 					{
@@ -722,13 +785,14 @@ public class SECTR_AudioSystem : MonoBehaviour
 						}
 						else
 						{
+#if UNITY_4
 							source.pan = srcCue.Pan2D;
 							source.panLevel = 0;
+#else
+							source.panStereo = srcCue.Pan2D;
+							source.spatialBlend = 0;
+#endif
 						}
-
-						#if !(UNITY_3_5 || UNITY_4_0 || UNITY_4_1 || UNITY_4_2)
-						source.bypassReverbZones = true;
-						#endif
 																	
 						source.dopplerLevel = 0f;
 
@@ -750,7 +814,6 @@ public class SECTR_AudioSystem : MonoBehaviour
 							// Min must be set before Max or Unity may ignore it.
 							source.minDistance = 1000000;
 							source.maxDistance = source.minDistance + EPSILON;
-
 						}
 						else
 						{
@@ -773,11 +836,7 @@ public class SECTR_AudioSystem : MonoBehaviour
 						source.velocityUpdateMode = AudioVelocityUpdateMode.Dynamic;
 					}
 					source.transform.position = Position;
-#if UNITY_3_5
-					source.gameObject.active = true;
-#else
 					source.gameObject.SetActive(true);
-#endif
 				}
 			}
 
@@ -807,11 +866,8 @@ public class SECTR_AudioSystem : MonoBehaviour
 				}
 				
 				source.Stop();
-#if UNITY_3_5
-				source.gameObject.active = false;
-#else
 				source.gameObject.SetActive(false);
-#endif
+
 				if(lowpass)
 				{
 					lowpass.enabled = false;
@@ -969,7 +1025,7 @@ public class SECTR_AudioSystem : MonoBehaviour
 	[SECTR_ToolTip("The distance beyond which sounds will be considered occluded, if Distance occlusion is enabled.", "OcclusionFlags")]
 	public float OcclusionDistance = 100f;
 	[SECTR_ToolTip("The layers to test against when raycasting for occlusion.", "OcclusionFlags")]
-#if UNITY_3_5 || UNITY_4_0 || UNITY_4_1 || UNITY_4_2
+#if UNITY_4_EARLY
 	public LayerMask RaycastLayers;
 #else
 	public LayerMask RaycastLayers = Physics.DefaultRaycastLayers;
@@ -1057,7 +1113,7 @@ public class SECTR_AudioSystem : MonoBehaviour
 			Debug.LogWarning("Global max audio instances exceeded.");
 			return new SECTR_AudioCueInstance();
 		}
-		else if(audioCue == null || !_CheckInstances(audioCue))
+		else if(audioCue == null || !_CheckInstances(audioCue, false))
 		{
 			// It's not necessarily bad to pass in a null cue or to not have
 			// enough instances, so no warning here.
@@ -1068,26 +1124,29 @@ public class SECTR_AudioSystem : MonoBehaviour
 			Debug.LogWarning("Cannot play a clipless Audio Cues.");
 			return new SECTR_AudioCueInstance();
 		}
-
+	
 		SECTR_AudioCue srcCue = audioCue.SourceCue;
-		bool inRange = srcCue.IsLocal || _CheckProximity(audioCue, parent, localPosition, null);
-		loop |= srcCue.Loops;
-
-		// We'll play any sound that loops or is in range. Out of range one shots
-		// will be pre-culled and never play, becase they will probably be done
-		// by the time they are audible.
-		if(inRange || loop)
+		if(Random.value <= srcCue.PlayProbability)
 		{
-			Instance newInstance = instancePool.Pop();
-			if(newInstance != null)
+			bool inRange = srcCue.IsLocal || _CheckProximity(audioCue, parent, localPosition, null);
+			loop |= srcCue.Loops;
+
+			// We'll play any sound that loops or is in range. Out of range one shots
+			// will be pre-culled and never play, becase they will probably be done
+			// by the time they are audible.
+			if(inRange || loop)
 			{
-				newInstance.Init(audioCue, parent, localPosition, loop);
-				if(inRange)
+				Instance newInstance = instancePool.Pop();
+				if(newInstance != null)
 				{
-					newInstance.Play();
+					newInstance.Init(audioCue, parent, localPosition, loop);
+					if(inRange)
+					{
+						newInstance.Play();
+					}
+					activeInstances.Add(newInstance);
+					return new SECTR_AudioCueInstance(newInstance, newInstance.Generation);
 				}
-				activeInstances.Add(newInstance);
-				return new SECTR_AudioCueInstance(newInstance, newInstance.Generation);
 			}
 		}
 
@@ -1324,6 +1383,11 @@ public class SECTR_AudioSystem : MonoBehaviour
 				auditionCue.ClearClips();
 				auditionCue.AudioClips = new List<SECTR_AudioCue.ClipData>(audioCue.AudioClips);
 				auditionCue.PlaybackMode = audioCue.PlaybackMode;
+				auditionCue.FadeInTime = audioCue.FadeInTime;
+				auditionCue.FadeOutTime = audioCue.FadeOutTime;
+				auditionCue.Volume = audioCue.Volume;
+				auditionCue.Loudness = audioCue.Loudness;
+				auditionCue.Pitch = audioCue.Pitch;
 				auditionCueID = audioCue.GetInstanceID();
 			}
 			auditionInstance = Play(auditionCue, Listener.transform, Vector3.zero, false);
@@ -1342,6 +1406,11 @@ public class SECTR_AudioSystem : MonoBehaviour
 			auditionCue.ClearClips();
 			auditionCue.AddClip(clip, true);
 			auditionCue.PlaybackMode = SECTR_AudioCue.PlaybackModes.Random;
+			auditionCue.FadeInTime = 0f;
+			auditionCue.FadeOutTime = 0f;
+			auditionCue.Volume = new Vector2(1f, 1f);
+			auditionCue.Loudness = new Vector2(50f, 50f);
+			auditionCue.Pitch = new Vector2(1f, 1f);
 			auditionCueID = -1;
 			auditionInstance = Play(auditionCue, Listener.transform, Vector3.zero, false);
 		}
@@ -1421,11 +1490,7 @@ public class SECTR_AudioSystem : MonoBehaviour
 				newSourceObject.transform.parent = sourcePoolParent.transform;
 				AudioSource newSource = newSourceObject.AddComponent<AudioSource>();
 				newSource.playOnAwake = false;
-#if UNITY_3_5
-				newSourceObject.active = false;
-#else
 				newSourceObject.SetActive(false);
-#endif
 				simpleSourcePool.Push(newSource);
 			}
 
@@ -1439,11 +1504,7 @@ public class SECTR_AudioSystem : MonoBehaviour
 				newSource.playOnAwake = false;
 				AudioLowPassFilter newLowpass = newSourceObject.AddComponent<AudioLowPassFilter>();
 				newLowpass.enabled = false;
-				#if UNITY_3_5
-				newSourceObject.active = false;
-				#else
 				newSourceObject.SetActive(false);
-				#endif
 				lowpassSourcePool.Push(newSource);
 			}
 
@@ -1459,17 +1520,15 @@ public class SECTR_AudioSystem : MonoBehaviour
 			windowHDRMin = windowHDRMax - HDRWindowSize;
 			occlusionPath = new List<SECTR_Graph.Node>(32);
 
-			if(MasterBus == null)
+			if(MasterBus != null)
 			{
-				Debug.LogWarning("SECTR AudioSystem has no MasterBus. Game sounds will not play.");
+				MasterBus.ResetUserVolume();
+				_UpdateBusPitchVolume(MasterBus, 1f, 1f);
 			}
 			else
 			{
-				_UpdateBusPitchVolume(MasterBus, 1f, 1f);
+				Debug.LogWarning("SECTR AudioSystem has no MasterBus. Game sounds will not play.");
 			}
-
-			#if AUDIO_HUD
-			#endif
 
 			#if UNITY_EDITOR
 			auditionCue = ScriptableObject.CreateInstance<SECTR_AudioCue>();
@@ -1728,9 +1787,15 @@ public class SECTR_AudioSystem : MonoBehaviour
 	
 	#region Private Methods
 	// Returns true if we're within our instance limit. 
-	private static bool _CheckInstances(SECTR_AudioCue audioCue)
+	private static bool _CheckInstances(SECTR_AudioCue audioCue, bool isPlaying)
 	{
 		int maxInstances = audioCue.SourceCue.MaxInstances;
+		// If this call is from an active instance, assume that it's one of the active
+		// instances and don't count it against us.
+		if(isPlaying)
+		{
+			maxInstances += 1;
+		}
 		if(maxInstances > 0)
 		{
 			int currentInstances;
@@ -1789,7 +1854,7 @@ public class SECTR_AudioSystem : MonoBehaviour
 
 	private static float _UpdateTime()
 	{
-		#if UNITY_3_5 || UNITY_4_0
+		#if UNITY_4_0
 		float newTime = Time.realtimeSinceStartup;
 		#else
 		float newTime = (float)AudioSettings.dspTime;
@@ -1848,7 +1913,14 @@ public class SECTR_AudioSystem : MonoBehaviour
 
 				if(currentAmbience.BackgroundLoop)
 				{
-					ambienceLoop = Play(currentAmbience.BackgroundLoop, Listener, Vector3.zero, true);
+					if(currentAmbience.BackgroundLoop.Spatialization == SECTR_AudioCue.Spatializations.Infinite3D)
+					{
+						ambienceLoop = Play(currentAmbience.BackgroundLoop, Listener, Random.onUnitSphere , true);
+					}
+					else
+					{
+						ambienceLoop = Play(currentAmbience.BackgroundLoop, Listener, Vector3.zero, true);
+					}
 				}
 			}
 		}

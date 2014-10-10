@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Nathan Martz
+﻿// Copyright (c) 2014 Make Code Now! LLC
 
 using UnityEngine;
 using System.Collections;
@@ -34,7 +34,14 @@ public class SECTR_PointSource : SECTR_AudioSource
 		
 		if(Cue != null)
 		{
-			instance = SECTR_AudioSystem.Play(Cue, transform, Vector3.zero, Loop);
+			if(Cue.Spatialization == SECTR_AudioCue.Spatializations.Infinite3D)
+			{
+				instance = SECTR_AudioSystem.Play(Cue, SECTR_AudioSystem.Listener, Random.onUnitSphere, Loop);
+			}
+			else
+			{
+				instance = SECTR_AudioSystem.Play(Cue, transform, Vector3.zero, Loop);
+			}
 			if(instance)
 			{
 				instance.Volume = volume;

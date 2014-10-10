@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Nathan Martz
+﻿// Copyright (c) 2014 Make Code Now! LLC
 
 using UnityEngine;
 using UnityEditor;
@@ -93,6 +93,7 @@ public abstract class SECTR_Editor : Editor
 				if(property.property.propertyType == SerializedPropertyType.Float)
 				{
 					float oldValue = property.property.floatValue;
+					GUI.SetNextControlName(property.niceName + "_Slider");
 					EditorGUILayout.Slider(property.property, min, max, new GUIContent(property.niceName,  property.toolTip.TipText));
 					if(property.property.floatValue != oldValue)
 					{
@@ -102,6 +103,7 @@ public abstract class SECTR_Editor : Editor
 				else if(property.property.propertyType == SerializedPropertyType.Integer)
 				{
 					int oldValue = property.property.intValue;
+					GUI.SetNextControlName(property.niceName + "_Slider");
 					EditorGUILayout.IntSlider(property.property, (int)min, (int)max, new GUIContent(property.niceName,  property.toolTip.TipText));
 					if(property.property.intValue != oldValue)
 					{
@@ -129,13 +131,16 @@ public abstract class SECTR_Editor : Editor
 
 					float propMin = property.property.vector2Value.x;
 					float propMax = property.property.vector2Value.y;
-					#if UNITY_3_5 || UNITY_4_0 || UNITY_4_1 || UNITY_4_2
+					#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2
 					EditorGUILayout.BeginHorizontal();
 					EditorGUILayout.PrefixLabel(new GUIContent(property.niceName, property.toolTip.TipText));
 					labelStyle.alignment = TextAnchor.MiddleLeft;
 					GUILayout.Label("Min", labelStyle);
+					GUI.SetNextControlName(property.niceName + "_Min");
 					propMin = EditorGUILayout.FloatField(propMin);
+					GUI.SetNextControlName(property.niceName + "_Slider");
 					EditorGUILayout.MinMaxSlider(new GUIContent("",  property.toolTip.TipText), ref propMin, ref propMax, min, max);
+					GUI.SetNextControlName(property.niceName + "_Max");
 					propMax = EditorGUILayout.FloatField(propMax);
 					labelStyle.alignment = TextAnchor.MiddleLeft;
 					GUILayout.Label("Max");
@@ -159,13 +164,16 @@ public abstract class SECTR_Editor : Editor
 					labelStyle.alignment = TextAnchor.MiddleLeft;
 					GUI.Label(new Rect(insertPos, controlRect.y, labelWidth, controlRect.height), "Min", labelStyle);
 					insertPos += labelWidth;
+					GUI.SetNextControlName(property.niceName + "_Min");
 					propMin = EditorGUI.FloatField(new Rect(insertPos, controlRect.y, fieldWidth, controlRect.height), propMin);
 					insertPos += fieldWidth;
 					if(sliderWidth > 0)
 					{
+						GUI.SetNextControlName(property.niceName + "_Slider");
 						EditorGUI.MinMaxSlider(new GUIContent("",  property.toolTip.TipText), new Rect(insertPos, controlRect.y, sliderWidth, controlRect.height), ref propMin, ref propMax, min, max);
 						insertPos += sliderWidth;
 					}
+					GUI.SetNextControlName(property.niceName + "_Max");
 					propMax = EditorGUI.FloatField(new Rect(insertPos, controlRect.y, fieldWidth, controlRect.height), "", propMax);
 					insertPos += fieldWidth;
 					labelStyle.alignment = TextAnchor.MiddleLeft;
@@ -192,6 +200,7 @@ public abstract class SECTR_Editor : Editor
 
 	protected T ObjectField<T>(string fieldName, string toolTip, Object targetObject, bool allowSceneObjects) where T : Object
 	{
+		GUI.SetNextControlName(fieldName + "_Control");
 		return (T)EditorGUILayout.ObjectField(new GUIContent(fieldName, toolTip), targetObject, typeof(T), allowSceneObjects);
 	}
 	#endregion
@@ -202,6 +211,7 @@ public abstract class SECTR_Editor : Editor
 		if(_ShouldDraw(property))
 		{
 			GUIContent label = new GUIContent(property.niceName, property.toolTip.TipText);
+			GUI.SetNextControlName(property.niceName + "_Control");
 			if(property.toolTip.EnumType != null && property.property.propertyType == SerializedPropertyType.Enum)
 			{
 				System.Enum enumValue = System.Enum.ToObject(property.toolTip.EnumType, property.property.intValue) as System.Enum;

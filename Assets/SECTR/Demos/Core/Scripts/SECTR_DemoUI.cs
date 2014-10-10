@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿// Copyright (c) 2014 Make Code Now! LLC
+#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2 || UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6
+#define UNITY_4
+#endif
+
+using UnityEngine;
 using System.Collections.Generic;
 
 /// \ingroup Demo
@@ -55,6 +60,8 @@ public class SECTR_DemoUI : MonoBehaviour
 	public SECTR_GhostController PipController;
 	[SECTR_ToolTip("Message to display at start of demo.")]
 	[Multiline] public string DemoMessage;
+	[SECTR_ToolTip("Disables HUD for video captures.")]
+	public bool CaptureMode = false;
 
 	public bool PipActive
 	{
@@ -71,13 +78,13 @@ public class SECTR_DemoUI : MonoBehaviour
 			AddButton(KeyCode.P, "Control Player", "Control PiP", PressedPip);
 		}
 		cachedController = GetComponent<SECTR_FPSController>();
-		passedIntro = string.IsNullOrEmpty(DemoMessage);
+		passedIntro = string.IsNullOrEmpty(DemoMessage) || CaptureMode;
 		if(!passedIntro)
 		{
 			cachedController.enabled = false;
 			if(PipController)
 			{
-				PipController.camera.enabled = false;
+				PipController.GetComponent<Camera>().enabled = false;
 			}
 		}
 	}
@@ -94,6 +101,11 @@ public class SECTR_DemoUI : MonoBehaviour
 
 	protected virtual void OnGUI()
 	{
+		if(CaptureMode)
+		{
+			return;
+		}
+
 		float gutter = 25;
 
 		if(Watermark)
@@ -127,7 +139,12 @@ public class SECTR_DemoUI : MonoBehaviour
 
 		if(!passedIntro)
 		{
+#if UNITY_4
 			Screen.lockCursor = true;
+#else
+			Cursor.lockState = CursorLockMode.Locked;
+			Cursor.visible = false;
+#endif
 			string message = DemoMessage;
 			if(Input.multiTouchEnabled && !Application.isEditor)
 			{
@@ -149,7 +166,7 @@ public class SECTR_DemoUI : MonoBehaviour
 				cachedController.enabled = true;
 				if(PipController)
 				{
-					PipController.camera.enabled = true;
+					PipController.GetComponent<Camera>().enabled = true;
 				}
 			}
 		}

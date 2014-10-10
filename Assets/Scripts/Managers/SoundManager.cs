@@ -70,6 +70,8 @@ public class SoundManager : MonoBehaviour
 
     #endregion
 
+    public SECTR_AudioBus busUnits;
+
     private static string AUDIOPATH = "Sounds/";
 
     private GameObject _mouseObject;
@@ -97,6 +99,7 @@ public class SoundManager : MonoBehaviour
     {
         //_globalSounds = Camera.main.GetComponent<AudioSource>();
 
+
         _globalSounds = GameObject.Find("ActualCamera").GetComponent<AudioSource>();
 
         if (GameObject.Find("StunSFX"))
@@ -117,7 +120,6 @@ public class SoundManager : MonoBehaviour
     {
         _feedbackSucced = Resources.Load(AUDIOPATH + "Tada") as AudioClip;
         _feedbackFail = Resources.Load(AUDIOPATH + "Fail") as AudioClip;
-
     }
 
     public void PlaySingleFile(AudioClip clip)

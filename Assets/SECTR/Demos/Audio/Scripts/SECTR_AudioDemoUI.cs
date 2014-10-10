@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿// Copyright (c) 2014 Make Code Now! LLC
+
+using UnityEngine;
 using System.Collections;
 
 public class SECTR_AudioDemoUI : SECTR_DemoUI 
@@ -86,9 +88,9 @@ public class SECTR_AudioDemoUI : SECTR_DemoUI
 	protected void ThrowPrefab(bool active)
 	{
 		GameObject newObject = (GameObject)GameObject.Instantiate(AudioPrefab, transform.position + transform.forward * 2, transform.rotation);
-		if(newObject.rigidbody)
+		if(newObject.GetComponent<Rigidbody>())
 		{
-			newObject.rigidbody.velocity = transform.forward * PrefabThrowSpeed;
+			newObject.GetComponent<Rigidbody>().velocity = transform.forward * PrefabThrowSpeed;
 		}
 	}
 	#endregion

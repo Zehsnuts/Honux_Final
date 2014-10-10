@@ -158,13 +158,15 @@ public static class SECTR_Asset
 		return asset;
 	}
 	
-	public static List<T> GetAll<T>(string rootPath, List<string> extensions, ref List<string> paths) where T : UnityEngine.Object
+	public static List<T> GetAll<T>(string rootPath, List<string> extensions, ref List<string> paths, bool pathsOnly) where T : UnityEngine.Object
 	{	
 		string progressTitle = "Finding " + typeof(T).Name;
 		EditorUtility.DisplayProgressBar(progressTitle, "Starting Search", 0f);
 
 		List<T> assetRefs = new List<T>(128);
 		paths.Clear();
+
+#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2 || UNITY_4_3 || UNITY_4_4
 		DirectoryInfo dirInfo = new DirectoryInfo(string.IsNullOrEmpty(rootPath) ? Application.dataPath : rootPath);
 		int numExtensions = extensions.Count;
 		for(int extensionIndex = 0; extensionIndex < numExtensions; ++extensionIndex)
@@ -180,15 +182,50 @@ public static class SECTR_Asset
 					string relativePath = fi.FullName.Replace('\\', '/');
 					relativePath = relativePath.Replace(Application.dataPath, "Assets");
 					EditorUtility.DisplayProgressBar(progressTitle, "Searching " + relativePath, fileIndex / (float)numFiles);
-					T asset = Load<T>(relativePath);
-					if(asset)
+					if(pathsOnly)
 					{
-						assetRefs.Add(asset);
 						paths.Add(relativePath);
+					}
+					else
+					{
+						T asset = Load<T>(relativePath);
+						if(asset)
+						{
+							assetRefs.Add(asset);
+							paths.Add(relativePath);
+						}
 					}
 				}
 			}
 		}
+#else
+		string[] searchPaths = null;
+		if(!string.IsNullOrEmpty(rootPath))
+		{
+			searchPaths = new string[1];
+			searchPaths[0] = OSToUnityPath(rootPath);
+		}
+		string typeString = "t:";
+		// Hack to match internal Unity class name with C# class name.
+		if(typeof(T) == typeof(AudioClip))
+		{
+			typeString += "audioClip";
+		}
+		else
+		{
+			typeString += typeof(T);
+		}
+		paths.AddRange(AssetDatabase.FindAssets(typeString, searchPaths));
+		int numPaths = paths.Count;
+		for(int pathIndex = 0; pathIndex < numPaths; ++pathIndex)
+		{
+			paths[pathIndex] = AssetDatabase.GUIDToAssetPath(paths[pathIndex]);
+			if(!pathsOnly)
+			{
+				assetRefs.Add(Load<T>(paths[pathIndex]));
+			}
+		}
+#endif
 		Resources.UnloadUnusedAssets();
 		EditorUtility.ClearProgressBar();
 		return assetRefs;

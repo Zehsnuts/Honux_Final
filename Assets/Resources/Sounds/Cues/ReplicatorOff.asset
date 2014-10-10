@@ -11,34 +11,58 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e53b6803754c30d4fafeac19b23db57b, type: 3}
   m_Name: ReplicatorOff
   m_EditorClassIdentifier: 
-  template: {fileID: 11400000, guid: 90ebc8e25a51c724794682cdac312537, type: 2}
+  template: {fileID: 0}
   bus: {fileID: 11400000, guid: c0b9a1d490036464fbb4d57aa52a3e76, type: 2}
   AudioClips:
   - clip: {fileID: 8300000, guid: 264ae652b9348994eac0ff167c50e523, type: 3}
     playedInShuffle: 0
     volume: 1
-    hdrKeys: []
+    hdrKeys:
+    - -19.8546715
+    - -19.5842934
+    - -24.8950729
+    - -21.9124336
+    - -20.3776531
+    - -20.7158127
+    - -26.1809711
+    - -19.9674206
+    - -20.5137653
+    - -22.9778271
+    - -23.5940571
+    - -19.9734669
+    - -20.6068058
+    - -26.2313538
+    - -20.664423
+    - -20.2041225
+    - -21.4221935
+    - -25.5067921
+    - -19.7016392
+    - -18.7436619
+    - -24.8950729
+    - -21.9124336
+    - -19.8546715
+    - -19.8546715
     bakeTimestamp:
-      first: 0
-      second: 0
+      first: -132057901
+      second: 53338
   PlaybackMode: 0
   HDR: 0
-  Loudness: {x: 50, y: 50}
-  Volume: {x: 1, y: 1}
+  Loudness: {x: 50, y: 200}
+  Volume: {x: .788990855, y: 1}
   Pitch: {x: 1, y: 1}
   Loops: 1
-  Priority: 128
-  BypassEffects: 0
-  MaxInstances: 10
+  Priority: 255
+  BypassEffects: 1
+  MaxInstances: 800
   FadeInTime: 0
   FadeOutTime: 0
   Spatialization: 2
   Spread: 0
   Pan2D: 0
   Falloff: 0
-  MaxDistance: 3.91000009
-  MinDistance: .600000024
-  DopplerLevel: 0
-  ProximityLimit: 0
+  MaxDistance: 3.8499999
+  MinDistance: .747948647
+  DopplerLevel: 1
+  ProximityLimit: 10
   ProximityRange: 10
-  OcclusionScale: 1
+  OcclusionScale: 0

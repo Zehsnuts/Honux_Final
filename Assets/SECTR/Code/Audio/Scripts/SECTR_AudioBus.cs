@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Nathan Martz
+﻿// Copyright (c) 2014 Make Code Now! LLC
 
 using UnityEngine;
 #if UNITY_EDITOR
@@ -135,6 +135,21 @@ public class SECTR_AudioBus : ScriptableObject
 			ancestor = ancestor.Parent;
 		}
 		return false;
+	}
+
+	/// Resets the User Volume to 1 for this bus and all it's children.
+	public void ResetUserVolume()
+	{
+		userVolume = 1f;
+		int numChildren = children.Count;
+		for(int childIndex = 0; childIndex < numChildren; ++childIndex)
+		{
+			SECTR_AudioBus child = children[childIndex];
+			if(child)
+			{
+				child.ResetUserVolume();
+			}
+		}
 	}
 
 #if UNITY_EDITOR

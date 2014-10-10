@@ -117,23 +117,32 @@ public class CrystalsControl : MonoBehaviour
         t.FindChild("Structure").gameObject.GetComponent<MeshRenderer>().material = Resources.Load("Materials/PinOn") as Material;
 
         if (t.FindChild("AudioSource_on"))
-            t.FindChild("AudioSource_on").active = true;
+            t.FindChild("AudioSource_on").GetComponent<SECTR_PointSource>().Play();      
+            //t.FindChild("AudioSource_on").active = true;        
 
         if (t.FindChild("AudioSource_off"))
-            t.FindChild("AudioSource_off").active = false;
+            t.FindChild("AudioSource_off").GetComponent<SECTR_PointSource>().Stop(true);
+            //t.FindChild("AudioSource_off").active = false;
         
     }
 
     void TurnShadowOn(Transform t)
     {
-        t.gameObject.SetActiveRecursively(false);
+        if (Application.loadedLevelName != "Stage_Null")
+            t.gameObject.SetActiveRecursively(false);
+        else
+            t.gameObject.SetActiveRecursively(true);
+
         t.gameObject.active = true;
 
         if (t.FindChild("AudioSource_on"))
             t.FindChild("AudioSource_on").active = false;
 
         if (t.FindChild("AudioSource_off"))
+        {
             t.FindChild("AudioSource_off").active = true;
+            t.FindChild("AudioSource_off").GetComponent<SECTR_PointSource>().Play();
+        }
 
         foreach (Transform trans in t)
         {
@@ -187,13 +196,17 @@ public class CrystalsControl : MonoBehaviour
 
     void TurnShadowOff(Transform t)
     {
-        t.gameObject.SetActiveRecursively(true);
+        if (Application.loadedLevelName != "Stage_Null")
+            t.gameObject.SetActiveRecursively(true);
+        else
+            t.gameObject.SetActiveRecursively(true);
 
-        if (t.FindChild("AudioSource_on"))
-            t.FindChild("AudioSource_on").active = true;
 
         if (t.FindChild("AudioSource_off"))
-            t.FindChild("AudioSource_off").active = false;
+            t.FindChild("AudioSource_off").GetComponent<SECTR_PointSource>().Play();
+
+        if (t.FindChild("AudioSource_on"))
+            t.FindChild("AudioSource_on").GetComponent<SECTR_PointSource>().Stop(true);
 
         foreach (Transform trans in t)
         {

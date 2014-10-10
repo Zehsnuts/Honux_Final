@@ -114,7 +114,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   volume: 1
   pitch: 1
-  Cue: {fileID: 11400000, guid: 90ebc8e25a51c724794682cdac312537, type: 2}
+  Cue: {fileID: 0}
   Loop: 1
   PlayOnStart: 1
 --- !u!1001 &14103034
@@ -768,7 +768,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   volume: 1
   pitch: 1
-  Cue: {fileID: 11400000, guid: 90ebc8e25a51c724794682cdac312537, type: 2}
+  Cue: {fileID: 0}
   Loop: 1
   PlayOnStart: 1
 --- !u!1001 &84039162
@@ -939,40 +939,13 @@ MonoBehaviour:
   Cue: {fileID: 11400000, guid: d63971812e94bc545b5facdc8f923c33, type: 2}
   Loop: 1
   PlayOnStart: 1
---- !u!1 &103140873
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 100010, guid: ab1f25bd2dfa2144db575fc95195f51f, type: 2}
-  m_PrefabInternal: {fileID: 1166394374}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 103140874}
-  - 114: {fileID: 103140875}
-  m_Layer: 0
-  m_Name: AudioSource_on
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &103140874
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 400010, guid: ab1f25bd2dfa2144db575fc95195f51f, type: 2}
-  m_PrefabInternal: {fileID: 1166394374}
-  m_GameObject: {fileID: 103140873}
-  m_LocalRotation: {x: -.00367043144, y: .382680446, z: -.00152034243, w: .923872292}
-  m_LocalPosition: {x: 11.585907, y: -.295132279, z: .54338187}
-  m_LocalScale: {x: 1.38763893, y: 1.38763928, z: 1.38763905}
-  m_Children: []
-  m_Father: {fileID: 2024671566}
 --- !u!114 &103140875
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 11400006, guid: ab1f25bd2dfa2144db575fc95195f51f,
     type: 2}
   m_PrefabInternal: {fileID: 1166394374}
-  m_GameObject: {fileID: 103140873}
+  m_GameObject: {fileID: 2030669680}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a6f20b8b60dbb1046b21f167d1303601, type: 3}
@@ -2227,7 +2200,7 @@ Transform:
   m_PrefabInternal: {fileID: 84039162}
   m_GameObject: {fileID: 256745862}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.85242844, y: -3.62952328, z: 10.8618431}
+  m_LocalPosition: {x: 6.85242844, y: -3.62952328, z: 9.41012001}
   m_LocalScale: {x: 6.99739313, y: 1.70804596, z: 1.23263204}
   m_Children: []
   m_Father: {fileID: 1150420960}
@@ -2492,40 +2465,13 @@ Renderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_SortingLayerID: 0
---- !u!1 &279208003
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 100010, guid: ab1f25bd2dfa2144db575fc95195f51f, type: 2}
-  m_PrefabInternal: {fileID: 1670385958}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 279208004}
-  - 114: {fileID: 279208005}
-  m_Layer: 0
-  m_Name: AudioSource_on
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &279208004
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 400010, guid: ab1f25bd2dfa2144db575fc95195f51f, type: 2}
-  m_PrefabInternal: {fileID: 1670385958}
-  m_GameObject: {fileID: 279208003}
-  m_LocalRotation: {x: -.00367043144, y: .382680446, z: -.00152034243, w: .923872292}
-  m_LocalPosition: {x: 11.585907, y: -.295132279, z: .54338187}
-  m_LocalScale: {x: 1.38763893, y: 1.38763928, z: 1.38763905}
-  m_Children: []
-  m_Father: {fileID: 1017925877}
 --- !u!114 &279208005
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 11400006, guid: ab1f25bd2dfa2144db575fc95195f51f,
     type: 2}
   m_PrefabInternal: {fileID: 1670385958}
-  m_GameObject: {fileID: 279208003}
+  m_GameObject: {fileID: 988283899}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a6f20b8b60dbb1046b21f167d1303601, type: 3}
@@ -2577,7 +2523,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   volume: 1
   pitch: 1
-  Cue: {fileID: 11400000, guid: b8b111283ef2d6d41813c1a3facca071, type: 2}
+  Cue: {fileID: 0}
   Loop: 1
   PlayOnStart: 1
 --- !u!1 &291282330
@@ -3451,10 +3397,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   systemType: 0
   isThisSystemOn: 0
+  PrimarySourceOfEnergy: {fileID: 0}
   hasThisSystemTurnedOnAtLastFrame: 0
   isAffectedByForceField: 0
   lastPrimarySourceOfEnergy: {fileID: 0}
-  PrimarySourceOfEnergy: {fileID: 0}
   ConnectedToMe: []
   SystemsThisReceivedEnergyFrom: []
   SystemsThisDonatedEnergyTo: []
@@ -3523,10 +3469,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   systemType: 1
   isThisSystemOn: 0
+  PrimarySourceOfEnergy: {fileID: 0}
   hasThisSystemTurnedOnAtLastFrame: 0
   isAffectedByForceField: 0
   lastPrimarySourceOfEnergy: {fileID: 0}
-  PrimarySourceOfEnergy: {fileID: 0}
   ConnectedToMe: []
   SystemsThisReceivedEnergyFrom: []
   SystemsThisDonatedEnergyTo: []
@@ -4400,6 +4346,33 @@ MeshFilter:
   m_PrefabInternal: {fileID: 1995974854}
   m_GameObject: {fileID: 631765057}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &639509459
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 100002, guid: ab1f25bd2dfa2144db575fc95195f51f, type: 2}
+  m_PrefabInternal: {fileID: 2052482000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 639509460}
+  - 114: {fileID: 2097741052}
+  m_Layer: 0
+  m_Name: AudioSource_on
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &639509460
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 400002, guid: ab1f25bd2dfa2144db575fc95195f51f, type: 2}
+  m_PrefabInternal: {fileID: 2052482000}
+  m_GameObject: {fileID: 639509459}
+  m_LocalRotation: {x: 9.36147671e-07, y: 6.51362086e-07, z: -3.87765112e-07, w: 1}
+  m_LocalPosition: {x: 0, y: -0, z: -0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1289607969}
 --- !u!1 &643004787
 GameObject:
   m_ObjectHideFlags: 0
@@ -4803,7 +4776,7 @@ Transform:
   m_PrefabInternal: {fileID: 2052482000}
   m_GameObject: {fileID: 716864522}
   m_LocalRotation: {x: 1.81675532e-07, y: 5.83013104e-07, z: 4.55830751e-09, w: 1}
-  m_LocalPosition: {x: 0, y: -0, z: -0}
+  m_LocalPosition: {x: 2.47851985e-05, y: -6.94159563e-10, z: -2.4785204e-05}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1289607969}
@@ -5234,7 +5207,7 @@ Transform:
   m_PrefabInternal: {fileID: 1670385958}
   m_GameObject: {fileID: 756617020}
   m_LocalRotation: {x: 1.81675532e-07, y: 5.83013104e-07, z: 4.55830751e-09, w: 1}
-  m_LocalPosition: {x: 0, y: -0, z: -0}
+  m_LocalPosition: {x: 2.47851985e-05, y: -6.94159563e-10, z: -2.4785204e-05}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1017925877}
@@ -5632,10 +5605,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   systemType: 1
   isThisSystemOn: 0
+  PrimarySourceOfEnergy: {fileID: 0}
   hasThisSystemTurnedOnAtLastFrame: 0
   isAffectedByForceField: 0
   lastPrimarySourceOfEnergy: {fileID: 0}
-  PrimarySourceOfEnergy: {fileID: 0}
   ConnectedToMe: []
   SystemsThisReceivedEnergyFrom: []
   SystemsThisDonatedEnergyTo: []
@@ -5811,7 +5784,7 @@ Transform:
   m_PrefabInternal: {fileID: 84039162}
   m_GameObject: {fileID: 850130260}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -.982948303}
+  m_LocalPosition: {x: 0, y: 0, z: -2.4346714}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 244518118}
@@ -6738,6 +6711,33 @@ Transform:
   - {fileID: 1945115290}
   - {fileID: 2114473736}
   m_Father: {fileID: 682061689}
+--- !u!1 &988283899
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 100002, guid: ab1f25bd2dfa2144db575fc95195f51f, type: 2}
+  m_PrefabInternal: {fileID: 1670385958}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 988283900}
+  - 114: {fileID: 279208005}
+  m_Layer: 0
+  m_Name: AudioSource_off
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &988283900
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 400002, guid: ab1f25bd2dfa2144db575fc95195f51f, type: 2}
+  m_PrefabInternal: {fileID: 1670385958}
+  m_GameObject: {fileID: 988283899}
+  m_LocalRotation: {x: 9.36147671e-07, y: 6.51362086e-07, z: -3.87765112e-07, w: 1}
+  m_LocalPosition: {x: 0, y: -0, z: -0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1017925877}
 --- !u!1 &990726986
 GameObject:
   m_ObjectHideFlags: 0
@@ -7207,7 +7207,7 @@ Transform:
   - {fileID: 756617021}
   - {fileID: 672962238}
   - {fileID: 504011983}
-  - {fileID: 279208004}
+  - {fileID: 988283900}
   - {fileID: 1681299314}
   m_Father: {fileID: 156900683}
 --- !u!114 &1017925878
@@ -7224,10 +7224,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   systemType: 1
   isThisSystemOn: 0
+  PrimarySourceOfEnergy: {fileID: 0}
   hasThisSystemTurnedOnAtLastFrame: 0
   isAffectedByForceField: 0
   lastPrimarySourceOfEnergy: {fileID: 0}
-  PrimarySourceOfEnergy: {fileID: 0}
   ConnectedToMe: []
   SystemsThisReceivedEnergyFrom: []
   SystemsThisDonatedEnergyTo: []
@@ -7409,7 +7409,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   volume: 1
   pitch: 1
-  Cue: {fileID: 11400000, guid: 90ebc8e25a51c724794682cdac312537, type: 2}
+  Cue: {fileID: 0}
   Loop: 1
   PlayOnStart: 1
 --- !u!1 &1088785783
@@ -7981,7 +7981,7 @@ Transform:
   m_PrefabInternal: {fileID: 84039162}
   m_GameObject: {fileID: 1150420959}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: .854194641, z: 8.7396183}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 256745863}
@@ -8434,7 +8434,7 @@ Transform:
   m_PrefabInternal: {fileID: 1166394374}
   m_GameObject: {fileID: 1235519023}
   m_LocalRotation: {x: 1.81675532e-07, y: 5.83013104e-07, z: 4.55830751e-09, w: 1}
-  m_LocalPosition: {x: 0, y: -0, z: -0}
+  m_LocalPosition: {x: 2.47851985e-05, y: -6.94159563e-10, z: -2.4785204e-05}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2024671566}
@@ -8831,10 +8831,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   systemType: 3
   isThisSystemOn: 0
+  PrimarySourceOfEnergy: {fileID: 0}
   hasThisSystemTurnedOnAtLastFrame: 0
   isAffectedByForceField: 0
   lastPrimarySourceOfEnergy: {fileID: 0}
-  PrimarySourceOfEnergy: {fileID: 0}
   ConnectedToMe: []
   SystemsThisReceivedEnergyFrom: []
   SystemsThisDonatedEnergyTo: []
@@ -8987,12 +8987,12 @@ Transform:
   m_GameObject: {fileID: 1289607968}
   m_LocalRotation: {x: -.00367043167, y: .382680118, z: -.00152034126, w: .923872352}
   m_LocalPosition: {x: 18.7514, y: .0107585704, z: 1.89735639}
-  m_LocalScale: {x: 1.38763893, y: 1.38763905, z: 1.38763916}
+  m_LocalScale: {x: 1.38763881, y: 1.38763988, z: 1.38763988}
   m_Children:
   - {fileID: 716864523}
   - {fileID: 207282969}
   - {fileID: 510842676}
-  - {fileID: 2097741051}
+  - {fileID: 639509460}
   m_Father: {fileID: 156900683}
 --- !u!114 &1289607970
 MonoBehaviour:
@@ -9008,10 +9008,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   systemType: 1
   isThisSystemOn: 0
+  PrimarySourceOfEnergy: {fileID: 0}
   hasThisSystemTurnedOnAtLastFrame: 0
   isAffectedByForceField: 0
   lastPrimarySourceOfEnergy: {fileID: 0}
-  PrimarySourceOfEnergy: {fileID: 0}
   ConnectedToMe: []
   SystemsThisReceivedEnergyFrom: []
   SystemsThisDonatedEnergyTo: []
@@ -9129,7 +9129,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   volume: 1
   pitch: 1
-  Cue: {fileID: 11400000, guid: 90ebc8e25a51c724794682cdac312537, type: 2}
+  Cue: {fileID: 0}
   Loop: 1
   PlayOnStart: 1
 --- !u!1 &1301847767
@@ -10209,10 +10209,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   systemType: 1
   isThisSystemOn: 0
+  PrimarySourceOfEnergy: {fileID: 0}
   hasThisSystemTurnedOnAtLastFrame: 0
   isAffectedByForceField: 0
   lastPrimarySourceOfEnergy: {fileID: 0}
-  PrimarySourceOfEnergy: {fileID: 0}
   ConnectedToMe: []
   SystemsThisReceivedEnergyFrom: []
   SystemsThisDonatedEnergyTo: []
@@ -10617,10 +10617,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   systemType: 0
   isThisSystemOn: 0
+  PrimarySourceOfEnergy: {fileID: 0}
   hasThisSystemTurnedOnAtLastFrame: 0
   isAffectedByForceField: 0
   lastPrimarySourceOfEnergy: {fileID: 0}
-  PrimarySourceOfEnergy: {fileID: 0}
   ConnectedToMe: []
   SystemsThisReceivedEnergyFrom: []
   SystemsThisDonatedEnergyTo: []
@@ -10795,7 +10795,7 @@ Transform:
   m_PrefabInternal: {fileID: 84039162}
   m_GameObject: {fileID: 1495227498}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -.982948303}
+  m_LocalPosition: {x: 0, y: 0, z: -2.62143326}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 219173066}
@@ -11927,7 +11927,7 @@ Transform:
   m_PrefabInternal: {fileID: 84039162}
   m_GameObject: {fileID: 1663020645}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.84886837, y: -3.62952328, z: 10.8618431}
+  m_LocalPosition: {x: -6.84886837, y: -3.62952328, z: 9.41012001}
   m_LocalScale: {x: 6.99739313, y: 1.70804596, z: 1.23263204}
   m_Children: []
   m_Father: {fileID: 1150420960}
@@ -12306,7 +12306,7 @@ Transform:
   m_PrefabInternal: {fileID: 84039162}
   m_GameObject: {fileID: 1692211142}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 7.27724838}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1833382674}
@@ -13088,7 +13088,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   volume: 1
   pitch: 1
-  Cue: {fileID: 11400000, guid: 90ebc8e25a51c724794682cdac312537, type: 2}
+  Cue: {fileID: 0}
   Loop: 1
   PlayOnStart: 1
 --- !u!1 &1802402463
@@ -13188,7 +13188,7 @@ Transform:
   m_PrefabInternal: {fileID: 84039162}
   m_GameObject: {fileID: 1833382673}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.85242844, y: -3.62952328, z: 10.8618431}
+  m_LocalPosition: {x: 6.85242844, y: -3.62952328, z: 9.22336197}
   m_LocalScale: {x: 6.99739313, y: 1.70804596, z: 1.23263204}
   m_Children: []
   m_Father: {fileID: 1692211143}
@@ -14174,7 +14174,7 @@ Transform:
   m_PrefabInternal: {fileID: 84039162}
   m_GameObject: {fileID: 1957774787}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.84886837, y: -3.62952328, z: 10.8618431}
+  m_LocalPosition: {x: -6.84886837, y: -3.62952328, z: 9.22336197}
   m_LocalScale: {x: 6.99739313, y: 1.70804596, z: 1.23263204}
   m_Children: []
   m_Father: {fileID: 1692211143}
@@ -14487,12 +14487,12 @@ Transform:
   m_GameObject: {fileID: 2024671565}
   m_LocalRotation: {x: -.00367043144, y: .382680446, z: -.00152034243, w: .923872292}
   m_LocalPosition: {x: 11.585907, y: .0107585704, z: 1.89735639}
-  m_LocalScale: {x: 1.38763893, y: 1.38763905, z: 1.38763916}
+  m_LocalScale: {x: 1.38763881, y: 1.38763988, z: 1.38763988}
   m_Children:
   - {fileID: 1235519024}
   - {fileID: 1749593799}
   - {fileID: 747782950}
-  - {fileID: 103140874}
+  - {fileID: 2030669681}
   m_Father: {fileID: 156900683}
 --- !u!114 &2024671567
 MonoBehaviour:
@@ -14508,10 +14508,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   systemType: 1
   isThisSystemOn: 0
+  PrimarySourceOfEnergy: {fileID: 0}
   hasThisSystemTurnedOnAtLastFrame: 0
   isAffectedByForceField: 0
   lastPrimarySourceOfEnergy: {fileID: 0}
-  PrimarySourceOfEnergy: {fileID: 0}
   ConnectedToMe: []
   SystemsThisReceivedEnergyFrom: []
   SystemsThisDonatedEnergyTo: []
@@ -14704,6 +14704,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2405301ba15ee3c4faa5551051b514b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &2030669680
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 100002, guid: ab1f25bd2dfa2144db575fc95195f51f, type: 2}
+  m_PrefabInternal: {fileID: 1166394374}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 2030669681}
+  - 114: {fileID: 103140875}
+  m_Layer: 0
+  m_Name: AudioSource_on
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2030669681
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 400002, guid: ab1f25bd2dfa2144db575fc95195f51f, type: 2}
+  m_PrefabInternal: {fileID: 1166394374}
+  m_GameObject: {fileID: 2030669680}
+  m_LocalRotation: {x: 9.36147671e-07, y: 6.51362086e-07, z: -3.87765112e-07, w: 1}
+  m_LocalPosition: {x: 0, y: -0, z: -0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2024671566}
 --- !u!1 &2037974344
 GameObject:
   m_ObjectHideFlags: 0
@@ -15119,40 +15146,13 @@ Renderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_SortingLayerID: 0
---- !u!1 &2097741050
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 100010, guid: ab1f25bd2dfa2144db575fc95195f51f, type: 2}
-  m_PrefabInternal: {fileID: 2052482000}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 2097741051}
-  - 114: {fileID: 2097741052}
-  m_Layer: 0
-  m_Name: AudioSource_on
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2097741051
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 400010, guid: ab1f25bd2dfa2144db575fc95195f51f, type: 2}
-  m_PrefabInternal: {fileID: 2052482000}
-  m_GameObject: {fileID: 2097741050}
-  m_LocalRotation: {x: -.00367043144, y: .382680446, z: -.00152034243, w: .923872292}
-  m_LocalPosition: {x: 11.585907, y: -.295132279, z: .54338187}
-  m_LocalScale: {x: 1.38763893, y: 1.38763928, z: 1.38763905}
-  m_Children: []
-  m_Father: {fileID: 1289607969}
 --- !u!114 &2097741052
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 11400006, guid: ab1f25bd2dfa2144db575fc95195f51f,
     type: 2}
   m_PrefabInternal: {fileID: 2052482000}
-  m_GameObject: {fileID: 2097741050}
+  m_GameObject: {fileID: 639509459}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a6f20b8b60dbb1046b21f167d1303601, type: 3}

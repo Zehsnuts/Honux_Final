@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Nathan Martz
+// Copyright (c) 2014 Make Code Now! LLC
 
 using UnityEngine;
 using System.Collections;
@@ -34,9 +34,10 @@ public class SECTR_Wanderer : MonoBehaviour
 			SECTR_Sector goal = SECTR_Sector.All[Random.Range(0, SECTR_Sector.All.Count)];
 			SECTR_Graph.FindShortestPath(ref path, transform.position, goal.transform.position, SECTR_Portal.PortalFlags.Locked);
 			Vector3 height = Vector3.zero;
-			if(collider)
+			Collider myCollider = GetComponent<Collider>();
+			if(myCollider)
 			{
-				height.y += collider.bounds.extents.y;
+				height.y += myCollider.bounds.extents.y;
 			}
 			waypoints.Clear();
 			int numNodes = path.Count;
