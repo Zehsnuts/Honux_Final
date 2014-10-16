@@ -53,7 +53,7 @@ MonoBehaviour:
   Loops: 1
   Priority: 255
   BypassEffects: 1
-  MaxInstances: 800
+  MaxInstances: 10
   FadeInTime: 0
   FadeOutTime: 0
   Spatialization: 2
@@ -66,3 +66,5 @@ MonoBehaviour:
   ProximityLimit: 10
   ProximityRange: 10
   OcclusionScale: 0
+  PlayProbability: 1
+  Delay: {x: 0, y: 0}

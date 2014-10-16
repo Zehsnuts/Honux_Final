@@ -21,154 +21,57 @@ public class TutorialManager : MonoBehaviour {
         }
     }
     #endregion
+    public TextAsset tutorialStepsTextFile;
+    private List<string> _tutorialLevels = new List<string>();
+    private List<string> _tutorialDescriptions = new List<string>();
 
-     public List<string> _steps;
-     public int _currentStep = 0;
+    private List<string> _currentStageDescriptions;
 
-     public List<KeyCode> _inputKeyList;
-     public int _currentInput = 0;
+    private int _currentStep;
+    private int _totalStageSteps;
 
-     public List<Material> _materialsList;
-     public int _currentMaterial = 0;
+    public UITexture tutorialPanel;
+    public UILabel tutorialLabel;
 
-     public List<GameObject> _clickTargetList;
-     public int _currentTarget = 0;
-
-     public bool _isWaitingInput = false;
-
-     public GameObject _tutorialPanel;
-
-     public GameObject _target;
-     public KeyCode _inputKey;
-
-     public Camera ActualCamera;
-
-    public List<string> Steps = new List<string>();
-    public List<KeyCode> Inputs = new List<KeyCode>();
-    public List<Material> Mats = new List<Material>();
-    public List<GameObject> ClickTarget = new List<GameObject>();
-
+    public GameObject arrow;
+    public GameObject arrowTarget;
 
     void Awake()
     {
-        if (_tutorialPanel == null)
-            _tutorialPanel = GameObject.Find("Tutorial Panel");
+        //ChangeState(false);
+        string[] lines = tutorialStepsTextFile.ToString().Split("\n"[0]);
+        Debug.Log(lines.Length);
 
-        ActualCamera = GameObject.Find("ActualCamera").GetComponent<Camera>();
+        for (int i = 0; i < lines.Length-1; i++)
+        {
+            string[] itemSplit = lines[i].Split(";"[0]);
+            _tutorialLevels.Add(itemSplit[0]);
+            _tutorialDescriptions.Add(itemSplit[1]);
+        }
 
-        _tutorialPanel.SetActive(false);
+        DontDestroyOnLoad(gameObject);
 
+        transform.parent = GameObject.Find("_Manager").transform;
     }
 
-    public void ReceiveSteps(List<string> list, List<KeyCode> keycodes, List<Material> mats, List<GameObject> targets)
+    void OnLevelWasLoaded(int lvlNumber)
     {
-        if (list.Count <= 0)
-            return;
-
-        _steps = list;
-
-        if (mats.Count > 0)
-            _materialsList = mats;
-
-        if (keycodes.Count > 0)
-            _inputKeyList = keycodes;
-
-        if(targets.Count >0)
-            _clickTargetList = targets;
-
-        ExecuteNextStep();
+        _currentStep = 0;
+        if (_tutorialLevels.Contains(Application.loadedLevelName))
+            foreach (var item in _tutorialLevels)            
+                if (item == Application.loadedLevelName)
+                    _currentStageDescriptions.Add(_tutorialDescriptions[ _tutorialLevels.IndexOf(item)]);             
     }
 
-    void ExecuteNextStep()
+    void ChangeState(bool state)
     {
-        if (_currentStep < _steps.Count)
-            StartCoroutine(WaitAndGoToNextStep(_steps[_currentStep]));
-        else
-            FinishTutorial();
-        
+        arrow.active = state;
+        tutorialPanel.active = state;
+        tutorialLabel.active = state;
     }
 
-    void ShowTutorialPanel()
-    {
-        _tutorialPanel.renderer.material = _materialsList[_currentMaterial];
-        _currentMaterial++;
-        _tutorialPanel.SetActive(true);
-        ExecuteNextStep();
-    }
-
-    void FinishTutorial()
-    {
-        EventManager.INSTANCE.CallStageSucces();
-    }
-
-    IEnumerator WaitAndGoToNextStep(string str)
+    void NextStep()
     {
         _currentStep++;
-        yield return new WaitForSeconds(0.2f);
-
-        switch (str)
-        { 
-            case "ShowTutorialPanel":
-                ShowTutorialPanel();
-                break;
-
-            case "WaitForKeyboardInput":
-                _isWaitingInput = true;
-                StartCoroutine(WaitKeyboardInput());
-                break;
-
-            case "WaitForMouseInput":
-                _isWaitingInput = true;
-                StartCoroutine(WaitMouseInput());
-                break;
-        }
     }
-
-    IEnumerator WaitKeyboardInput()
-    {
-        while (_isWaitingInput)
-        {
-            CheckKeyboardInput();
-            yield return 0;
-        }
-
-        _currentInput++;
-        ExecuteNextStep();
-    }
-
-    public virtual void CheckKeyboardInput()
-    {
-        if (Input.GetKey(_inputKeyList[_currentInput]))
-        {
-            _isWaitingInput = false;
-        }
-    
-	}
-
-
-    IEnumerator WaitMouseInput()
-    {
-        while (_isWaitingInput)
-        {
-            CheckMouseInput();
-            yield return 0;
-        }
-        
-        ExecuteNextStep();
-    }
-
-    public virtual void CheckMouseInput()
-    {
-        
-    }
-
-    IEnumerator Wait()
-    {
-        yield return new WaitForSeconds(1);
-        
-    }
-
-  
-
-
 }

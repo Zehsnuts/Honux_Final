@@ -46,6 +46,7 @@ public class ConnectionCreator : MonoBehaviour {
         GlobalFunctions.ConnectThisLineWithParent(transform.gameObject, go);
 
         transform.GetComponent<CrystalUnitFunctions>().ConnectSingleUnit(this.Destination.gameObject);
+
     }
 
     public void CreateConnectionAtRunTime(Transform destination, ConnectionEnum.ConnectionType type)

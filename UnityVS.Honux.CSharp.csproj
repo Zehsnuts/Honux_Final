@@ -232,6 +232,8 @@
     <Compile Include="Assets\Scripts\Connections\ConnectionCreator.cs" />
     <Compile Include="Assets\Scripts\Connections\ConnectionEnum.cs" />
     <Compile Include="Assets\Scripts\Connections\ConnectionFunctions.cs" />
+    <Compile Include="Assets\Scripts\Connections\ConnectionInitializer_Temporary.cs" />
+    <Compile Include="Assets\Scripts\Connections\Connection_Fixed.cs" />
     <Compile Include="Assets\Scripts\Connections\ConnectionsManager.cs" />
     <Compile Include="Assets\Scripts\Connections\ConnectorFunctions.cs" />
     <Compile Include="Assets\Scripts\Connections\CrystalConnection.cs" />
@@ -275,14 +277,6 @@
     <Compile Include="Assets\Scripts\Stage_HUB.cs" />
     <Compile Include="Assets\Scripts\Stages\GridAlignment.cs" />
     <Compile Include="Assets\Scripts\Stages\StagesProperties.cs" />
-    <Compile Include="Assets\Scripts\Tutorial\Stage_tut_1.cs" />
-    <Compile Include="Assets\Scripts\Tutorial\Stage_tut_2.cs" />
-    <Compile Include="Assets\Scripts\Tutorial\Stage_tut_3.cs" />
-    <Compile Include="Assets\Scripts\Tutorial\Stage_tut_4.cs" />
-    <Compile Include="Assets\Scripts\Tutorial\Stage_tut_5.cs" />
-    <Compile Include="Assets\Scripts\Tutorial\Stage_tut_6.cs" />
-    <Compile Include="Assets\Scripts\Tutorial\Stage_tut_7.cs" />
-    <Compile Include="Assets\Scripts\Tutorial\Stage_tut_8.cs" />
     <Compile Include="Assets\Scripts\Tutorial\TutorialManager.cs" />
     <Compile Include="Assets\Scripts\Utils\CameraFade.cs" />
     <Compile Include="Assets\Scripts\Utils\Extensions.cs" />
@@ -325,6 +319,7 @@
     <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed 2.shader" />
     <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed 3.shader" />
     <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed.shader" />
+    <None Include="Assets\Scripts\Tutorial\tutorialStepsTextFile.txt" />
     <None Include="Assets\Standard Assets\Skyboxes\_skybox info.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2013\UnityVS.CSharp.targets" />

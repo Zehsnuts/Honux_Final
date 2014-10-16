@@ -33,23 +33,16 @@ public class CrystalsControl : MonoBehaviour
 
     public void TurnThisSystemOff(Transform t)
     {
+        t.tag = "Off";
+        if (Application.loadedLevelName != "Stage_Null")
+            foreach (Transform item in t)            
+                if (item.GetComponent<MeshRenderer>())
+                    item.GetComponent<MeshRenderer>().enabled = false;            
+
+        TurnShadowOn(t);
+
         switch (t.GetComponent<CrystalsUnit>().systemType)
         { 
-            case CrystalsUnit.SystemType.Replicator:
-                TurnReplicatorOff(t);
-                break;
-
-            case CrystalsUnit.SystemType.Bridge:
-                TurnReplicatorOff(t);
-                break;
-
-            case  CrystalsUnit.SystemType.Generator:
-                TurnGeneratorOff(t);
-                break;
-
-            case CrystalsUnit.SystemType.Unstable:
-                TurnUnstableCrystalOff(t);
-                break;
 
             case CrystalsUnit.SystemType.Pin:
                 TurnPinOff(t);
@@ -58,57 +51,24 @@ public class CrystalsControl : MonoBehaviour
     }
 
     public void TurnThisSystemOn(Transform t)
-    {        
+    {
+        t.tag = "Off";
+        if (Application.loadedLevelName != "Stage_Null")
+            foreach (Transform item in t)
+                if (item.GetComponent<MeshRenderer>())
+                    item.GetComponent<MeshRenderer>().enabled = true;
+
+        TurnShadowOff(t);
+
         switch (t.GetComponent<CrystalsUnit>().systemType)
         {
-            case CrystalsUnit.SystemType.Replicator:
-                TurnReplicatorOn(t);
-                break;
-
-            case CrystalsUnit.SystemType.Bridge:
-                TurnReplicatorOn(t);
-                break;
-
-            case CrystalsUnit.SystemType.Generator:
-                TurnGeneratorOn(t);
-                break;
-
-            case CrystalsUnit.SystemType.Unstable:
-                TurnUnstableCrystalOn(t);
-                break;
-
             case CrystalsUnit.SystemType.Pin:
                 TurnPinOn(t);
                 break;
         }
     }
 
-    #region TurnOn
-
-    void TurnReplicatorOn(Transform t)
-    {
-        t.tag = "On";
-        t.FindChild("CoreOff").gameObject.active = false;
-        //t.FindChild("Structure").gameObject.renderer.material = _structureOn
-        t.FindChild("Structure").transform.renderer.material = _structureOff;
-
-        TurnShadowOff(t);
-    }
-    
-    void TurnUnstableCrystalOn(Transform t)
-    {
-        t.tag = "On";
-        t.FindChild("CoreOff").gameObject.active = false;
-        t.FindChild("Structure").gameObject.renderer.material = _structureOn;
-
-        TurnShadowOff(t);
-    }
-    
-    void TurnGeneratorOn(Transform t)
-    {
-        t.tag = "On";
-        TurnShadowOff(t);
-    }
+    #region TurnOn    
 
     void TurnPinOn(Transform t)
     {
@@ -128,11 +88,6 @@ public class CrystalsControl : MonoBehaviour
 
     void TurnShadowOn(Transform t)
     {
-        if (Application.loadedLevelName != "Stage_Null")
-            t.gameObject.SetActiveRecursively(false);
-        else
-            t.gameObject.SetActiveRecursively(true);
-
         t.gameObject.active = true;
 
         if (t.FindChild("AudioSource_on"))
@@ -156,29 +111,7 @@ public class CrystalsControl : MonoBehaviour
     #endregion
 
     #region TurnOff
-    void TurnReplicatorOff(Transform t)
-    {
-        t.tag = "Off";
-        t.FindChild("CoreOff").gameObject.active = true;
-        t.FindChild("Structure").transform.renderer.material = _structureOff;
 
-        TurnShadowOn(t);
-    }
-
-    void TurnUnstableCrystalOff(Transform t)
-    {
-        t.tag = "Off";
-        t.FindChild("CoreOff").gameObject.active = true;
-        t.FindChild("Structure").transform.renderer.material = _structureOff;        
-
-        TurnShadowOn(t);
-    }
-
-    void TurnGeneratorOff(Transform t)
-    {
-        t.tag = "Off";
-        TurnShadowOn(t);
-    }
 
     void TurnPinOff(Transform t)
     {
@@ -196,12 +129,6 @@ public class CrystalsControl : MonoBehaviour
 
     void TurnShadowOff(Transform t)
     {
-        if (Application.loadedLevelName != "Stage_Null")
-            t.gameObject.SetActiveRecursively(true);
-        else
-            t.gameObject.SetActiveRecursively(true);
-
-
         if (t.FindChild("AudioSource_off"))
             t.FindChild("AudioSource_off").GetComponent<SECTR_PointSource>().Play();
 

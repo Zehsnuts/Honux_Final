@@ -48,6 +48,11 @@ public class CrystalUnitFunctions : CrystalsUnit
     void UnpauseUnit()
     {
         ChangeSystemStatus();
+        if (_unitAudioSourceOn != null)
+            _unitAudioSourceOn.Play();
+
+        if (_unitAudioSourceOff != null)
+            _unitAudioSourceOff.Play(); 
     }
 
     public virtual void Start()//Sequencia de inicialização do sistema inteiro. 

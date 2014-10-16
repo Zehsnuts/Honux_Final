@@ -9,7 +9,6 @@ public class ForceField_Button : MonoBehaviour {
     private SECTR_AudioSource _audioSourceOff;
 
     private GameObject _buttonCore;
-    private GameObject _structure;
 
     private Material _buttonMaterialActive;
     private Material _buttonMaterialSolved;
@@ -24,7 +23,6 @@ public class ForceField_Button : MonoBehaviour {
         ButtonStatus = _myForceFieldScript.fieldStatus;
 
         _buttonCore = transform.FindChild("ButtonCore").gameObject;
-        _structure = transform.FindChild("Structure").gameObject;
 
         _buttonMaterialActive = Resources.Load("Material/Firula") as Material;
         _buttonMaterialSolved = Resources.Load("Material/Generator 1") as Material;
@@ -52,7 +50,6 @@ public class ForceField_Button : MonoBehaviour {
 
     void ButtonInactive()
     {
-        _structure.active = false;
         _buttonCore.transform.renderer.enabled = false;
 
         ButtonStatus = global::ForceField.ForceFieldStatus.Inactive;
@@ -69,7 +66,6 @@ public class ForceField_Button : MonoBehaviour {
 
         _audioSourceOff.Stop(true);
 
-        _structure.active = true;
         _buttonCore.renderer.active = true;
 
         _myForceFieldScript.BeginRhythmSequence();
@@ -79,7 +75,6 @@ public class ForceField_Button : MonoBehaviour {
     {
         _audioSourceOff.Stop(true);
         _buttonCore.renderer.material = _buttonMaterialSolved;
-        _structure.active = true;
         _buttonCore.renderer.active = true;
 
         Destroy(this);
