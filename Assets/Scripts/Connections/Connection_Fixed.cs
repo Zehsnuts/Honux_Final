@@ -139,4 +139,19 @@ public class Connection_Fixed : ConnectorFunctions{
         _audioPointSourceOff.Play();
         _audioSourceOn.active = false;
     }
+
+    public void BreakLine()
+    {        
+        if (Connection == ConnectionEnum.ConnectionType.Fixed)
+            return;
+
+        Debug.Log("Destroy");
+
+        ResourcesManager.INSTANCE.AddTrack();
+        GlobalFunctions.BreakThisConnection(gameObject, transform.parent, Destination);
+
+        Destroy(cc);
+
+        Destroy(gameObject);
+    }
 }

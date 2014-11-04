@@ -21,60 +21,91 @@ public class Screen_BluePrint : MonoBehaviour
     }
     #endregion
 
-    #region Events
-    void OnEnable()
-    {
-        EventManager.BLUEPRINTSTART += ChangeScreenDisplay;
-        EventManager.BLUEPRINTEXIT += ChangeScreenDisplay;
+    private Texture _currentSelectedStampTexture;
+    private GameObject _stampContainer;
 
+    private GameObject _screenSideLeft;
+    private GameObject _screenSideRight;
+
+    public GameObject selectedStampIndicator;
+
+    void Start()
+    {
+        _screenSideLeft = transform.FindChild("Blueprint Left").gameObject;
+        _screenSideRight = transform.FindChild("Blueprint Right").gameObject;
+
+        EventManager.CHANGECAMERA += EnableScreenSideAccordingToCamera;
     }
 
     void OnDisable()
     {
-        EventManager.BLUEPRINTSTART -= ChangeScreenDisplay;
-        EventManager.BLUEPRINTEXIT -= ChangeScreenDisplay;
-    }
-    #endregion
+        _stampContainer = null;
+        selectedStampIndicator.SetActive(false);
 
-    private Vector3 _initialPosition;
-    private Vector3 _shownPosition;
-
-    private bool _isShowingScreen = false;
-
-    void Start()
-    {
-        _initialPosition = transform.position;
-        _shownPosition = new Vector3(_initialPosition.x, _initialPosition.y + 24, _initialPosition.z);
+        if (FindObjectOfType<EventManager>())
+            EventManager.INSTANCE.CallBluePrintExit();
     }
 
-    void ChangeScreenDisplay()
+    void OnEnable()
     {
-        if (_isShowingScreen)
+        if(FindObjectOfType<EventManager>())
+            EventManager.INSTANCE.CallBluePrintStart();
+
+        if (selectedStampIndicator == null)
+            selectedStampIndicator = transform.FindChild("texture_stampsSelected").gameObject;
+        _stampContainer = null;
+        selectedStampIndicator.SetActive(false);
+
+        _screenSideLeft = transform.FindChild("Blueprint Left").gameObject;
+        _screenSideRight = transform.FindChild("Blueprint Right").gameObject;
+
+        EnableScreenSideAccordingToCamera();
+    }
+
+    public void AddMark(Transform t)
+    {
+        if (_stampContainer == null || UICamera.currentTouchID == -2)
+            return;
+
+        GameObject b = Instantiate(_stampContainer, UICamera.lastHit.point, t.localRotation) as GameObject;
+        b.GetComponent<UITexture>().width = 58;
+        b.GetComponent<UITexture>().height = 58;        
+        b.transform.parent = t;
+        b.transform.localScale = new Vector3(1, 1, 1);
+    }
+
+    public void RemoveMark(GameObject go)
+    {
+        if ( UICamera.currentTouchID == -2)
+            Destroy(go);
+    }
+
+    public void ChangeSelectedStamp(Transform stamp)
+    {
+        selectedStampIndicator.SetActive(true);
+        selectedStampIndicator.transform.position = stamp.transform.position;
+
+        if(_stampContainer == null)
+            _stampContainer = transform.FindChild("texture_stampContainer").gameObject;
+
+        _stampContainer.GetComponent<UITexture>().mainTexture = _currentSelectedStampTexture = stamp.GetComponent<UITexture>().mainTexture;
+    }
+
+    void EnableScreenSideAccordingToCamera()
+    {
+        selectedStampIndicator.transform.position = new Vector3(-2000,180,0);
+        _stampContainer = null;
+
+        if (CameraControl.cameraLookAtSide == "Left")
         {
-            _isShowingScreen = false;
-            HideScreen();
+            _screenSideLeft.SetActive(true);
+            _screenSideRight.SetActive(false);
         }
         else
         {
-            _isShowingScreen = true;
-            ShowScreen();
+            _screenSideRight.SetActive(true);
+            _screenSideLeft.SetActive(false);
         }
-    }
-
-    void HideScreen()
-    {
-        iTween.MoveTo(gameObject, iTween.Hash("x", _initialPosition.x, "y", _initialPosition.y, "z", _initialPosition.z));
-    }
-
-    void ShowScreen()
-    {
-        iTween.MoveTo(gameObject, iTween.Hash("x", _shownPosition.x, "y", _shownPosition.y, "z", _shownPosition.z));
-    }
-
-    public void AddMark(Transform t, Vector3 pos)
-    {
-        Debug.Log("Add Mark");
-        GameObject b = Instantiate(Resources.Load("Prefabs/BluePrintMark"), pos, t.localRotation) as GameObject;
-        b.transform.parent = t;
+        
     }
 }

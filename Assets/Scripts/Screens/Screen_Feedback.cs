@@ -34,42 +34,27 @@ public class Screen_Feedback : MonoBehaviour {
     }
     #endregion
 
-    #region Events
-    void OnEnable()
-    {
-        EventManager.STAGESUCESS += SucceedFeedback;
-        EventManager.STAGEFAIL += FailFeedback;
-    }
-
-    void OnDisable()
-    {
-        EventManager.STAGESUCESS -= SucceedFeedback;
-        EventManager.STAGEFAIL -= FailFeedback;
-    }
-    #endregion
-
     private bool _isFeedbackPositive;
 
-    private Transform _failScreen;
-    private Transform _succesScreen;
+    public GameObject winScreen;
+    public GameObject loseScreen;
 
-    void Start()
+    void OnEnable()
     {
-        _failScreen = transform.FindChild("Fail");
-        _succesScreen = transform.FindChild("Succeed");
-
-        _failScreen.gameObject.SetActiveRecursively(false);
-        _succesScreen.gameObject.SetActiveRecursively(false);
+        if (winScreen == null || loseScreen == null)
+        {
+            winScreen = transform.FindChild("Win").gameObject;
+            loseScreen = transform.FindChild("Lose").gameObject;
+        }
     }
 
-
-    void SucceedFeedback()
+    public void SucceedFeedback()
     {
         _isFeedbackPositive = true;
         StartCoroutine(Wait()); 
     }
 
-    void FailFeedback()
+    public void FailFeedback()
     {
         _isFeedbackPositive = false;
         StartCoroutine(Wait());
@@ -77,35 +62,35 @@ public class Screen_Feedback : MonoBehaviour {
 
     IEnumerator Wait()
     {
-        yield return new WaitForSeconds(5F);
+        winScreen.SetActive(false);
+        loseScreen.SetActive(false);
+        yield return new WaitForSeconds(1F);
         GiveFeedback();           
     }
 
     void GiveFeedback()
-    { 
-        if(_isFeedbackPositive)
-            _succesScreen.gameObject.SetActiveRecursively(true);
+    {
+        if (_isFeedbackPositive)
+        {
+            winScreen.SetActive(true);
+            loseScreen.SetActive(false);
+        }
         else
-            _failScreen.gameObject.SetActiveRecursively(true);
-
+        {
+            winScreen.SetActive(false);
+            loseScreen.SetActive(true);
+        }
     }
 
     public void ClickedThisButton(string name)
     {
-
         switch (name)
         {
-            case "btn_Yes":
-                StageManager.INTANCE.RetryCurrentLevel();
-                break;
-            case "btn_Retry":
+            case "texture_retryButton":
                 StageManager.INTANCE.RetryCurrentLevel();
                 break;
 
-            case "btn_No":
-                StageManager.INTANCE.ReturnToStageSelect();
-                break;
-            case "btn_Quit":
+            case "texture_backButton":
                 StageManager.INTANCE.ReturnToStageSelect();
                 break;
         }

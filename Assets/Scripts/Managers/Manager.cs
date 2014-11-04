@@ -4,7 +4,7 @@ using System.Collections;
 public class Manager : MonoBehaviour {
     void OnGUI()
     {
-        GUILayout.Label("Version 0.2.0");
+        GUILayout.Label("Version 0.3.2");
     }
     void Awake()
     {
@@ -22,6 +22,11 @@ public class Manager : MonoBehaviour {
             go.transform.parent = transform;
             go.name = "SoundManager";
             go.AddComponent<SoundManager>();
+        }
+        else        
+        {
+            var go = GameObject.FindObjectOfType<SoundManager>();
+            go.transform.parent = transform;
         }
 
         if (!GameObject.FindObjectOfType<GUIManager>())

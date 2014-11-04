@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Screen_AudioScreen : MonoBehaviour {
-    
+public class Screen_AudioScreen : MonoBehaviour
+{
+
     #region Singleton
 
     private static Screen_AudioScreen _INSTANCE;
@@ -20,82 +21,49 @@ public class Screen_AudioScreen : MonoBehaviour {
     }
     #endregion
 
-    #region Events
-    void OnEnable()
+    private GameObject _screenSideLeft;
+    private GameObject _screenSideRight;
+
+
+    void Start()
     {
-        EventManager.CHANGECAMERA += ChangePosition;
+        _screenSideLeft = transform.FindChild("Audio Left").gameObject;
+        _screenSideRight = transform.FindChild("Audio Right").gameObject;
 
-        EventManager.AUDIOSCREENSTART += ChangeScreenDisplay;
-        EventManager.AUDIOSCREENEXIT += ChangeScreenDisplay;
-
+        EventManager.CHANGECAMERA += EnableScreenSideAccordingToCamera;
     }
 
     void OnDisable()
     {
-        EventManager.CHANGECAMERA -= ChangePosition;
 
-        EventManager.AUDIOSCREENSTART -= ChangeScreenDisplay;
-        EventManager.AUDIOSCREENEXIT -= ChangeScreenDisplay;
-    }   
-    #endregion
+        if (FindObjectOfType<EventManager>())
+            EventManager.INSTANCE.CallAudioScreenExit();
+    }
 
-    private Vector3 _initialPosition;
-    private Vector3 _leftPosition;
-    private Vector3 _rightPosition;
-    private Vector3 _shownPosition;
-
-    private bool _isLeft = true;
-    private bool _isShowingScreen = false;
-
-
-    void ChangeScreenDisplay()
+    void OnEnable()
     {
-        if (_isShowingScreen)
+        if (FindObjectOfType<EventManager>())
+            EventManager.INSTANCE.CallAudioScreenStart();
+
+        _screenSideLeft = transform.FindChild("Audio Left").gameObject;
+        _screenSideRight = transform.FindChild("Audio Right").gameObject;
+
+        EnableScreenSideAccordingToCamera();
+    }
+
+
+    void EnableScreenSideAccordingToCamera()
+    { 
+        if (CameraControl.cameraLookAtSide == "Left")
         {
-            _isShowingScreen = false;
-            HideScreen();
+            _screenSideLeft.SetActive(true);
+            _screenSideRight.SetActive(false);
         }
         else
         {
-            _isShowingScreen = true;
-            ShowScreen();
+            _screenSideRight.SetActive(true);
+            _screenSideLeft.SetActive(false);
         }
-    }
 
-    void Start()
-    {
-        _initialPosition = new Vector3(-42.71157f, -25.022f, -27.80511f);
-        _leftPosition = new Vector3(-6.5f, -0.9758148f, -23.08426f);
-        _rightPosition = new Vector3(0.06050587f, -0.9758148f, -1.238088f);
-
-        _shownPosition = _leftPosition;
     }
-
-    void ChangePosition()
-    {
-        if (_isLeft)
-        {
-            _isLeft = false;
-            _shownPosition = _rightPosition;
-            transform.rotation = Quaternion.Euler(0, 0, 0);
-        }
-        else
-        {
-            _isLeft = true;
-            _shownPosition = _leftPosition;
-            transform.rotation = Quaternion.Euler(0,-90,0);
-        }
-    }
-    
-    void HideScreen()
-    {       
-        iTween.MoveTo(gameObject, iTween.Hash("x", _initialPosition.x, "y", _initialPosition.y, "z", _initialPosition.z));
-    }
-
-    void ShowScreen()
-    {        
-        iTween.MoveTo(gameObject, iTween.Hash("x", _shownPosition.x, "y", _shownPosition.y, "z", _shownPosition.z));        
-    }
-	
-
 }

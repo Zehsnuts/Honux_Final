@@ -22,6 +22,7 @@ public class HUDManager : MonoBehaviour
     }
     #endregion
 
+    #region Events
     void OnEnable()
     {
         EventManager.GAMEPAUSESTART += StopCountDown;
@@ -29,6 +30,9 @@ public class HUDManager : MonoBehaviour
 
         EventManager.STAGESUCESS += StopCountDown;
         EventManager.STAGEFAIL += StopCountDown;
+
+        EventManager.CHANGECAMERA += EnableScreenSideAccordingToCamera;
+
     }
 
     void OnDisable()
@@ -38,52 +42,61 @@ public class HUDManager : MonoBehaviour
 
         EventManager.STAGESUCESS -= StopCountDown;
         EventManager.STAGEFAIL -= StopCountDown;
+        EventManager.CHANGECAMERA -= EnableScreenSideAccordingToCamera;
     }
 
-    private TextMesh _leftClock;
-    private TextMesh _rightClock;
+    #endregion
+
+    public UILabel leftClockLabel;
+    public UILabel rightClockLabel;
+    public UILabel leftTracksLabel;
+    public UILabel rightTracksLabel;
+
     private string _timeText;
     private float _minutes = 5;
     private float _seconds = 59;
     public bool _shouldCountDown = false;
 
-    public List<Transform> _leftTracks = new List<Transform>();
-    public List<Transform> _rightTracks = new List<Transform>();
-
     private int _tracksCount;
+
+    private Transform _hudContainerLeft;
+    private Transform _hudContainerRight;
+
+    void OnLevelWasLoaded(int level)
+    {
+        GrabElements();
+    }
+
 
     void Start()
     {
-        Transform holder = transform.FindChild("Left");
+        GrabElements();
+    }
 
-        _leftClock = holder.FindChild("Clock").GetComponent<TextMesh>();
+    void GrabElements()
+    {
 
-        Transform track = holder.FindChild("Tracks");
+        _hudContainerLeft = transform.FindChild("InGame HUD Left");
+        _hudContainerLeft.gameObject.SetActive(true);
+        _hudContainerRight = transform.FindChild("InGame HUD Right");
 
-        foreach (Transform t in track)
+        //EnableScreenSideAccordingToCamera();
+
+
+        if (leftClockLabel == null || 
+            leftTracksLabel == null ||
+            rightTracksLabel == null ||
+            rightClockLabel == null)
         {
+            leftClockLabel = transform.FindChild("InGame HUD Left/texture_tempoBox/label_tempo").GetComponent<UILabel>();
+            leftTracksLabel = transform.FindChild("InGame HUD Left/texture_trilhos/label_trilhos").GetComponent<UILabel>();
 
-            _leftTracks.Add(t);
-            t.gameObject.active = false;
+            rightClockLabel = transform.FindChild("InGame HUD Right/texture_tempoBox/label_tempo").GetComponent<UILabel>();
+            rightTracksLabel = transform.FindChild("InGame HUD Right/texture_trilhos/label_trilhos").GetComponent<UILabel>();
         }
+        _hudContainerRight.gameObject.SetActive(false);
 
-        holder = transform.FindChild("Right");
-
-        _rightClock = holder.FindChild("Clock").GetComponent<TextMesh>();
-
-        track = holder.FindChild("Tracks");
-
-        foreach (Transform t in track)
-        {
-
-            _rightTracks.Add(t);
-            t.gameObject.active = false;
-        }
-
-        TracksCounter();
-
-        ShowNumberOfTracks();
-
+        UpdateTracksCounter();
     }
 
     void Update()
@@ -91,7 +104,7 @@ public class HUDManager : MonoBehaviour
         if (_shouldCountDown)
             Cronometer();
 
-        TracksCounter();
+        UpdateTracksCounter();
     }
 
 
@@ -119,7 +132,7 @@ public class HUDManager : MonoBehaviour
         if (_seconds < 9.5f)
             _timeText = "0" + _minutes.ToString() + ":" + "0" + Mathf.Round(_seconds).ToString();
 
-        _rightClock.text = _leftClock.text = _timeText;
+        rightClockLabel.text = leftClockLabel.text = _timeText;
 
         CheckIfTimeIsOver();
     }
@@ -135,25 +148,16 @@ public class HUDManager : MonoBehaviour
             EventManager.INSTANCE.CallStageFail();
         }           
     }
-    void TracksCounter()
+    void UpdateTracksCounter()
     {
         if (_tracksCount == ResourcesManager.INSTANCE.GetTracksNumber())
             return;
 
-            _tracksCount = ResourcesManager.INSTANCE.GetTracksNumber();
-            ShowNumberOfTracks();
+        _tracksCount = ResourcesManager.INSTANCE.GetTracksNumber();
+
+        leftTracksLabel.text = rightTracksLabel.text = _tracksCount.ToString();
     }
 
-    void ShowNumberOfTracks()
-    {
-        for (int i = 0; i < _leftTracks.Count; i++)
-        {
-            if (i < _tracksCount)
-                _leftTracks[i].active = _rightTracks[i].active = true; 
-            else
-                _leftTracks[i].active = _rightTracks[i].active = false;    
-        }
-    }
 
     public void SetCountDownTimer(float min, float sec)
     {
@@ -164,6 +168,27 @@ public class HUDManager : MonoBehaviour
 
         _seconds = sec;
         _shouldCountDown = true;
+    }
+
+    void EnableScreenSideAccordingToCamera()
+    {
+        if (_hudContainerLeft == null || _hudContainerRight == null)
+        {
+            _hudContainerLeft = transform.FindChild("InGame HUD Left");
+            _hudContainerRight = transform.FindChild("InGame HUD Right");
+        }
+
+        if (CameraControl.cameraLookAtSide == "Left")
+        {
+            _hudContainerLeft.gameObject.SetActive(false);
+            _hudContainerRight.gameObject.SetActive(true);
+        }
+        else
+        {
+            _hudContainerRight.gameObject.SetActive(false);
+            _hudContainerLeft.gameObject.SetActive(true);
+        }
+
     }
 }
 

@@ -21,14 +21,15 @@ public class TutorialManager : MonoBehaviour {
         }
     }
     #endregion
+
     public TextAsset tutorialStepsTextFile;
     private List<string> _tutorialLevels = new List<string>();
     private List<string> _tutorialDescriptions = new List<string>();
+    private List<Transform> tutorialObjects;
+    public List<string> _currentStageDescriptions;
 
-    private List<string> _currentStageDescriptions;
-
-    private int _currentStep;
-    private int _totalStageSteps;
+    public int _currentStep;
+    public int _totalStageSteps;
 
     public UITexture tutorialPanel;
     public UILabel tutorialLabel;
@@ -38,9 +39,9 @@ public class TutorialManager : MonoBehaviour {
 
     void Awake()
     {
-        //ChangeState(false);
+        ChangeState(false);
+
         string[] lines = tutorialStepsTextFile.ToString().Split("\n"[0]);
-        Debug.Log(lines.Length);
 
         for (int i = 0; i < lines.Length-1; i++)
         {
@@ -49,18 +50,28 @@ public class TutorialManager : MonoBehaviour {
             _tutorialDescriptions.Add(itemSplit[1]);
         }
 
+        tutorialObjects.CreateTutorialObjects();
+
         DontDestroyOnLoad(gameObject);
 
         transform.parent = GameObject.Find("_Manager").transform;
+
+        LoadDescriptons();
+    }
+
+    void LoadDescriptons()
+    {
+        _currentStep = 0;
+        if (_tutorialLevels.Contains(Application.loadedLevelName))
+            for (int i = 0; i < _tutorialLevels.Count; i++)
+                if (_tutorialLevels[i] == Application.loadedLevelName)                
+                    _currentStageDescriptions.Add(_tutorialDescriptions[i]);
+                
     }
 
     void OnLevelWasLoaded(int lvlNumber)
     {
-        _currentStep = 0;
-        if (_tutorialLevels.Contains(Application.loadedLevelName))
-            foreach (var item in _tutorialLevels)            
-                if (item == Application.loadedLevelName)
-                    _currentStageDescriptions.Add(_tutorialDescriptions[ _tutorialLevels.IndexOf(item)]);             
+        LoadDescriptons();                  
     }
 
     void ChangeState(bool state)
@@ -72,6 +83,6 @@ public class TutorialManager : MonoBehaviour {
 
     void NextStep()
     {
-        _currentStep++;
+        _currentStep++;       
     }
 }

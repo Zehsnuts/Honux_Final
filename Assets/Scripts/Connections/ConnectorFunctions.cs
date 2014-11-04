@@ -10,33 +10,18 @@ public class ConnectorFunctions : MonoBehaviour
 
     public void InitializeConnection(CrystalConnection cristalConnection)
     {
+        Connection = cristalConnection.Connection;
 
         if (Connection == ConnectionEnum.ConnectionType.Fixed)
             gameObject.AddComponent<Connection_Fixed>().InitializeConnection(cristalConnection);
         else
-            gameObject.AddComponent<ConnectionInitializer_Temporary>().InitializeConnection(cristalConnection);
-
-        //if(Origin.GetComponent<CrystalsUnit>().isThisSystemOn)
-          //  TurnTrackOn();
-        //else
-          //  TurnTrackOff();
+            gameObject.AddComponent<Connection_Temporary>().InitializeConnection(cristalConnection);
     }
 
     public void BreakLine()
     {
-        /*
-        if (Connection == ConnectionEnum.ConnectionType.Fixed)
-            return;
-
-        Debug.Log("Destroy");
-
-        ResourcesManager.INSTANCE.AddTrack();
-        GlobalFunctions.BreakThisConnection(gameObject, transform.parent, Destination);
-
-        Destroy(cc);
-
-        Destroy(gameObject);
-         * */
+        if (Connection == ConnectionEnum.ConnectionType.Temporary)
+            gameObject.GetComponent<Connection_Temporary>().BreakLine();
     }
 
     public void TurnTrackOn()
@@ -44,7 +29,7 @@ public class ConnectorFunctions : MonoBehaviour
         if (Connection == ConnectionEnum.ConnectionType.Fixed)
             gameObject.GetComponent<Connection_Fixed>().TurnTrackOn();
         else
-            gameObject.GetComponent<Connection_Fixed>().TurnTrackOn();
+            gameObject.GetComponent<Connection_Temporary>().TurnTrackOn();
     }
 
     public void TurnTrackOff()
@@ -52,7 +37,6 @@ public class ConnectorFunctions : MonoBehaviour
         if (Connection == ConnectionEnum.ConnectionType.Fixed)
             gameObject.GetComponent<Connection_Fixed>().TurnTrackOff();
         else
-            gameObject.GetComponent<Connection_Fixed>().TurnTrackOff();
-           
+            gameObject.GetComponent<Connection_Temporary>().TurnTrackOff();           
     }
 }

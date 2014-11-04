@@ -13,6 +13,7 @@ public class CrystalsUnit : MonoBehaviour
     public SystemType systemType;
 
     public bool isThisSystemOn;
+    public bool isSystemSuposedToTurnOn = true;
 
     public GameObject PrimarySourceOfEnergy;    
     [HideInInspector]
@@ -40,4 +41,5 @@ public class CrystalsUnit : MonoBehaviour
     public SECTR_AudioSource _unitAudioSourceOn;
     public SECTR_AudioSource _unitAudioSourceOff;
 
+    public Animator animator;
 }

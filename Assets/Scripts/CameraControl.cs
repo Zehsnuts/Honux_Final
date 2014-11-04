@@ -6,14 +6,14 @@ public class CameraControl : MonoBehaviour {
     private GameObject _actualCamera;
     private GameObject _mainCamera;
 
-    private string _camPosition;
+    public static string cameraLookAtSide;
 
     void Start()
     {
         _actualCamera = GameObject.Find("ActualCamera");
         _mainCamera = Camera.main.gameObject;
 
-        _camPosition = "Left";
+        cameraLookAtSide = "Left";
     }
 
     void OnEnable()
@@ -28,21 +28,19 @@ public class CameraControl : MonoBehaviour {
 
     void ChangeCamera()
     {
-        if (_camPosition == "Left")
+        if (cameraLookAtSide == "Left")
         {
             iTween.RotateTo(_actualCamera, iTween.Hash("y", 90));
             iTween.RotateTo(_mainCamera, iTween.Hash("y", 90));
 
-            _camPosition = "Right";
+            cameraLookAtSide = "Right";
         }
         else            
             {
                 iTween.RotateTo(_actualCamera, iTween.Hash("y", 0));
                 iTween.RotateTo(_mainCamera, iTween.Hash("y", 0));
 
-                _camPosition = "Left";
+                cameraLookAtSide = "Left";
             }
-
-        //Debug.Log("Changing Camera");
     }
 }

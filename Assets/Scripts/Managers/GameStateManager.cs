@@ -68,7 +68,6 @@ public class GameStateManager : MonoBehaviour {
 
         EventManager.MAINMENUSTART -= MenuState;
 
-
         EventManager.LOADINGSTART -= LoadState;
 
         EventManager.CUTSCENESTART -= CutsceneState;

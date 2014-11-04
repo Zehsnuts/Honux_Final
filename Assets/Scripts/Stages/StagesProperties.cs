@@ -17,6 +17,9 @@ public class StagesProperties : MonoBehaviour
 
         EventManager.UNSTABLETURNON += AddToUnstableCount;
         EventManager.UNSTABLETURNOFF += RemoveFromUnstableCount;
+
+        EventManager.STAGESUCESS += TurnRobotOff;
+        EventManager.STAGEFAIL += TurnRobotOff;
     }
 
     void OnDisable()
@@ -33,10 +36,13 @@ public class StagesProperties : MonoBehaviour
 
         EventManager.UNSTABLETURNON -= AddToUnstableCount;
         EventManager.UNSTABLETURNOFF -= RemoveFromUnstableCount;
+
+        EventManager.STAGESUCESS -= TurnRobotOff;
+        EventManager.STAGEFAIL -= TurnRobotOff;
     }
     #endregion
 
-    public int NumberOfInitialTracks;
+    public int NumberOfInitialTracks = 0;
     public int TimeAvailableInMinutes;
     public int TimeAvailableInSeconds;
 
@@ -63,11 +69,23 @@ public class StagesProperties : MonoBehaviour
     void Start()
     {
         HUDManager.INSTANCE.SetCountDownTimer(TimeAvailableInMinutes, TimeAvailableInSeconds);
-        ResourcesManager.INSTANCE.SetNumberOfInitialTrack(NumberOfInitialTracks);
+
+        ResourcesManager.INSTANCE.SetNumberOfInitialTrack(NumberOfInitialTracks);  
 
         if (NumberOfPinsAND == 0 && NumberOfPinsOR == 0 && NumberOfPinsXOR == 0)
         {
-            Debug.LogError("You need to set at least one pin needed to complete this level in the Stage Holder. \nNumber Of Pins AND = " + NumberOfPinsAND + "\nNumber Of Pins OR = " + NumberOfPinsOR + "\nNumber Of Pins XOR = " + NumberOfPinsXOR);
+
+            Object[] list = FindObjectsOfType<CrystalsUnit_pinAND>();
+            NumberOfPinsAND = list.Length;
+
+            list = FindObjectsOfType<CrystalsUnit_pinOR>();
+            NumberOfPinsOR = list.Length;
+
+            list = FindObjectsOfType<CrystalsUnit_pinXOR>();
+            NumberOfPinsXOR = list.Length;
+
+            if (NumberOfPinsAND == 0 && NumberOfPinsOR == 0 && NumberOfPinsXOR == 0)
+                Debug.LogError("You need to set at least one pin needed to complete this level in the Stage Holder. \nNumber Of Pins AND = " + NumberOfPinsAND + "\nNumber Of Pins OR = " + NumberOfPinsOR + "\nNumber Of Pins XOR = " + NumberOfPinsXOR);
         }
     }
     

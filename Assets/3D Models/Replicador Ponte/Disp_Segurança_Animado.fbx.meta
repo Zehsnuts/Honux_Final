@@ -1,0 +1,371 @@
+fileFormatVersion: 2
+guid: 6818423707cf63547ad7fd9848572cb1
+ModelImporter:
+  serializedVersion: 15
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: polySurface1
+    100004: polySurface10
+    100006: polySurface11
+    100008: polySurface2
+    100010: polySurface43
+    100012: polySurface44
+    100014: polySurface45
+    100016: polySurface46
+    100018: polySurface47
+    100020: polySurface48
+    100022: polySurface49
+    100024: polySurface50
+    100026: polySurface51
+    100028: polySurface6
+    100030: polySurface7
+    100032: polySurface8
+    100034: polySurface9
+    100036: transform12
+    100038: transform13
+    100040: transform16
+    100042: transform17
+    100044: transform20
+    100046: transform21
+    100048: transform3
+    100050: transform4
+    400000: //RootNode
+    400002: polySurface1
+    400004: polySurface10
+    400006: polySurface11
+    400008: polySurface2
+    400010: polySurface43
+    400012: polySurface44
+    400014: polySurface45
+    400016: polySurface46
+    400018: polySurface47
+    400020: polySurface48
+    400022: polySurface49
+    400024: polySurface50
+    400026: polySurface51
+    400028: polySurface6
+    400030: polySurface7
+    400032: polySurface8
+    400034: polySurface9
+    400036: transform12
+    400038: transform13
+    400040: transform16
+    400042: transform17
+    400044: transform20
+    400046: transform21
+    400048: transform3
+    400050: transform4
+    2300000: polySurface44
+    2300002: polySurface45
+    2300004: polySurface46
+    2300006: polySurface47
+    2300008: polySurface48
+    2300010: polySurface49
+    2300012: polySurface50
+    2300014: polySurface51
+    3300000: polySurface44
+    3300002: polySurface45
+    3300004: polySurface46
+    3300006: polySurface47
+    3300008: polySurface48
+    3300010: polySurface49
+    3300012: polySurface50
+    3300014: polySurface51
+    4300000: polySurface44
+    4300002: polySurface45
+    4300004: polySurface46
+    4300006: polySurface47
+    4300008: polySurface48
+    4300010: polySurface49
+    4300012: polySurface50
+    4300014: polySurface51
+    7400000: TurnOn
+    7400002: IdleOff
+    7400004: IdleOn
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: TurnOn
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 76
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: polySurface1
+        weight: 1
+      - path: polySurface1/transform3
+        weight: 1
+      - path: polySurface2
+        weight: 1
+      - path: polySurface2/transform4
+        weight: 1
+      - path: polySurface6
+        weight: 1
+      - path: polySurface6/transform12
+        weight: 1
+      - path: polySurface7
+        weight: 1
+      - path: polySurface7/transform13
+        weight: 1
+      - path: polySurface8
+        weight: 1
+      - path: polySurface8/transform16
+        weight: 1
+      - path: polySurface9
+        weight: 1
+      - path: polySurface9/transform17
+        weight: 1
+      - path: polySurface10
+        weight: 1
+      - path: polySurface10/transform20
+        weight: 1
+      - path: polySurface11
+        weight: 1
+      - path: polySurface11/transform21
+        weight: 1
+      - path: polySurface43
+        weight: 1
+      - path: polySurface43/polySurface44
+        weight: 1
+      - path: polySurface43/polySurface45
+        weight: 1
+      - path: polySurface43/polySurface46
+        weight: 1
+      - path: polySurface43/polySurface47
+        weight: 1
+      - path: polySurface43/polySurface48
+        weight: 1
+      - path: polySurface43/polySurface49
+        weight: 1
+      - path: polySurface43/polySurface50
+        weight: 1
+      - path: polySurface43/polySurface51
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: IdleOff
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: .100000009
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: polySurface1
+        weight: 1
+      - path: polySurface1/transform3
+        weight: 1
+      - path: polySurface2
+        weight: 1
+      - path: polySurface2/transform4
+        weight: 1
+      - path: polySurface6
+        weight: 1
+      - path: polySurface6/transform12
+        weight: 1
+      - path: polySurface7
+        weight: 1
+      - path: polySurface7/transform13
+        weight: 1
+      - path: polySurface8
+        weight: 1
+      - path: polySurface8/transform16
+        weight: 1
+      - path: polySurface9
+        weight: 1
+      - path: polySurface9/transform17
+        weight: 1
+      - path: polySurface10
+        weight: 1
+      - path: polySurface10/transform20
+        weight: 1
+      - path: polySurface11
+        weight: 1
+      - path: polySurface11/transform21
+        weight: 1
+      - path: polySurface43
+        weight: 1
+      - path: polySurface43/polySurface44
+        weight: 1
+      - path: polySurface43/polySurface45
+        weight: 1
+      - path: polySurface43/polySurface46
+        weight: 1
+      - path: polySurface43/polySurface47
+        weight: 1
+      - path: polySurface43/polySurface48
+        weight: 1
+      - path: polySurface43/polySurface49
+        weight: 1
+      - path: polySurface43/polySurface50
+        weight: 1
+      - path: polySurface43/polySurface51
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: IdleOn
+      takeName: Take 001
+      firstFrame: 76
+      lastFrame: 76
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: polySurface1
+        weight: 1
+      - path: polySurface1/transform3
+        weight: 1
+      - path: polySurface2
+        weight: 1
+      - path: polySurface2/transform4
+        weight: 1
+      - path: polySurface6
+        weight: 1
+      - path: polySurface6/transform12
+        weight: 1
+      - path: polySurface7
+        weight: 1
+      - path: polySurface7/transform13
+        weight: 1
+      - path: polySurface8
+        weight: 1
+      - path: polySurface8/transform16
+        weight: 1
+      - path: polySurface9
+        weight: 1
+      - path: polySurface9/transform17
+        weight: 1
+      - path: polySurface10
+        weight: 1
+      - path: polySurface10/transform20
+        weight: 1
+      - path: polySurface11
+        weight: 1
+      - path: polySurface11/transform21
+        weight: 1
+      - path: polySurface43
+        weight: 1
+      - path: polySurface43/polySurface44
+        weight: 1
+      - path: polySurface43/polySurface45
+        weight: 1
+      - path: polySurface43/polySurface46
+        weight: 1
+      - path: polySurface43/polySurface47
+        weight: 1
+      - path: polySurface43/polySurface48
+        weight: 1
+      - path: polySurface43/polySurface49
+        weight: 1
+      - path: polySurface43/polySurface50
+        weight: 1
+      - path: polySurface43/polySurface51
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  userData: 

@@ -56,7 +56,7 @@ public class CrystalUnitFunctions : CrystalsUnit
     }
 
     public virtual void Start()//Sequencia de inicialização do sistema inteiro. 
-    {       
+    {
         GrabAudioSource();
         CheckSystemType(); //Qual tipo de unidade esse GameObject é;
         //CheckConnections(); //Quais conexões ele tem com os outros elementos da fase;
@@ -83,15 +83,20 @@ public class CrystalUnitFunctions : CrystalsUnit
         switch (transform.name)
         { 
             case "Generator":
+                gameObject.AddComponent<CrystalUnitAnimator>();
                 systemType = SystemType.Generator;
+                TurnMeOff();
                 break;
             case "ReplicatorNormal":
+                gameObject.AddComponent<CrystalUnitAnimator>();
                 systemType = SystemType.Replicator;
                 break;
             case "Bridge":
+                gameObject.AddComponent<CrystalUnitAnimator>();
                 systemType = SystemType.Bridge;
                 break;
             case "UnstableCrystal":
+                gameObject.AddComponent<CrystalUnitAnimator>();
                 systemType = SystemType.Unstable;
                 break;
         }
@@ -149,25 +154,75 @@ public class CrystalUnitFunctions : CrystalsUnit
     }
     
     public virtual void TurnMeOn()
-    {
+    {        
         if (isThisSystemOn)
             return;
 
-        CrystalsControl.INSTANCE.TurnThisSystemOn(transform);
+        isSystemSuposedToTurnOn = true;
+
         isThisSystemOn = true;
+
+        CrystalsControl.INSTANCE.TurnThisSystemOn(transform);
+
+        //StartCoroutine(WaitAnimationToTurnOn());  
+    }
+
+    public void TurnOnAfterAnimation()
+    {
+        if (!isSystemSuposedToTurnOn)
+            return;
 
         TransferEnergyToConnections();
 
         if (_unitAudioSourceOn == null || _unitAudioSourceOff == null)
             GrabAudioSource();
 
-            _unitAudioSourceOn.Play();
-            _unitAudioSourceOff.Stop(true);   
+        _unitAudioSourceOn.Play();
+        _unitAudioSourceOff.Stop(true);
+        CheckIfMyConnectionsHaveMeOnTracks();
+    }
+
+    void CheckIfMyConnectionsHaveMeOnTracks()
+    {
+        foreach (GameObject item in ConnectedToMe)
+        {
+            foreach (var track in item.GetComponent<CrystalsUnit>().TracksOfDonatedEnergy)
+            {
+                if (track.GetComponent<Connection_Fixed>())
+                    if (track.GetComponent<Connection_Fixed>().Destination == transform)
+                        track.GetComponent<Connection_Fixed>().TurnTrackOn();
+
+                else if (track.GetComponent<Connection_Temporary>())
+                        if (track.GetComponent<Connection_Temporary>().Destination == transform)
+                            track.GetComponent<Connection_Temporary>().TurnTrackOn();
+            }
+        }
+    }
+
+    IEnumerator WaitAnimationToTurnOn()
+    {
+        isThisSystemOn = true;
+
+        if (gameObject.GetComponent<CrystalUnitAnimator>())
+            yield return new WaitForSeconds(gameObject.GetComponent<CrystalUnitAnimator>().TurnOnAnimation());
+        else
+            yield return new WaitForSeconds(1);      
+
+        TransferEnergyToConnections();
+
+        if (_unitAudioSourceOn == null || _unitAudioSourceOff == null)
+            GrabAudioSource();
+
+        _unitAudioSourceOn.Play();
+        _unitAudioSourceOff.Stop(true);   
     }
 
     public virtual void TurnMeOff()
     {
         isThisSystemOn = false;
+
+        isSystemSuposedToTurnOn = false;
+
         RemoveEnergyFromConnections();
 
         if (AskForEnergyFromConnections())
@@ -194,7 +249,7 @@ public class CrystalUnitFunctions : CrystalsUnit
 
         foreach (var item in ConnectedToMe)
         {
-            Debug.Log(gameObject.name + " trying to get energy from: " + item.name);
+            //Debug.Log(gameObject.name + " trying to get energy from: " + item.name);
 
             if (item == lastPrimarySourceOfEnergy)
             {
@@ -290,9 +345,7 @@ public class CrystalUnitFunctions : CrystalsUnit
 
     IEnumerator WaitBeforeTransferingEnergy()
     {
-        
-        yield return new WaitForSeconds(0.01f);
-        
+        yield return new WaitForSeconds(0.1f);        
 
         foreach (GameObject go in ConnectedToMe)
         {

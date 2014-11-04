@@ -89,8 +89,23 @@ public class SoundManager : MonoBehaviour
     private AudioClip _feedbackSucced;
     private AudioClip _feedbackFail;   
 
+    public float masterVolume = 1f;
+
     void Start()
-    {        
+    {
+        if (Application.loadedLevelName == "Menu" || Application.loadedLevelName == "Stage_HUB")
+            return;
+        GrabAudioSources();
+        LoadAudioFiles();   
+    }
+
+    void OnLevelWasLoaded(int level) 
+    {
+        if (Application.loadedLevelName == "Menu" || Application.loadedLevelName == "Stage_HUB")
+            return;
+
+        DontDestroyOnLoad(gameObject);
+
         GrabAudioSources();
         LoadAudioFiles();        
     }
@@ -98,7 +113,6 @@ public class SoundManager : MonoBehaviour
     void GrabAudioSources()
     {
         //_globalSounds = Camera.main.GetComponent<AudioSource>();
-
 
         _globalSounds = GameObject.Find("ActualCamera").GetComponent<AudioSource>();
 
@@ -120,6 +134,17 @@ public class SoundManager : MonoBehaviour
     {
         _feedbackSucced = Resources.Load(AUDIOPATH + "Tada") as AudioClip;
         _feedbackFail = Resources.Load(AUDIOPATH + "Fail") as AudioClip;
+    }
+
+    public void ChangeVolume(float volume)
+    {
+        masterVolume = volume;
+        _stunSfx.Volume = masterVolume;
+
+        _stunSfx.Volume = masterVolume;
+        _alarmSfx.Volume = masterVolume;
+        _robotAlarmSfx.Volume = masterVolume;
+        _robotCollectSfx.Volume = masterVolume;
     }
 
     public void PlaySingleFile(AudioClip clip)

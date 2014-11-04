@@ -34,16 +34,27 @@ public class CrystalsControl : MonoBehaviour
     public void TurnThisSystemOff(Transform t)
     {
         t.tag = "Off";
-        if (Application.loadedLevelName != "Stage_Null")
-            foreach (Transform item in t)            
+
+        if (Application.loadedLevelName != "Stage_Null" && t.GetComponent<CrystalsUnit>().systemType != CrystalsUnit.SystemType.Pin)
+            foreach (Transform item in t)
+            {
+                if (item.GetComponent<Animator>())                
+                    item.gameObject.SetActive(false);
+                
                 if (item.GetComponent<MeshRenderer>())
-                    item.GetComponent<MeshRenderer>().enabled = false;            
+                    item.GetComponent<MeshRenderer>().enabled = false;
+
+                foreach (Transform i in item)
+                {
+                    if (i.GetComponent<MeshRenderer>())
+                        i.GetComponent<MeshRenderer>().enabled = false;
+                }
+            }
 
         TurnShadowOn(t);
 
         switch (t.GetComponent<CrystalsUnit>().systemType)
         { 
-
             case CrystalsUnit.SystemType.Pin:
                 TurnPinOff(t);
                 break;
@@ -55,16 +66,45 @@ public class CrystalsControl : MonoBehaviour
         t.tag = "Off";
         if (Application.loadedLevelName != "Stage_Null")
             foreach (Transform item in t)
+            {
+                if (item.GetComponent<Animator>())
+                {
+                    item.gameObject.SetActive(true);
+
+                    StartCoroutine(WaitAnimationBeforeTurningOn(t));
+                }
+
                 if (item.GetComponent<MeshRenderer>())
                     item.GetComponent<MeshRenderer>().enabled = true;
+                foreach (Transform i in item)
+                {
+                    if (i.GetComponent<MeshRenderer>())
+                        i.GetComponent<MeshRenderer>().enabled = true;
+                }
+            }
 
-        TurnShadowOff(t);
+
 
         switch (t.GetComponent<CrystalsUnit>().systemType)
         {
             case CrystalsUnit.SystemType.Pin:
                 TurnPinOn(t);
                 break;
+        }
+    }
+
+    IEnumerator WaitAnimationBeforeTurningOn(Transform t)
+    {
+        if (t.gameObject.GetComponent<CrystalUnitAnimator>())
+        yield return new WaitForSeconds(t.gameObject.GetComponent<CrystalUnitAnimator>().TurnOnAnimation());
+        else
+            yield return new WaitForSeconds(1);
+
+        if (t.GetComponent<CrystalsUnit>().isSystemSuposedToTurnOn)
+        {
+            t.GetComponent<CrystalUnitFunctions>().TurnOnAfterAnimation();
+
+            TurnShadowOff(t);
         }
     }
 
@@ -91,7 +131,7 @@ public class CrystalsControl : MonoBehaviour
         t.gameObject.active = true;
 
         if (t.FindChild("AudioSource_on"))
-            t.FindChild("AudioSource_on").active = false;
+            t.FindChild("AudioSource_on").GetComponent<SECTR_PointSource>().Stop(true);
 
         if (t.FindChild("AudioSource_off"))
         {

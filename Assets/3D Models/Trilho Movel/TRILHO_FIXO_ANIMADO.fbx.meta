@@ -1,0 +1,177 @@
+fileFormatVersion: 2
+guid: a278de45ad59cef4088e281747c57507
+ModelImporter:
+  serializedVersion: 15
+  fileIDToRecycleName:
+    100000: polySurface1
+    100002: polySurface10
+    100004: polySurface11
+    100006: polySurface12
+    100008: polySurface13
+    100010: polySurface14
+    100012: polySurface15
+    100014: polySurface16
+    100016: polySurface17
+    100018: polySurface18
+    100020: polySurface19
+    100022: polySurface2
+    100024: transform16
+    100026: transform17
+    100028: transform20
+    100030: transform21
+    100032: transform3
+    100034: transform4
+    100036: //RootNode
+    100038: TrilhoFixo_unfold3d:Mesh
+    400000: polySurface1
+    400002: polySurface10
+    400004: polySurface11
+    400006: polySurface12
+    400008: polySurface13
+    400010: polySurface14
+    400012: polySurface15
+    400014: polySurface16
+    400016: polySurface17
+    400018: polySurface18
+    400020: polySurface19
+    400022: polySurface2
+    400024: transform16
+    400026: transform17
+    400028: transform20
+    400030: transform21
+    400032: transform3
+    400034: transform4
+    400036: //RootNode
+    400038: TrilhoFixo_unfold3d:Mesh
+    2300000: polySurface16
+    2300002: polySurface17
+    2300004: polySurface18
+    2300006: polySurface19
+    3300000: polySurface16
+    3300002: polySurface17
+    3300004: polySurface18
+    3300006: polySurface19
+    4300000: polySurface16
+    4300002: polySurface17
+    4300004: polySurface18
+    4300006: polySurface19
+    7400000: TurnOn
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: TurnOn
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 44
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: polySurface1
+        weight: 1
+      - path: polySurface1/transform3
+        weight: 1
+      - path: polySurface2
+        weight: 1
+      - path: polySurface2/transform4
+        weight: 1
+      - path: polySurface10
+        weight: 1
+      - path: polySurface10/transform16
+        weight: 1
+      - path: polySurface11
+        weight: 1
+      - path: polySurface11/transform17
+        weight: 1
+      - path: polySurface12
+        weight: 1
+      - path: polySurface12/transform21
+        weight: 1
+      - path: polySurface13
+        weight: 1
+      - path: polySurface13/transform20
+        weight: 1
+      - path: TrilhoFixo_unfold3d:Mesh
+        weight: 1
+      - path: TrilhoFixo_unfold3d:Mesh/polySurface14
+        weight: 1
+      - path: TrilhoFixo_unfold3d:Mesh/polySurface14/polySurface16
+        weight: 1
+      - path: TrilhoFixo_unfold3d:Mesh/polySurface14/polySurface17
+        weight: 1
+      - path: TrilhoFixo_unfold3d:Mesh/polySurface15
+        weight: 1
+      - path: TrilhoFixo_unfold3d:Mesh/polySurface15/polySurface18
+        weight: 1
+      - path: TrilhoFixo_unfold3d:Mesh/polySurface15/polySurface19
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: .00999999978
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  userData: 

@@ -28,7 +28,7 @@ public class ConnectionCreator : MonoBehaviour {
 
         if (Connection == ConnectionEnum.ConnectionType.Fixed)
             cc.Connection = ConnectionEnum.ConnectionType.Fixed;
-        else if (Connection == ConnectionEnum.ConnectionType.Temporary)
+        else
             cc.Connection = ConnectionEnum.ConnectionType.Temporary;
 
         cc.Destination = this.Destination;
@@ -52,6 +52,6 @@ public class ConnectionCreator : MonoBehaviour {
     public void CreateConnectionAtRunTime(Transform destination, ConnectionEnum.ConnectionType type)
     {
         this.Destination = destination;
-        Connection = type;       
+        this.Connection = type;       
     }
 }

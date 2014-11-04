@@ -36,7 +36,7 @@ public class ResourcesManager : MonoBehaviour
     }
     #endregion
       
-    public int _tracks;
+    public int _tracks = 0;
 
     public void SetNumberOfInitialTrack(int i)
     {

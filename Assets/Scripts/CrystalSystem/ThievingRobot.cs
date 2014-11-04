@@ -68,7 +68,8 @@ public class ThievingRobot : MonoBehaviour {
         Pause,
         RunAway,
         Stun,
-        Thief
+        Thief,
+        None
     }
     public States state = States.Patrol;
     public States lastKnownState = States.Patrol;
@@ -126,7 +127,7 @@ public class ThievingRobot : MonoBehaviour {
     {
         _pickupSound = Resources.Load("Sounds/PickingUpTrackBot") as AudioClip;
         _robot = transform.FindChild("Robot");
-        lastKnownState = States.Patrol;
+        lastKnownState = States.None;
 
         _waypointHolder = transform.FindChild("Waypoints_Left").transform;
         _transitionPoint = transform.FindChild("Transition Point").transform;

@@ -170,8 +170,6 @@ public class MenuSystem_Options : MonoBehaviour
     { 
         string HorasPronta ="";
 
-
-
         return HorasPronta;
     }
 }

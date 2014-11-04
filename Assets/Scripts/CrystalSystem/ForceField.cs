@@ -98,6 +98,9 @@ public class ForceField : MonoBehaviour {
                 affectedSystem.GetComponent<CrystalUnitFunctions>().ChangeSystemStatus();
             }
         }
+
+        affectedSystem.GetComponent<CrystalsUnit>().isAffectedByForceField = true;
+        affectedSystem.GetComponent<CrystalUnitFunctions>().ChangeSystemStatus();
     }
 
     public void StopRhythmSequence()

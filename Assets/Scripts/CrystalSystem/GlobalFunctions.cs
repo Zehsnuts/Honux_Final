@@ -86,6 +86,9 @@ public class GlobalFunctions : MonoBehaviour {
             if (hitInfo.transform.name == "Frame")
                 return false;
 
+        if (Vector3.Distance(origin.position, destination.position) > connectionDistance)
+            return false;
+
         for (int i = 0; i < tracks.Count; i++)
         {
             if (tracks[i].GetComponent<ConnectorFunctions>().Destination == destination)

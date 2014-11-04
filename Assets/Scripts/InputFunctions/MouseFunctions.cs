@@ -61,6 +61,8 @@ public class MouseFunctions : MonoBehaviour
 
         MoveMouseCursor();
 
+        MoveEar();
+
         Ray ray = ActualCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
@@ -159,7 +161,7 @@ public class MouseFunctions : MonoBehaviour
         {
             if (Input.GetMouseButtonUp(0))
             {
-                Screen_Pause.INSTANCE.ClickedThisButton(hit.transform.name);
+               
             }
         }
     }
@@ -192,22 +194,6 @@ public class MouseFunctions : MonoBehaviour
     void OnBluePrintInput(RaycastHit hit)
     {
         MoveEar();
-
-        string[] name = hit.transform.name.Split("_"[0]);
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            //if (hit.transform.name == "BluePaper")
-            if (name[0] == "BluePaper")
-
-                Screen_BluePrint.INSTANCE.AddMark(hit.transform, hit.point);
-        }
-
-        if (Input.GetMouseButtonUp(1))
-        {
-            if (hit.transform.name == "MarkLeg")
-                Destroy(hit.transform.parent.gameObject);
-        }
     }
 
     void OnAudioScreenInput()

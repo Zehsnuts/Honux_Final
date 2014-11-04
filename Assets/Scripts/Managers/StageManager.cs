@@ -51,8 +51,9 @@ public class StageManager : MonoBehaviour
     private List<string> _unlockedLevels = new List<string>();
 
     void Start()
-    {
-        _unlockedLevels.Add("Stage_tut_1");        
+    {       
+
+        FillCheatList();
 
         EnableUnlockedLevels();
 
@@ -149,14 +150,6 @@ public class StageManager : MonoBehaviour
     }
     void FillCheatList()
     {
-        _unlockedLevels.Add("Stage_tut_1");
-        _unlockedLevels.Add("Stage_tut_2");
-        _unlockedLevels.Add("Stage_tut_3");
-        _unlockedLevels.Add("Stage_tut_4");
-        _unlockedLevels.Add("Stage_tut_5");
-        _unlockedLevels.Add("Stage_tut_6");
-        _unlockedLevels.Add("Stage_tut_7");
-        _unlockedLevels.Add("Stage_tut_8");
 
         _unlockedLevels.Add("Stage_1_1");
         _unlockedLevels.Add("Stage_1_2");
@@ -174,24 +167,9 @@ public class StageManager : MonoBehaviour
 
         _unlockedLevels.Add("Stage_3_1");
         _unlockedLevels.Add("Stage_3_2");
-        _unlockedLevels.Add("Stage_3_3");
-        _unlockedLevels.Add("Stage_3_4");
-        _unlockedLevels.Add("Stage_3_5");
-        _unlockedLevels.Add("Stage_3_6");
 
         _unlockedLevels.Add("Stage_4_1");
-        _unlockedLevels.Add("Stage_4_2");
-        _unlockedLevels.Add("Stage_4_3");
-        _unlockedLevels.Add("Stage_4_4");
-        _unlockedLevels.Add("Stage_4_5");
-        _unlockedLevels.Add("Stage_4_6");
 
-        _unlockedLevels.Add("Stage_5_1");
-        _unlockedLevels.Add("Stage_5_2");
-        _unlockedLevels.Add("Stage_5_3");
-        _unlockedLevels.Add("Stage_5_4");
-        _unlockedLevels.Add("Stage_5_5");
-        _unlockedLevels.Add("Stage_5_6");
-
+        _unlockedLevels.Add("Stage_5_1");        
     }
 }
