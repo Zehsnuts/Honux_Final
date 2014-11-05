@@ -135,6 +135,9 @@ public class TutorialManager : MonoBehaviour {
 
     void NextDescription()
     {
+        if (_currentStep >= _currentStageDescriptions.Count)
+            return;
+
         tutorialLabel.text = _currentStageDescriptions[_currentStep];
     }
 
