@@ -3,7 +3,6 @@ using System.Collections;
 
 public class ResourcesManager : MonoBehaviour
 {
-
     #region Singleton
     private static ResourcesManager _INSTANCE;
     public static ResourcesManager INSTANCE
@@ -45,7 +44,7 @@ public class ResourcesManager : MonoBehaviour
 
     public void AddTrack()
     {
-        _tracks++;
+        _tracks++;        
     }
     public void RemoveTrack()
     {

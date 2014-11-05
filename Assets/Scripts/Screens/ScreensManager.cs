@@ -63,6 +63,10 @@ public class ScreensManager : MonoBehaviour
 	// Update is called once per frame
 	public void OpenScreenByButtonName(Transform name) 
     {
+
+        if (GameStateManager.INSTANCE.SpecialGameState == GameStateManager.SpecialGameStates.OnTutorial)
+            return;
+
         foreach (Transform item in transform)
         {
             item.gameObject.SetActive(false);

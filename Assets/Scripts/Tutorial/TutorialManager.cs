@@ -31,6 +31,8 @@ public class TutorialManager : MonoBehaviour {
     public int _currentStep;
     public int _totalStageSteps;
 
+    private TutorialObject _currentTutorialObject;
+
     public UITexture tutorialPanel;
     public UILabel tutorialLabel;
 
@@ -50,23 +52,45 @@ public class TutorialManager : MonoBehaviour {
             _tutorialDescriptions.Add(itemSplit[1]);
         }
 
-        tutorialObjects.CreateTutorialObjects();
-
         DontDestroyOnLoad(gameObject);
 
         transform.parent = GameObject.Find("_Manager").transform;
 
         LoadDescriptons();
+
+        NextStep();
     }
 
     void LoadDescriptons()
     {
         _currentStep = 0;
         if (_tutorialLevels.Contains(Application.loadedLevelName))
+        {
             for (int i = 0; i < _tutorialLevels.Count; i++)
-                if (_tutorialLevels[i] == Application.loadedLevelName)                
-                    _currentStageDescriptions.Add(_tutorialDescriptions[i]);
-                
+                if (_tutorialLevels[i] == Application.loadedLevelName)
+                    _currentStageDescriptions.Add(_tutorialDescriptions[i]);            
+        }                
+    }
+
+    bool GrabTutorialStep()
+    {
+        ChangeState(false);
+
+        string loadAtPath = "TutorialObjects/TO_" + _currentStep.ToString() + "_" + Application.loadedLevelName;
+
+        GameObject go = Resources.Load<GameObject>(loadAtPath);
+
+        if (go == null)
+            return false;
+
+        go = Instantiate(Resources.Load("TutorialObjects/TO_" + _currentStep.ToString() + "_" + Application.loadedLevelName)) as GameObject;
+
+        go.transform.parent = transform;
+        _currentTutorialObject = go.GetComponent<TutorialObject>();
+        
+        go = null;
+
+        return true;        
     }
 
     void OnLevelWasLoaded(int lvlNumber)
@@ -81,8 +105,59 @@ public class TutorialManager : MonoBehaviour {
         tutorialLabel.active = state;
     }
 
+    IEnumerator WaitBeforNextStep()
+    {
+        ChangeState(false);
+        yield return new WaitForSeconds(0.2f);
+
+        NextDescription();
+        _currentStep++;        
+
+        if (GrabTutorialStep())
+        {
+            _currentTutorialObject.BeginStep();
+            _currentTutorialObject.TUTORIALSTEPCOMPLETED += NextStep;
+            ChangeState(true);
+
+            if (_currentTutorialObject.tutorialSteps == TutorialObject.TutorialSteps.TargetClick)
+                PointArrowToObject();
+
+            if (_currentTutorialObject.tutorialSteps == TutorialObject.TutorialSteps.KeyPress && _currentTutorialObject.clickTarget != null)
+                PointArrowToObject();
+
+            else if (_currentTutorialObject.tutorialSteps == TutorialObject.TutorialSteps.KeyPress && _currentTutorialObject.clickTarget == null)
+                arrow.active = false;
+
+            else if (_currentTutorialObject.tutorialSteps == TutorialObject.TutorialSteps.WaitForRobotSteal)
+                PointArrowToObject();     
+        }
+    }
+
+    void NextDescription()
+    {
+        tutorialLabel.text = _currentStageDescriptions[_currentStep];
+    }
+
     void NextStep()
     {
-        _currentStep++;       
+        StartCoroutine(WaitBeforNextStep());
+    }
+
+    void PointArrowToObject()
+    {
+        if (_currentTutorialObject.clickTarget == null)
+        {
+            arrow.transform.position = GameObject.Find(_currentTutorialObject.clickTargetName).transform.position;
+            arrow.transform.rotation = GameObject.Find(_currentTutorialObject.clickTargetName).transform.rotation;
+
+        }
+        else
+        {
+            arrow.transform.position = _currentTutorialObject.clickTarget.transform.position;
+            arrow.transform.rotation = _currentTutorialObject.clickTarget.transform.rotation;
+        }
+
+        if (_currentTutorialObject.clickTarget.name.Contains("Track:"))
+            arrow.transform.position = _currentTutorialObject.clickTarget.transform.FindChild("Frame").transform.position;
     }
 }

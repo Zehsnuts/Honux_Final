@@ -50,13 +50,13 @@ public class EventManager : MonoBehaviour
     private static EventManager _INSTANCE;
 
     public static EventManager INSTANCE
-    { 
+    {
         get
         {
-            if(_INSTANCE == null)
+            if (_INSTANCE == null)
             {
                 _INSTANCE = GameObject.FindObjectOfType<EventManager>();
-            }           
+            }
             return _INSTANCE;
         }
     }
@@ -79,9 +79,9 @@ public class EventManager : MonoBehaviour
 
     public delegate void StageStart();
     public static event StageStart STAGESTART;
-    public  void CallStageStart()
+    public void CallStageStart()
     {
-        if(STAGESTART!=null)
+        if (STAGESTART != null)
             STAGESTART();
     }
 
@@ -91,7 +91,7 @@ public class EventManager : MonoBehaviour
     {
         if (STAGESUCESS != null)
             STAGESUCESS();
-    } 
+    }
 
     public delegate void StageFail();
     public static event StageFail STAGEFAIL;
@@ -115,7 +115,7 @@ public class EventManager : MonoBehaviour
     {
         if (STAGEFAILSEQUENCESTOP != null)
             STAGEFAILSEQUENCESTOP();
-    } 
+    }
 
     public delegate void MainMenu();
     public static event MainMenu MAINMENUSTART;
@@ -131,7 +131,7 @@ public class EventManager : MonoBehaviour
     {
         if (STAGEEND != null)
             STAGEEND();
-    }    
+    }
 
     public delegate void LoadingStart();
     public static event LoadingStart LOADINGSTART;
@@ -200,7 +200,7 @@ public class EventManager : MonoBehaviour
     public delegate void ChangeCamera();
     public static event ChangeCamera CHANGECAMERA;
     public void CallChangeCamera()
-    {       
+    {
         if (CHANGECAMERA != null)
             CHANGECAMERA();
     }
@@ -333,6 +333,4 @@ public class EventManager : MonoBehaviour
         if (ROBOTURNOFF != null)
             ROBOTURNOFF();
     }
-
-    
 }

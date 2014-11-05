@@ -49,7 +49,7 @@ public class KeyboardFunctions : MonoBehaviour
                 break;
 
             case GameStateManager.SpecialGameStates.OnMenu:
-                OnStartMenuInput();
+                OnTutorialInput();
                 break;
 
             case GameStateManager.SpecialGameStates.OnCutscene:
@@ -81,7 +81,7 @@ public class KeyboardFunctions : MonoBehaviour
             EventManager.INSTANCE.CallGamePauseExit();
     }
 
-    void OnStartMenuInput()
+    void OnTutorialInput()
     {
 
     }

@@ -122,7 +122,6 @@ public class ThievingRobot : MonoBehaviour {
         state = States.Patrol;
     }
 
-
     void Start()
     {
         _pickupSound = Resources.Load("Sounds/PickingUpTrackBot") as AudioClip;
@@ -130,6 +129,8 @@ public class ThievingRobot : MonoBehaviour {
         lastKnownState = States.None;
 
         _waypointHolder = transform.FindChild("Waypoints_Left").transform;
+
+        if (transform.FindChild("Transition Point"))
         _transitionPoint = transform.FindChild("Transition Point").transform;
 
         foreach (Transform t in _waypointHolder)
@@ -138,14 +139,19 @@ public class ThievingRobot : MonoBehaviour {
                 _waypointsLeft.Add(t);
         }
 
-        _waypoints = _waypointsLeft;
+        if(_waypointsLeft.Count >0)
+            _waypoints = _waypointsLeft;
+
         _waypointHolder = transform.FindChild("Waypoints_Right").transform;
 
         foreach (Transform t in _waypointHolder)
         {
             if (t != null)
                 _waypointsRight.Add(t);
-        }        
+        }
+
+        if (_waypointsLeft.Count < 1)
+            _waypoints = _waypointsRight;
 
         _robot.transform.position = _waypoints[Random.Range(0, _waypoints.Count)].position;
 
@@ -197,7 +203,7 @@ public class ThievingRobot : MonoBehaviour {
     {        
         PlaySound();
 
-        if (_isRobotInTransition)
+        if (_isRobotInTransition && _transitionPoint!=null)
             _currentMovementTarget = _transitionPoint;
         else
             _currentMovementTarget = _waypoints[_currentWaypoint];
@@ -219,7 +225,7 @@ public class ThievingRobot : MonoBehaviour {
             else
                 _waypoints = _waypointsLeft;
 
-            _currentWaypoint = Random.Range(0, _waypoints.Count + 1);
+            _currentWaypoint = Random.Range(0, _waypoints.Count);
 
             if (_currentWaypoint >= _waypoints.Count)
                 _currentWaypoint = 0; 
@@ -277,6 +283,8 @@ public class ThievingRobot : MonoBehaviour {
         else
         {
             _target.parent.parent.GetComponent<ConnectorFunctions>().BreakLine();
+            if (Application.loadedLevelName == "Stage_0_0")
+                FindObjectOfType<TutorialObject>().CallTutorialStepComplete();
             state = States.RunAway;
             //ResourcesManager.INSTANCE.RemoveTrack();
             SoundManager.INSTANCE.PlaySingleFile(_pickupSound);
@@ -296,6 +304,9 @@ public class ThievingRobot : MonoBehaviour {
     #region Stun
     public void StunRobot()
     {
+        if (Application.loadedLevelName == "Stage_0_0")
+            FindObjectOfType<TutorialObject>().CallTutorialStepComplete();
+
         Debug.Log(state);
 
         if (state == States.Pause)

@@ -82,8 +82,8 @@ public class MouseFunctions : MonoBehaviour
                         OnStageSelectInput(hit);
                         break;
 
-                    case GameStateManager.SpecialGameStates.OnMenu:
-                        OnStartMenuInput();
+                    case GameStateManager.SpecialGameStates.OnTutorial:
+                        OnTutorialInput(hit);
                         break;
 
                     case GameStateManager.SpecialGameStates.OnCutscene:
@@ -149,7 +149,6 @@ public class MouseFunctions : MonoBehaviour
         {
             if (t.name == "StageFloor")
                 Skill_StunRay.INSTANCE.CastStunRay(hit.point);
-
         }
     }
 
@@ -166,9 +165,19 @@ public class MouseFunctions : MonoBehaviour
         }
     }
 
-    void OnStartMenuInput()
+    void OnTutorialInput(RaycastHit hit)
     {
+        if (FindObjectOfType<TutorialObject>().tutorialSteps == TutorialObject.TutorialSteps.TargetClick)
+            if (Input.GetMouseButtonUp(0))
+                if (FindObjectOfType<TutorialObject>().TryClickTarget(hit) != null)
+                    FreeInput(hit);
 
+      if (FindObjectOfType<TutorialObject>().tutorialSteps == TutorialObject.TutorialSteps.WaitForTrackCount)
+        if (Input.GetMouseButtonUp(1))
+        {
+            if (hit.transform.name == "StageFloor")
+                Skill_StunRay.INSTANCE.CastStunRay(hit.point);
+        }
     }
 
     void OnStageSelectInput(RaycastHit hit)

@@ -75,7 +75,6 @@ public class HUDManager : MonoBehaviour
 
     void GrabElements()
     {
-
         _hudContainerLeft = transform.FindChild("InGame HUD Left");
         _hudContainerLeft.gameObject.SetActive(true);
         _hudContainerRight = transform.FindChild("InGame HUD Right");

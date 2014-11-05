@@ -51,8 +51,7 @@ public class StageManager : MonoBehaviour
     private List<string> _unlockedLevels = new List<string>();
 
     void Start()
-    {       
-
+    {  
         FillCheatList();
 
         EnableUnlockedLevels();
