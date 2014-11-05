@@ -111,8 +111,21 @@ public class Connection_Fixed : ConnectorFunctions{
 
     public void TurnTrackOn()
     {
-        _fixedPiece1.GetComponent<MeshRenderer>().enabled = true;
-        _fixedPiece2.GetComponent<MeshRenderer>().enabled = true;
+        _fixedPiece1.active = true;
+        _fixedPiece2.active = true;
+
+        foreach (Transform item in _fixedPiece1.transform)
+        {
+            if (item.GetComponent<MeshRenderer>())
+                item.GetComponent<MeshRenderer>().enabled = true;
+        }
+        //_fixedPiece2.GetComponent<MeshRenderer>().enabled = false;
+
+        foreach (Transform item in _fixedPiece2.transform)
+        {
+            if (item.GetComponent<MeshRenderer>())
+                item.GetComponent<MeshRenderer>().enabled = true;
+        }
 
         _frameLight.GetComponent<ParticleRenderer>().enabled = true;
         _frameLight2.GetComponent<ParticleRenderer>().enabled = true;
@@ -125,10 +138,22 @@ public class Connection_Fixed : ConnectorFunctions{
 
     public void TurnTrackOff()
     {
+        _fixedPiece1.active = false;
+        _fixedPiece2.active = false;
+
         if (Application.loadedLevelName != "Stage_Null")
         {
-            _fixedPiece1.GetComponent<MeshRenderer>().enabled = false;
-            _fixedPiece2.GetComponent<MeshRenderer>().enabled = false;
+            foreach (Transform item in _fixedPiece1.transform)
+            {
+                if(item.GetComponent<MeshRenderer>())
+                    item.GetComponent<MeshRenderer>().enabled = false;
+            }
+
+            foreach (Transform item in _fixedPiece2.transform)
+            {
+                if (item.GetComponent<MeshRenderer>())
+                    item.GetComponent<MeshRenderer>().enabled = false;
+            }
         }
 
         _frameLight.GetComponent<ParticleRenderer>().enabled = false;

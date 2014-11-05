@@ -105,7 +105,10 @@ public class ThievingRobot : MonoBehaviour {
     {
         state = States.Pause;
 
+        if (audioSourceOn!=null)
         audioSourceOn.Stop(true);
+
+        if (audioSourceOff != null)
         audioSourceOff.Stop(true);        
     }
 

@@ -154,15 +154,31 @@ public class CrystalUnitFunctions : CrystalsUnit
     }
     
     public virtual void TurnMeOn()
-    {        
-        if (isThisSystemOn)
+    {
+        if (isThisSystemOn)        
             return;
+        
+
+        if (PrimarySourceOfEnergy == null && systemType == SystemType.Generator)
+        {
+            isThisSystemOn = false;
+            isSystemSuposedToTurnOn = true;
+
+            isThisSystemOn = true;
+
+            CrystalsControl.INSTANCE.TurnThisSystemOn(transform);
+
+            CheckIfMyConnectionsHaveMeOnTracks();
+            return;
+        }
 
         isSystemSuposedToTurnOn = true;
 
         isThisSystemOn = true;
 
         CrystalsControl.INSTANCE.TurnThisSystemOn(transform);
+
+        CheckIfMyConnectionsHaveMeOnTracks();
 
         //StartCoroutine(WaitAnimationToTurnOn());  
     }
@@ -179,7 +195,6 @@ public class CrystalUnitFunctions : CrystalsUnit
 
         _unitAudioSourceOn.Play();
         _unitAudioSourceOff.Stop(true);
-        CheckIfMyConnectionsHaveMeOnTracks();
     }
 
     void CheckIfMyConnectionsHaveMeOnTracks()

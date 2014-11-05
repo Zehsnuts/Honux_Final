@@ -149,13 +149,16 @@ public class StageManager : MonoBehaviour
     }
     void FillCheatList()
     {
-
         _unlockedLevels.Add("Stage_1_1");
         _unlockedLevels.Add("Stage_1_2");
         _unlockedLevels.Add("Stage_1_3");
         _unlockedLevels.Add("Stage_1_4");
         _unlockedLevels.Add("Stage_1_5");
         _unlockedLevels.Add("Stage_1_6");
+        _unlockedLevels.Add("Stage_1_7");
+        _unlockedLevels.Add("Stage_1_8");
+        _unlockedLevels.Add("Stage_1_9");
+        _unlockedLevels.Add("Stage_1_10");
 
         _unlockedLevels.Add("Stage_2_1");
         _unlockedLevels.Add("Stage_2_2");
@@ -163,12 +166,24 @@ public class StageManager : MonoBehaviour
         _unlockedLevels.Add("Stage_2_4");
         _unlockedLevels.Add("Stage_2_5");
         _unlockedLevels.Add("Stage_2_6");
+        _unlockedLevels.Add("Stage_2_7");
+        _unlockedLevels.Add("Stage_2_8");
+        _unlockedLevels.Add("Stage_2_9");
 
         _unlockedLevels.Add("Stage_3_1");
         _unlockedLevels.Add("Stage_3_2");
+        _unlockedLevels.Add("Stage_3_3");
+        _unlockedLevels.Add("Stage_3_4");
+        _unlockedLevels.Add("Stage_3_5");
 
         _unlockedLevels.Add("Stage_4_1");
+        _unlockedLevels.Add("Stage_4_2");
+        _unlockedLevels.Add("Stage_4_3");
+        _unlockedLevels.Add("Stage_4_4");
+        _unlockedLevels.Add("Stage_4_5");
 
-        _unlockedLevels.Add("Stage_5_1");        
+        _unlockedLevels.Add("Stage_5_1");
+        _unlockedLevels.Add("Stage_5_2");
+      
     }
 }

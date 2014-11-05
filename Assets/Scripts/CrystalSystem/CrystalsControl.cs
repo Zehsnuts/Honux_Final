@@ -72,6 +72,8 @@ public class CrystalsControl : MonoBehaviour
                     item.gameObject.SetActive(true);
 
                     StartCoroutine(WaitAnimationBeforeTurningOn(t));
+
+                    TurnShadowOff(t);
                 }
 
                 if (item.GetComponent<MeshRenderer>())
@@ -96,9 +98,9 @@ public class CrystalsControl : MonoBehaviour
     IEnumerator WaitAnimationBeforeTurningOn(Transform t)
     {
         if (t.gameObject.GetComponent<CrystalUnitAnimator>())
-        yield return new WaitForSeconds(t.gameObject.GetComponent<CrystalUnitAnimator>().TurnOnAnimation());
+            yield return new WaitForSeconds(t.gameObject.GetComponent<CrystalUnitAnimator>().TurnOnAnimation());
         else
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(2);
 
         if (t.GetComponent<CrystalsUnit>().isSystemSuposedToTurnOn)
         {

@@ -164,6 +164,8 @@ public class SoundManager : MonoBehaviour
 
     void RobotWarning()
     {
+        if (_robotAlarmSfx == null)
+            GrabAudioSources();
         _robotAlarmSfx.Stop(true);
         _robotAlarmSfx.Play();
     }

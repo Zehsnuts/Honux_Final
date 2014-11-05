@@ -99,8 +99,11 @@ public class ForceField : MonoBehaviour {
             }
         }
 
-        affectedSystem.GetComponent<CrystalsUnit>().isAffectedByForceField = true;
-        affectedSystem.GetComponent<CrystalUnitFunctions>().ChangeSystemStatus();
+        if (affectedSystem.GetComponent<CrystalsUnit>())
+        {
+            affectedSystem.GetComponent<CrystalsUnit>().isAffectedByForceField = true;
+            affectedSystem.GetComponent<CrystalUnitFunctions>().ChangeSystemStatus();
+        }
     }
 
     public void StopRhythmSequence()
@@ -143,8 +146,11 @@ public class ForceField : MonoBehaviour {
     {
         _myRhythmButtonScript.ButtonSolved();
 
-        affectedSystem.GetComponent<CrystalsUnit>().isAffectedByForceField = false;
-        affectedSystem.GetComponent<CrystalUnitFunctions>().ChangeSystemStatus();
+        if (affectedSystem.GetComponent<CrystalsUnit>())
+        {
+            affectedSystem.GetComponent<CrystalsUnit>().isAffectedByForceField = false;
+            affectedSystem.GetComponent<CrystalUnitFunctions>().ChangeSystemStatus();
+        }
 
         Destroy(_sphere);
         Destroy(_light);
