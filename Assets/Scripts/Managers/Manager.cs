@@ -4,7 +4,7 @@ using System.Collections;
 public class Manager : MonoBehaviour {
     void OnGUI()
     {
-        GUILayout.Label("Version 0.3.3");
+        GUILayout.Label("Version 0.3.4");
     }
     void Awake()
     {

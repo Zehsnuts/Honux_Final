@@ -39,13 +39,16 @@ public class LoadingManager: MonoBehaviour
     private GameObject _loadProgressBar;
     private bool _shoulShowLoadingScreen;
 
+    private bool _isCurrentlyLoading = false;
+
     private int _loadingPercentageProgress = 0;
     private bool _isLoading = false;
-
- 
+    
 
     void Start()
-    {       
+    {
+        _isCurrentlyLoading = false;
+
         CameraFade.StartAlphaFade(Color.black, true, 2);
         ShowOrHideLoadingScreenStatus(false);        
     }
@@ -121,6 +124,11 @@ public class LoadingManager: MonoBehaviour
 
     public void LoadLevelByName(string level)
     {
+        if (_isCurrentlyLoading)
+            return;
+
+        _isCurrentlyLoading = true;
+
         EventManager.INSTANCE.CallLoadingStart();
 
         levelToLoad = level;
@@ -131,6 +139,7 @@ public class LoadingManager: MonoBehaviour
     void FinishLoadingScreen(AsyncOperation async)
     {
         async.allowSceneActivation = true;
+        _isCurrentlyLoading = false;
         EventManager.INSTANCE.CallLoadingEnd();
     }    
 }

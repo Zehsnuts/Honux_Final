@@ -34,11 +34,7 @@ public class MouseFunctions : MonoBehaviour
         _earDistance = 23f;
 
         if (!GameObject.Find("MouseCursor"))
-        {
-            var go = new GameObject();
-            go.name = "MouseCursor";
-            mouseCursor = go;
-        }
+            Instantiate(Resources.Load("Prefabs/Interface/MouseCursor"));
 
         //if (GameObject.Find("Ear"))
         //{
@@ -230,9 +226,14 @@ public class MouseFunctions : MonoBehaviour
         var mousePos = Input.mousePosition;
         var wantedPos = ActualCamera.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 23));
 
-        mouseCursor.transform.position = wantedPos;
+        //mouseCursor.transform.position = wantedPos;
 
         return wantedPos;
+    }
+
+    void ChangeMouseCursor()
+    { 
+        
     }
 
     void MoveEar()

@@ -517,7 +517,6 @@ Transform:
   - {fileID: 2106497243}
   - {fileID: 114621904}
   - {fileID: 1650593945}
-  - {fileID: 253097373}
   - {fileID: 186690377}
   m_Father: {fileID: 0}
   m_RootOrder: 5
@@ -3769,7 +3768,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 23160286}
-  m_RootOrder: 4
+  m_RootOrder: 3
 --- !u!114 &186690378
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4548,95 +4547,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 154528790}
   m_RootOrder: 0
---- !u!1 &253097372
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 100004, guid: 877da11b946c2bc4092ba88e92bc9785, type: 2}
-  m_PrefabInternal: {fileID: 466613160}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 253097373}
-  - 33: {fileID: 253097377}
-  - 23: {fileID: 253097376}
-  - 54: {fileID: 253097375}
-  - 65: {fileID: 253097374}
-  m_Layer: 2
-  m_Name: Range
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &253097373
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 400004, guid: 877da11b946c2bc4092ba88e92bc9785, type: 2}
-  m_PrefabInternal: {fileID: 466613160}
-  m_GameObject: {fileID: 253097372}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 23160286}
-  m_RootOrder: 3
---- !u!65 &253097374
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 6500000, guid: 877da11b946c2bc4092ba88e92bc9785,
-    type: 2}
-  m_PrefabInternal: {fileID: 466613160}
-  m_GameObject: {fileID: 253097372}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: .370000005, y: .340000004, z: 1.00000024}
-  m_Center: {x: 5.96046448e-08, y: 0, z: -8.94069672e-08}
---- !u!54 &253097375
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 5400000, guid: 877da11b946c2bc4092ba88e92bc9785,
-    type: 2}
-  m_PrefabInternal: {fileID: 466613160}
-  m_GameObject: {fileID: 253097372}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 126
-  m_CollisionDetection: 0
---- !u!23 &253097376
-Renderer:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 2300000, guid: 877da11b946c2bc4092ba88e92bc9785,
-    type: 2}
-  m_PrefabInternal: {fileID: 466613160}
-  m_GameObject: {fileID: 253097372}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_LightmapIndex: 255
-  m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
-  m_Materials:
-  - {fileID: 2100000, guid: aabb3d98eb55f0d4eacd96487b769905, type: 2}
-  m_SubsetIndices: 
-  m_StaticBatchRoot: {fileID: 0}
-  m_UseLightProbes: 0
-  m_LightProbeAnchor: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
---- !u!33 &253097377
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 3300000, guid: 877da11b946c2bc4092ba88e92bc9785,
-    type: 2}
-  m_PrefabInternal: {fileID: 466613160}
-  m_GameObject: {fileID: 253097372}
-  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &254663953
 GameObject:
   m_ObjectHideFlags: 0
@@ -7562,7 +7472,7 @@ Camera:
   field of view: 60
   orthographic: 1
   orthographic size: 1
-  m_Depth: 2
+  m_Depth: 10
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 256
@@ -24190,9 +24100,9 @@ Prefab:
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 2000000, guid: b0b4a23f0044c0a408c4bf6be17b4c4d, type: 2}
-      propertyPath: m_CullingMask.m_Bits
-      value: 4294966783
+    - target: {fileID: 400000, guid: b0b4a23f0044c0a408c4bf6be17b4c4d, type: 2}
+      propertyPath: m_RootOrder
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b0b4a23f0044c0a408c4bf6be17b4c4d, type: 2}
@@ -29088,7 +28998,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294966783
+    m_Bits: 19
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

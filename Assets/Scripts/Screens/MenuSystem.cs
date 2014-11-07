@@ -40,6 +40,7 @@ public class MenuSystem : MonoBehaviour
     void StartGame()
     {
         CameraFade.StartAlphaFade(Color.black, false, 2, 0, () => { Application.LoadLevel("Stage_HUB"); });
+        mainAnchor.active = false;
     }
 
     void ShowCredits()

@@ -45,13 +45,16 @@ public class StageManager : MonoBehaviour
 
     #endregion
 
+    private bool _isLoading = false;
+
     public string currentLevel;
     public List<string> lastLevel;
 
     private List<string> _unlockedLevels = new List<string>();
 
     void Start()
-    {  
+    {
+        _isLoading = false;
         FillCheatList();
 
         EnableUnlockedLevels();
@@ -66,11 +69,20 @@ public class StageManager : MonoBehaviour
 
     public void RetryCurrentLevel()
     {
+        if (_isLoading)
+            return;
+
+        _isLoading = true;
+            
         LoadingManager.INSTANCE.LoadLevelByName(currentLevel);
     }
 
     public void ChangeLevelTo(string level)
     {
+        if (_isLoading)
+            return;
+
+        _isLoading = true;
         lastLevel.Add(currentLevel);
         LoadingManager.INSTANCE.LoadLevelByName(level);
     }
@@ -82,11 +94,17 @@ public class StageManager : MonoBehaviour
 
     public void ReturnToStageSelect()
     {
+        if (_isLoading)
+            return;
+        _isLoading = true;
         LoadingManager.INSTANCE.LoadLevelByName("Stage_HUB");
     }
 
     public void StageCompleted()
     {
+        if (_isLoading)
+            return;
+        _isLoading = true;
         Debug.Log(currentLevel + "is completed!");
         StartCoroutine(WaitForStageToEnd());
     }
@@ -183,7 +201,7 @@ public class StageManager : MonoBehaviour
         _unlockedLevels.Add("Stage_4_5");
 
         _unlockedLevels.Add("Stage_5_1");
-        _unlockedLevels.Add("Stage_5_2");
+        //_unlockedLevels.Add("Stage_5_2");
       
     }
 }

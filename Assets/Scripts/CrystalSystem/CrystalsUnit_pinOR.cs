@@ -27,6 +27,7 @@ public class CrystalsUnit_pinOR : CrystalUnitFunctions {
             EventManager.INSTANCE.CallPinTurnOff_Or();
 
         CrystalsControl.INSTANCE.TurnThisSystemOff(transform);
+
         isThisSystemOn = false;
 
         if (energyInsideMe < 1)
