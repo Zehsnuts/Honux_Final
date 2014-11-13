@@ -82,6 +82,7 @@ ModelImporter:
     7400000: TurnOn
     7400002: IdleOff
     7400004: IdleOn
+    7400006: IdleOn
     9500000: //RootNode
   materials:
     importMaterials: 1
@@ -102,85 +103,7 @@ ModelImporter:
       name: TurnOn
       takeName: Take 001
       firstFrame: 0
-      lastFrame: 76
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      loopTime: 0
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask:
-      - path: 
-        weight: 1
-      - path: polySurface1
-        weight: 1
-      - path: polySurface1/transform3
-        weight: 1
-      - path: polySurface2
-        weight: 1
-      - path: polySurface2/transform4
-        weight: 1
-      - path: polySurface6
-        weight: 1
-      - path: polySurface6/transform12
-        weight: 1
-      - path: polySurface7
-        weight: 1
-      - path: polySurface7/transform13
-        weight: 1
-      - path: polySurface8
-        weight: 1
-      - path: polySurface8/transform16
-        weight: 1
-      - path: polySurface9
-        weight: 1
-      - path: polySurface9/transform17
-        weight: 1
-      - path: polySurface10
-        weight: 1
-      - path: polySurface10/transform20
-        weight: 1
-      - path: polySurface11
-        weight: 1
-      - path: polySurface11/transform21
-        weight: 1
-      - path: polySurface43
-        weight: 1
-      - path: polySurface43/polySurface44
-        weight: 1
-      - path: polySurface43/polySurface45
-        weight: 1
-      - path: polySurface43/polySurface46
-        weight: 1
-      - path: polySurface43/polySurface47
-        weight: 1
-      - path: polySurface43/polySurface48
-        weight: 1
-      - path: polySurface43/polySurface49
-        weight: 1
-      - path: polySurface43/polySurface50
-        weight: 1
-      - path: polySurface43/polySurface51
-        weight: 1
-      maskType: 0
-      maskSource: {instanceID: 0}
-    - serializedVersion: 16
-      name: IdleOff
-      takeName: Take 001
-      firstFrame: 0
-      lastFrame: .100000009
+      lastFrame: 35
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -257,8 +180,8 @@ ModelImporter:
     - serializedVersion: 16
       name: IdleOn
       takeName: Take 001
-      firstFrame: 76
-      lastFrame: 76
+      firstFrame: 68
+      lastFrame: 69
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

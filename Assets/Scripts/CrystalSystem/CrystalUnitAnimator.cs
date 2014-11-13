@@ -1,21 +1,32 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CrystalUnitAnimator : MonoBehaviour
+public static class CrystalUnitAnimator
 {
-    private Animator _anim;
+    public static float AnimationGetTime(this Animator unitAnimator, string animationHashString)
+    {        
+        var hash = Animator.StringToHash(animationHashString);
 
-    int turnOnHash = Animator.StringToHash("turnUnitOn");
+        unitAnimator.SetTrigger(hash);
 
-    void Awake()
-    {
-        _anim = gameObject.GetComponent<CrystalsUnit>().animator;
-    }
+        var animationState = unitAnimator.GetCurrentAnimatorStateInfo(0);
 
-    public float TurnOnAnimation()
-    {
-        _anim.SetTrigger(turnOnHash);        
+        var animationClips = unitAnimator.GetCurrentAnimationClipState(0);
+        Debug.Log("animationState for:" + animationState);
 
-        return _anim.gameObject.animation.clip.length;
+        if (animationClips.Length == 0)
+            return 2;
+
+        Debug.Log("Normalized: "+animationState.normalizedTime);
+
+        var animationClip = animationClips[0].clip;
+        var animationTime = animationClip.length * animationState.normalizedTime;
+
+        Debug.Log("Waiting for:" + animationClip);
+
+        Debug.Log("Waiting for:" + animationTime/2);
+
+        return 1.7f;        
     }
 }
+

@@ -23,9 +23,8 @@ public class Connection_Temporary: ConnectorFunctions
     public SECTR_PointSource _audioPointSourceOff;
     public SECTR_PointSource _audioPointSourceOn;
 
-    public void InitializeConnection(CrystalConnection cristalConnection)
+    public void InitializeConnection(CrystalConnection cristalConnection, bool shouldTurnOnAfterCreating = false)
     {
-
         Origin = transform.parent;
         cc = cristalConnection;
         Destination = cc.Destination;
@@ -65,36 +64,23 @@ public class Connection_Temporary: ConnectorFunctions
         _audioPointSourceOff = _audioSourceOff.GetComponent<SECTR_PointSource>();
         _audioPointSourceOn = _audioSourceOn.GetComponent<SECTR_PointSource>();
 
-        _frameLight = Instantiate(Resources.Load("Prefabs/Connection/ConnectionLight"), Origin.transform.position, Origin.transform.rotation) as GameObject;
+        _frameLight = InstantiateNewLight(_originPoint);
         _frameLight.transform.parent = _framePosition;
 
-        _frameLight.GetComponent<LightningBolt>().target = _frame.transform.FindChild("FromOrigin");
-        StartCoroutine(GetLightDestination(_frame.transform.FindChild("FromOrigin")));
-
-        _frameLight2 = Instantiate(Resources.Load("Prefabs/Connection/ConnectionLight"), Destination.transform.position, Destination.transform.rotation) as GameObject;
+        _frameLight2 = InstantiateNewLight(_frame.transform.FindChild("FromDestination"));
         _frameLight2.transform.parent = _framePosition;
 
-        _frameLight2.GetComponent<LightningBolt>().target = _frame.transform.FindChild("FromDestination");
-        StartCoroutine(GetLightDestination(_frame.transform.FindChild("FromDestination")));
-
-        if (Origin.GetComponent<CrystalsUnit>().isThisSystemOn)
-            TurnTrackOn();
-        else
+        if (!shouldTurnOnAfterCreating)
             TurnTrackOff();
-
-    }
-
-    IEnumerator GetLightDestination(Transform dest)
-    {
-        while (_frameLight.GetComponent<LightningBolt>().target == null)
-        {
-            _frameLight.GetComponent<LightningBolt>().target = dest;
-            yield return 0;
-        }
+        else
+            TurnTrackOn();
     }
 
     public void TurnTrackOn()
     {
+        StartCoroutine(GetLightDestination(_frameLight, Origin, _frame.transform.FindChild("FromOrigin")));
+        StartCoroutine(GetLightDestination(_frameLight2, _frame.transform.FindChild("FromDestination"), _frame.transform.FindChild("ToDestination"), 0.5f, Destination, true));
+
         _centerPiece.GetComponent<MeshRenderer>().enabled = true;
         _frameLight.GetComponent<ParticleRenderer>().enabled = true;
         _frameLight2.GetComponent<ParticleRenderer>().enabled = true;
@@ -106,6 +92,8 @@ public class Connection_Temporary: ConnectorFunctions
 
     public void TurnTrackOff()
     {
+        isTrackOn = false;  
+
         if (Application.loadedLevelName != "Stage_Null")
         {
             _centerPiece.GetComponent<MeshRenderer>().enabled = false;
@@ -121,9 +109,6 @@ public class Connection_Temporary: ConnectorFunctions
 
     public void BreakLine()
     {
-        if (Connection == ConnectionEnum.ConnectionType.Fixed)
-            return;
-
         ResourcesManager.INSTANCE.AddTrack();
         GlobalFunctions.BreakThisConnection(gameObject, transform.parent, Destination);
 

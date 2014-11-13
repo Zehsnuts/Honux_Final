@@ -112,10 +112,10 @@ public class MouseFunctions : MonoBehaviour
         {            
             if (t.GetComponent<CrystalUnitFunctions>())
             {
-                if (ResourcesManager.INSTANCE.GetTracksNumber() > 0)
-                {
+                if (ResourcesManager.INSTANCE.GetTracksNumber() > 0)                
                     ConnectionFunctions.INSTANCE.AssignOriginAndDestination(t.gameObject);
-                }
+                
+                
                 /*if (LineCreatorByInput.INSTANCE.ReadyToCreateLine() && ResourcesManager.INSTANCE.GetTracksNumber()>0)
                     LineCreatorByInput.INSTANCE.AssignOriginAndDestination(t.gameObject);    
                  * */

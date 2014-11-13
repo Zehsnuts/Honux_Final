@@ -22,24 +22,16 @@ public class CrystalsControl : MonoBehaviour
     #endregion
 
     public Material _structureOn;
-    public Material _structureOff;
-
-    void Start()
-    {
-        _structureOn = Resources.Load("Materials/ReplicatorOn") as Material;
-
-        _structureOff = Resources.Load("Materials/ReplicatorOff") as Material;
-    }
+    public Material _structureOff;    
 
     public void TurnThisSystemOff(Transform t)
     {
-        t.tag = "Off";
-
         if (Application.loadedLevelName != "Stage_Null" && t.GetComponent<CrystalsUnit>().systemType != CrystalsUnit.SystemType.Pin)
             foreach (Transform item in t)
             {
-                if (item.GetComponent<Animator>())                
-                    item.gameObject.SetActive(false);
+                if (item.GetComponent<Animator>())
+                    foreach (Transform itemItem in item)                    
+                        itemItem.active = false;                    
                 
                 if (item.GetComponent<MeshRenderer>())
                     item.GetComponent<MeshRenderer>().enabled = false;
@@ -63,28 +55,26 @@ public class CrystalsControl : MonoBehaviour
 
     public void TurnThisSystemOn(Transform t)
     {
-        t.tag = "Off";
-        if (Application.loadedLevelName != "Stage_Null")
             foreach (Transform item in t)
             {
+                if (item.GetComponent<Connection_Fixed>() || item.GetComponent<Connection_Temporary>())
+                    continue;
+
+                item.gameObject.SetActive(true);
+
                 if (item.GetComponent<Animator>())
-                {
-                    item.gameObject.SetActive(true);
-
-                    StartCoroutine(WaitAnimationBeforeTurningOn(t));
-
-                    TurnShadowOff(t);
-                }
+                    foreach (Transform itemItem in item)                    
+                        itemItem.active = true;                    
 
                 if (item.GetComponent<MeshRenderer>())
                     item.GetComponent<MeshRenderer>().enabled = true;
-                foreach (Transform i in item)
-                {
+
+                foreach (Transform i in item)                
                     if (i.GetComponent<MeshRenderer>())
-                        i.GetComponent<MeshRenderer>().enabled = true;
-                }
+                        i.GetComponent<MeshRenderer>().enabled = true;                
             }
 
+            StartCoroutine(WaitAnimationBeforeTurningOn(t));
 
 
         switch (t.GetComponent<CrystalsUnit>().systemType)
@@ -97,14 +87,17 @@ public class CrystalsControl : MonoBehaviour
 
     IEnumerator WaitAnimationBeforeTurningOn(Transform t)
     {
-        if (t.gameObject.GetComponent<CrystalUnitAnimator>())
-            yield return new WaitForSeconds(t.gameObject.GetComponent<CrystalUnitAnimator>().TurnOnAnimation());
-        else
-            yield return new WaitForSeconds(2);
+        Debug.Log(t.name);
 
-        if (t.GetComponent<CrystalsUnit>().isSystemSuposedToTurnOn)
+        var crystalUnit = t.GetComponent<CrystalUnitFunctions>();
+
+        var unitAnimator = crystalUnit.unitAnimator;
+
+        yield return new WaitForSeconds(unitAnimator.AnimationGetTime("turnUnitOn"));
+
+        if (crystalUnit.isSystemSuposedToTurnOn)
         {
-            t.GetComponent<CrystalUnitFunctions>().TurnOnAfterAnimation();
+            crystalUnit.TurnOnAfterAnimation();
 
             TurnShadowOff(t);
         }
@@ -114,8 +107,6 @@ public class CrystalsControl : MonoBehaviour
 
     void TurnPinOn(Transform t)
     {
-        t.tag = "On";
-
         t.FindChild("Structure").gameObject.GetComponent<MeshRenderer>().material = Resources.Load("Materials/PinOn") as Material;
 
         if (t.FindChild("AudioSource_on"))
@@ -154,13 +145,9 @@ public class CrystalsControl : MonoBehaviour
 
     #region TurnOff
 
-
     void TurnPinOff(Transform t)
     {
-
         t.FindChild("Structure").gameObject.GetComponent<MeshRenderer>().material = Resources.Load("Materials/PinOff") as Material;
-
-        t.tag = "Off";
 
         if (t.FindChild("AudioSource_on"))
             t.FindChild("AudioSource_on").active = false;
@@ -176,16 +163,6 @@ public class CrystalsControl : MonoBehaviour
 
         if (t.FindChild("AudioSource_on"))
             t.FindChild("AudioSource_on").GetComponent<SECTR_PointSource>().Stop(true);
-
-        foreach (Transform trans in t)
-        {
-            if (trans.name.Contains("Track:"))
-            {
-                trans.gameObject.SetActiveRecursively(true);
-                trans.GetComponent<ConnectorFunctions>().TurnTrackOn();
-            }
-        }
-
     }
     #endregion
 }

@@ -29,7 +29,7 @@ GameObject:
   - 114: {fileID: 11400000}
   m_Layer: 0
   m_Name: PinAND
-  m_TagString: Off
+  m_TagString: Pin
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -280,10 +280,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   systemType: 3
   isThisSystemOn: 0
+  isSystemSuposedToTurnOn: 1
+  PrimarySourceOfEnergy: {fileID: 0}
   hasThisSystemTurnedOnAtLastFrame: 0
   isAffectedByForceField: 0
   lastPrimarySourceOfEnergy: {fileID: 0}
-  PrimarySourceOfEnergy: {fileID: 0}
   ConnectedToMe: []
   SystemsThisReceivedEnergyFrom: []
   SystemsThisDonatedEnergyTo: []
@@ -295,6 +296,7 @@ MonoBehaviour:
   _unitAudioObjectOff: {fileID: 0}
   _unitAudioSourceOn: {fileID: 0}
   _unitAudioSourceOff: {fileID: 0}
+  animator: {fileID: 0}
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1

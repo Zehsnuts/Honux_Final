@@ -45,7 +45,7 @@ GameObject:
   - 114: {fileID: 11400002}
   m_Layer: 0
   m_Name: PinOR
-  m_TagString: Off
+  m_TagString: Pin
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -129,7 +129,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100004}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 18.7632008, y: -.846060932, z: .484892666}
+  m_LocalPosition: {x: 18.7632008, y: -.838887155, z: 1.38773537}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 400010}
@@ -296,10 +296,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   systemType: 3
   isThisSystemOn: 0
+  isSystemSuposedToTurnOn: 1
+  PrimarySourceOfEnergy: {fileID: 0}
   hasThisSystemTurnedOnAtLastFrame: 0
   isAffectedByForceField: 0
   lastPrimarySourceOfEnergy: {fileID: 0}
-  PrimarySourceOfEnergy: {fileID: 0}
   ConnectedToMe: []
   SystemsThisReceivedEnergyFrom: []
   SystemsThisDonatedEnergyTo: []
@@ -311,6 +312,7 @@ MonoBehaviour:
   _unitAudioObjectOff: {fileID: 0}
   _unitAudioSourceOn: {fileID: 0}
   _unitAudioSourceOff: {fileID: 0}
+  animator: {fileID: 0}
 --- !u!114 &11400004
 MonoBehaviour:
   m_ObjectHideFlags: 1

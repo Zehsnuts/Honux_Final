@@ -16,6 +16,14 @@ public class Manager : MonoBehaviour {
             go.AddComponent<EventManager>();
         }
 
+        if (!GameObject.FindObjectOfType<ConnectionsControl>())
+        {
+            var go = new GameObject();
+            go.transform.parent = transform;
+            go.name = "ConnectionsControl";
+            go.AddComponent<ConnectionsControl>();
+        }
+
         if (!GameObject.FindObjectOfType<SoundManager>())
         {
             var go = new GameObject();

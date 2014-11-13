@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GlobalFunctions : MonoBehaviour {
-
-
+public class GlobalFunctions : MonoBehaviour 
+{
     public static void CheckIfMyConnectionsHaveMe(GameObject go)
     {
         var connectionsList = go.GetComponent<CrystalsUnit>().ConnectedToMe;
@@ -50,9 +49,6 @@ public class GlobalFunctions : MonoBehaviour {
 
     public static void BreakThisLine(GameObject line)
     {
-        if (line.GetComponent<ConnectorFunctions>().Connection == ConnectionEnum.ConnectionType.Fixed)
-            return;
-
         var origin = line.GetComponent<ConnectorFunctions>().Origin;
         var destination = line.GetComponent<ConnectorFunctions>().Destination;
 
@@ -68,9 +64,9 @@ public class GlobalFunctions : MonoBehaviour {
         Destroy(line);
     }
 
-    public static void ConnectThisLineWithParent(GameObject parent, GameObject line)
+    public static void ConnectThisLineWithParent(CrystalConnection crystalConnection, GameObject line)
     {        
-        parent.GetComponent<CrystalsUnit>().TracksOfDonatedEnergy.Add(line);
+        crystalConnection.gameObject.GetComponent<CrystalsUnit>().TracksOfDonatedEnergy.Add(line);
     }
 
     public static bool CheckIfConnectionIsPossible(Transform origin, Transform destination, float connectionDistance)

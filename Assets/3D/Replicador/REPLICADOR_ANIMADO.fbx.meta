@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 3cb07d58d02d13c46bec1687330c65fc
 ModelImporter:
-  serializedVersion: 16
+  serializedVersion: 15
   fileIDToRecycleName:
     100000: polySurface1
     100002: polySurface16
@@ -96,6 +96,7 @@ ModelImporter:
     4300008: polySurface71
     7400000: TurnOn
     7400002: IdleOn
+    7400004: IdleOff
     9500000: //RootNode
   materials:
     importMaterials: 1
@@ -105,7 +106,6 @@ ModelImporter:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
     optimizeGameObjects: 0
-    motionNodeName: 
     animationCompression: 1
     animationRotationError: .5
     animationPositionError: .5
@@ -219,7 +219,109 @@ ModelImporter:
       name: IdleOn
       takeName: Take 001
       firstFrame: 50
-      lastFrame: 81
+      lastFrame: 215
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: polySurface1
+        weight: 1
+      - path: polySurface1/transform3
+        weight: 1
+      - path: polySurface2
+        weight: 1
+      - path: polySurface2/transform4
+        weight: 1
+      - path: polySurface6
+        weight: 1
+      - path: polySurface6/transform12
+        weight: 1
+      - path: polySurface7
+        weight: 1
+      - path: polySurface7/transform13
+        weight: 1
+      - path: polySurface8
+        weight: 1
+      - path: polySurface8/transform16
+        weight: 1
+      - path: polySurface9
+        weight: 1
+      - path: polySurface9/transform17
+        weight: 1
+      - path: polySurface16
+        weight: 1
+      - path: polySurface16/polySurface17
+        weight: 1
+      - path: polySurface16/polySurface17/polySurface20
+        weight: 1
+      - path: polySurface16/polySurface17/polySurface20/polySurface22
+        weight: 1
+      - path: polySurface16/polySurface17/polySurface20/polySurface22/transform26
+        weight: 1
+      - path: polySurface16/polySurface17/polySurface20/polySurface23
+        weight: 1
+      - path: polySurface16/polySurface17/polySurface20/polySurface23/transform25
+        weight: 1
+      - path: polySurface16/polySurface17/polySurface20/polySurface24
+        weight: 1
+      - path: polySurface16/polySurface17/polySurface20/polySurface24/transform27
+        weight: 1
+      - path: polySurface16/polySurface17/polySurface20/polySurface25
+        weight: 1
+      - path: polySurface16/polySurface17/polySurface20/polySurface25/transform28
+        weight: 1
+      - path: polySurface16/polySurface17/polySurface20/polySurface26
+        weight: 1
+      - path: polySurface16/polySurface17/polySurface20/polySurface26/transform23
+        weight: 1
+      - path: polySurface16/polySurface17/polySurface20/polySurface27
+        weight: 1
+      - path: polySurface16/polySurface17/polySurface20/polySurface27/transform24
+        weight: 1
+      - path: polySurface16/polySurface17/polySurface20/polySurface28
+        weight: 1
+      - path: polySurface16/polySurface17/polySurface20/polySurface28/transform22
+        weight: 1
+      - path: polySurface16/polySurface17/polySurface20/polySurface29
+        weight: 1
+      - path: polySurface16/polySurface17/polySurface20/polySurface29/transform21
+        weight: 1
+      - path: polySurface58
+        weight: 1
+      - path: polySurface58/polySurface59
+        weight: 1
+      - path: polySurface58/polySurface60
+        weight: 1
+      - path: polySurface58/polySurface69
+        weight: 1
+      - path: polySurface58/polySurface70
+        weight: 1
+      - path: polySurface71
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: IdleOff
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: .100000009
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -353,5 +455,4 @@ ModelImporter:
     rootMotionBoneName: 
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2
-  additionalBone: 0
   userData: 

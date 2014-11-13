@@ -21,15 +21,15 @@ public class CrystalsUnit : MonoBehaviour
     [HideInInspector]
     public bool isAffectedByForceField = false;
     [HideInInspector]
-    public GameObject lastPrimarySourceOfEnergy;    
+    public GameObject lastPrimarySourceOfEnergy;
 
-    
-    public List<GameObject> ConnectedToMe;//Lista todos os elementos que tem uma trilha com este. Mesmo que não forneça ou receba energia deste
 
-    public List<GameObject> SystemsThisReceivedEnergyFrom; //Lista de elementos que doaram/repassaram energia para este. Serve para não retornar energia na mesma trilha.
-    public List<GameObject> SystemsThisDonatedEnergyTo; //Lista de elementos que receberam energia deste.
+    public List<GameObject> ConnectedToMe = new List<GameObject>();//Lista todos os elementos que tem uma trilha com este. Mesmo que não forneça ou receba energia deste
 
-    public List<GameObject> TracksOfDonatedEnergy;//Lista de trilhas de energia.
+    public List<GameObject> SystemsThisReceivedEnergyFrom = new List<GameObject>(); //Lista de elementos que doaram/repassaram energia para este. Serve para não retornar energia na mesma trilha.
+    public List<GameObject> SystemsThisDonatedEnergyTo = new List<GameObject>(); //Lista de elementos que receberam energia deste.
+
+    public List<GameObject> TracksOfDonatedEnergy = new List<GameObject>();//Lista de trilhas de energia.
     public bool hasLaidTracks = false;
 
     public int energyNeededToWork = 1;
@@ -41,5 +41,5 @@ public class CrystalsUnit : MonoBehaviour
     public SECTR_AudioSource _unitAudioSourceOn;
     public SECTR_AudioSource _unitAudioSourceOff;
 
-    public Animator animator;
+    public Animator unitAnimator;
 }

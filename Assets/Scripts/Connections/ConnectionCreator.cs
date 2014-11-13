@@ -9,21 +9,17 @@ public class ConnectionCreator : MonoBehaviour {
 
     CrystalConnection cc;
 
-    void Start()
+    void Awake()
     {
-        if (this.Destination != null)
-        {            
-            SetConnectionAttributes();
-            CreateConnection();          
-        }
+        if (Destination != null)                  
+            SetConnectionAttributes(); 
         else
             Debug.LogError("Crystal connection doesn't have a destination.");
-
         Destroy(this);
     }
 
     void SetConnectionAttributes()
-    { 
+    {         
         this.cc = gameObject.AddComponent<CrystalConnection>();         
 
         if (Connection == ConnectionEnum.ConnectionType.Fixed)
@@ -32,26 +28,32 @@ public class ConnectionCreator : MonoBehaviour {
             cc.Connection = ConnectionEnum.ConnectionType.Temporary;
 
         cc.Destination = this.Destination;
-    }
+    }    
 
-    void CreateConnection()
-    {   
-        GameObject go = Instantiate(Resources.Load("Prefabs/Connection/Connector"), transform.position, transform.rotation) as GameObject;
-        go.transform.parent = transform;
-
-        go.name = "Track: " + transform.name + " to " + this.Destination.name;
-
-        go.GetComponent<ConnectorFunctions>().InitializeConnection(cc);
-
-        GlobalFunctions.ConnectThisLineWithParent(transform.gameObject, go);
-
-        transform.GetComponent<CrystalUnitFunctions>().ConnectSingleUnit(this.Destination.gameObject);
-
-    }
-
-    public void CreateConnectionAtRunTime(Transform destination, ConnectionEnum.ConnectionType type)
+    public void CreateConnectionAtRunTime(Transform destination, ConnectionEnum.ConnectionType type, bool shouldTurnOnAfterCreating = false)
     {
         this.Destination = destination;
-        this.Connection = type;       
+        this.Connection = type;
+
+        SetConnectionAttributes();
+
+        cc.CreateConnection(shouldTurnOnAfterCreating);
+
+        Destroy(this);
+    }
+
+    public void ChangeFixedConnectionParent(GameObject track)
+    {
+        var trackCrystal = track.GetComponent<ConnectorFunctions>();
+
+        this.Destination = trackCrystal.Origin;
+        this.Connection = trackCrystal.Connection;
+
+        GlobalFunctions.BreakThisLine(track);
+
+        SetConnectionAttributes();
+
+        cc.CreateConnection();
+        Destroy(this);
     }
 }

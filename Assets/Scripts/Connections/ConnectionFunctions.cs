@@ -97,7 +97,6 @@ public class ConnectionFunctions : MonoBehaviour
         else
             Destination = go;
 
-
         if (Origin != null && Destination != null && Origin != Destination)
         {
             if (!Origin.GetComponent<CrystalsUnit>().isThisSystemOn)
@@ -134,9 +133,7 @@ public class ConnectionFunctions : MonoBehaviour
     {
         _isCreatingConnection = false;
 
-        Origin.transform.GetComponent<CrystalUnitFunctions>().ConnectSingleUnit(Destination);
-
-        Origin.AddComponent<ConnectionCreator>().CreateConnectionAtRunTime(Destination.transform, ConnectionEnum.ConnectionType.Temporary);
+        Origin.AddComponent<ConnectionCreator>().CreateConnectionAtRunTime(Destination.transform, ConnectionEnum.ConnectionType.Temporary, Origin.GetComponent<CrystalsUnit>().isThisSystemOn);
 
         ResourcesManager.INSTANCE.RemoveTrack();
 
@@ -145,10 +142,9 @@ public class ConnectionFunctions : MonoBehaviour
 
     public void EditorModeLineCreator(GameObject origin, GameObject destination, string type)
     {
-        if (origin != null && destination != null)
-        {
+        if (origin != null && destination != null)        
             origin.transform.GetComponent<CrystalUnitFunctions>().ConnectSingleUnit(destination);
-        }
+        
     }
 
     public void CancelLineCreation()
