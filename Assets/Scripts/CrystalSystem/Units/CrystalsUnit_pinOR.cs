@@ -2,9 +2,13 @@
 using System.Collections;
 
 public class CrystalsUnit_pinOR : CrystalUnitFunctions {
-    
+
+    public bool isPinOpen = false;
+
     public override bool CheckEnergy()
     {
+        unitAnimator.SetInteger("ConnectionsNumber", ConnectedToMe.Count);
+
         if (energyInsideMe >= 1 && ConnectedToMe.Count >1)
             return true;
         else

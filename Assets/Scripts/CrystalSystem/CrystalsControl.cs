@@ -107,7 +107,6 @@ public class CrystalsControl : MonoBehaviour
 
     void TurnPinOn(Transform t)
     {
-        t.FindChild("Structure").gameObject.GetComponent<MeshRenderer>().material = Resources.Load("Materials/PinOn") as Material;
 
         if (t.FindChild("AudioSource_on"))
             t.FindChild("AudioSource_on").GetComponent<SECTR_PointSource>().Play();      
@@ -121,6 +120,12 @@ public class CrystalsControl : MonoBehaviour
 
     void TurnShadowOn(Transform t)
     {
+        var crystalUnit = t.GetComponent<CrystalUnitFunctions>();
+
+        var unitAnimator = crystalUnit.unitAnimator;
+
+        unitAnimator.AnimationGetTime("TurnOff");
+
         t.gameObject.active = true;
 
         if (t.FindChild("AudioSource_on"))
@@ -147,7 +152,11 @@ public class CrystalsControl : MonoBehaviour
 
     void TurnPinOff(Transform t)
     {
-        t.FindChild("Structure").gameObject.GetComponent<MeshRenderer>().material = Resources.Load("Materials/PinOff") as Material;
+        var crystalUnit = t.GetComponent<CrystalUnitFunctions>();
+
+        var unitAnimator = crystalUnit.unitAnimator;
+
+        unitAnimator.AnimationGetTime("TurnOn");
 
         if (t.FindChild("AudioSource_on"))
             t.FindChild("AudioSource_on").active = false;

@@ -73,7 +73,7 @@ public class CrystalUnitFunctions : CrystalsUnit
             _unitAudioSourceOn = _unitAudioObjectOn.GetComponent<SECTR_AudioSource>();
 
         while (_unitAudioSourceOff == null)
-        _unitAudioSourceOff = _unitAudioObjectOff.GetComponent<SECTR_AudioSource>();    
+            _unitAudioSourceOff = _unitAudioObjectOff.GetComponent<SECTR_AudioSource>();    
     }
             
 
